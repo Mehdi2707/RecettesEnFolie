@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use App\Entity\Trait\CreatedAtTrait;
+use App\Entity\Trait\UpdatedAtTrait;
 use App\Repository\RecipesRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -11,6 +13,9 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: RecipesRepository::class)]
 class Recipes
 {
+    use CreatedAtTrait;
+    use UpdatedAtTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -21,6 +26,9 @@ class Recipes
 
     #[ORM\Column(type: Types::TEXT)]
     private ?string $description = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $slug = null;
 
     #[ORM\Column]
     private ?int $preparationTime = null;
@@ -36,12 +44,6 @@ class Recipes
 
     #[ORM\Column(length: 255)]
     private ?string $image = null;
-
-    #[ORM\Column]
-    private ?\DateTimeImmutable $createdAt = null;
-
-    #[ORM\Column]
-    private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'recipes')]
     #[ORM\JoinColumn(nullable: false)]
@@ -65,6 +67,8 @@ class Recipes
         $this->steps = new ArrayCollection();
         $this->comments = new ArrayCollection();
         $this->favorites = new ArrayCollection();
+        $this->createdAt = new \DateTimeImmutable();
+        $this->updatedAt = new \DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -92,6 +96,18 @@ class Recipes
     public function setDescription(string $description): self
     {
         $this->description = $description;
+
+        return $this;
+    }
+
+    public function getSlug(): ?string
+    {
+        return $this->slug;
+    }
+
+    public function setSlug(?string $slug): self
+    {
+        $this->slug = $slug;
 
         return $this;
     }
@@ -152,30 +168,6 @@ class Recipes
     public function setImage(string $image): self
     {
         $this->image = $image;
-
-        return $this;
-    }
-
-    public function getCreatedAt(): ?\DateTimeImmutable
-    {
-        return $this->createdAt;
-    }
-
-    public function setCreatedAt(\DateTimeImmutable $createdAt): self
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    public function getUpdatedAt(): ?\DateTimeImmutable
-    {
-        return $this->updatedAt;
-    }
-
-    public function setUpdatedAt(\DateTimeImmutable $updatedAt): self
-    {
-        $this->updatedAt = $updatedAt;
 
         return $this;
     }

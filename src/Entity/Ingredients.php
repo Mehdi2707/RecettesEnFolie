@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use App\Entity\Trait\CreatedAtTrait;
+use App\Entity\Trait\UpdatedAtTrait;
 use App\Repository\IngredientsRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -9,6 +11,9 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: IngredientsRepository::class)]
 class Ingredients
 {
+    use CreatedAtTrait;
+    use UpdatedAtTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -23,15 +28,15 @@ class Ingredients
     #[ORM\Column(length: 50)]
     private ?string $unit = null;
 
-    #[ORM\Column]
-    private ?\DateTimeImmutable $createdAt = null;
-
-    #[ORM\Column]
-    private ?\DateTimeImmutable $updatedAt = null;
-
     #[ORM\ManyToOne(inversedBy: 'ingredients')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Recipes $recipeId = null;
+
+    public function __construct()
+    {
+        $this->createdAt = new \DateTimeImmutable();
+        $this->updatedAt = new \DateTimeImmutable();
+    }
 
     public function getId(): ?int
     {
@@ -70,30 +75,6 @@ class Ingredients
     public function setUnit(string $unit): self
     {
         $this->unit = $unit;
-
-        return $this;
-    }
-
-    public function getCreatedAt(): ?\DateTimeImmutable
-    {
-        return $this->createdAt;
-    }
-
-    public function setCreatedAt(\DateTimeImmutable $createdAt): self
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    public function getUpdatedAt(): ?\DateTimeImmutable
-    {
-        return $this->updatedAt;
-    }
-
-    public function setUpdatedAt(\DateTimeImmutable $updatedAt): self
-    {
-        $this->updatedAt = $updatedAt;
 
         return $this;
     }

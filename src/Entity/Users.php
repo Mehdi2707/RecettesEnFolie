@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use App\Entity\Trait\CreatedAtTrait;
+use App\Entity\Trait\UpdatedAtTrait;
 use App\Repository\UsersRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -12,14 +14,18 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UsersRepository::class)]
 #[UniqueEntity(fields: ['email'], message: 'Il existe déjà un compte avec cet email')]
+#[UniqueEntity(fields: ['username'], message: 'Il existe déjà un compte avec ce nom d\'utilisateur')]
 class Users implements UserInterface, PasswordAuthenticatedUserInterface
 {
+    use CreatedAtTrait;
+    use UpdatedAtTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 50)]
+    #[ORM\Column(length: 50, unique: true)]
     private ?string $username = null;
 
     #[ORM\Column(length: 180, unique: true)]
@@ -33,12 +39,6 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\Column]
     private ?string $password = null;
-
-    #[ORM\Column(options: ['default' => 'CURRENT_TIMESTAMP'])]
-    private ?\DateTimeImmutable $createdAt = null;
-
-    #[ORM\Column(options: ['default' => 'CURRENT_TIMESTAMP'])]
-    private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\OneToMany(mappedBy: 'userId', targetEntity: Recipes::class)]
     private Collection $receipts;
@@ -138,30 +138,6 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
-    }
-
-    public function getCreatedAt(): ?\DateTimeImmutable
-    {
-        return $this->createdAt;
-    }
-
-    public function setCreatedAt(\DateTimeImmutable $createdAt): self
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    public function getUpdatedAt(): ?\DateTimeImmutable
-    {
-        return $this->updatedAt;
-    }
-
-    public function setUpdatedAt(\DateTimeImmutable $updatedAt): self
-    {
-        $this->updatedAt = $updatedAt;
-
-        return $this;
     }
 
     /**
