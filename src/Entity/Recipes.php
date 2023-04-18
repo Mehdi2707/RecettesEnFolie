@@ -42,7 +42,7 @@ class Recipes
     #[ORM\Column(length: 50)]
     private ?string $difficultyLevel = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $image = null;
 
     #[ORM\ManyToOne(inversedBy: 'recipes')]
