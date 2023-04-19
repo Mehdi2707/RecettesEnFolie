@@ -15,37 +15,37 @@ class Favorites
 
     #[ORM\ManyToOne(inversedBy: 'favorites')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Recipes $recipeId = null;
+    private ?Recipes $recipe = null;
 
     #[ORM\ManyToOne(inversedBy: 'favorites')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Users $userId = null;
+    private ?Users $user = null;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getRecipeId(): ?Recipes
+    public function getRecipe(): ?Recipes
     {
-        return $this->recipeId;
+        return $this->recipe;
     }
 
-    public function setRecipeId(?Recipes $recipeId): self
+    public function setRecipeId(?Recipes $recipe): self
     {
-        $this->recipeId = $recipeId;
+        $this->recipe = $recipe;
 
         return $this;
     }
 
-    public function getUserId(): ?Users
+    public function getUser(): ?Users
     {
-        return $this->userId;
+        return $this->user;
     }
 
-    public function setUserId(?Users $userId): self
+    public function setUser(?Users $user): self
     {
-        $this->userId = $userId;
+        $this->user = $user;
 
         return $this;
     }

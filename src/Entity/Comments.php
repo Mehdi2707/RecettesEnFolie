@@ -24,11 +24,11 @@ class Comments
 
     #[ORM\ManyToOne(inversedBy: 'comments')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Users $userId = null;
+    private ?Users $user = null;
 
     #[ORM\ManyToOne(inversedBy: 'comments')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Recipes $recipeId = null;
+    private ?Recipes $recipe = null;
 
     public function __construct()
     {
@@ -53,26 +53,26 @@ class Comments
         return $this;
     }
 
-    public function getUserId(): ?Users
+    public function getUser(): ?Users
     {
-        return $this->userId;
+        return $this->user;
     }
 
-    public function setUserId(?Users $userId): self
+    public function setUser(?Users $user): self
     {
-        $this->userId = $userId;
+        $this->user = $user;
 
         return $this;
     }
 
-    public function getRecipeId(): ?Recipes
+    public function getRecipe(): ?Recipes
     {
-        return $this->recipeId;
+        return $this->recipe;
     }
 
-    public function setRecipeId(?Recipes $recipeId): self
+    public function setRecipe(?Recipes $recipe): self
     {
-        $this->recipeId = $recipeId;
+        $this->recipe = $recipe;
 
         return $this;
     }

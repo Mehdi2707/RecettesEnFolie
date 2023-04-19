@@ -47,18 +47,18 @@ class Recipes
 
     #[ORM\ManyToOne(inversedBy: 'recipes')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Users $userId = null;
+    private ?Users $user = null;
 
-    #[ORM\OneToMany(mappedBy: 'recipeId', targetEntity: Ingredients::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'recipe', targetEntity: Ingredients::class, orphanRemoval: true)]
     private Collection $ingredients;
 
-    #[ORM\OneToMany(mappedBy: 'recipeId', targetEntity: Steps::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'recipe', targetEntity: Steps::class, orphanRemoval: true)]
     private Collection $steps;
 
-    #[ORM\OneToMany(mappedBy: 'recipeId', targetEntity: Comments::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'recipe', targetEntity: Comments::class, orphanRemoval: true)]
     private Collection $comments;
 
-    #[ORM\OneToMany(mappedBy: 'recipeId', targetEntity: Favorites::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'recipe', targetEntity: Favorites::class, orphanRemoval: true)]
     private Collection $favorites;
 
     public function __construct()
@@ -172,14 +172,14 @@ class Recipes
         return $this;
     }
 
-    public function getUserId(): ?Users
+    public function getUser(): ?Users
     {
-        return $this->userId;
+        return $this->user;
     }
 
-    public function setUserId(?Users $userId): self
+    public function setUser(?Users $user): self
     {
-        $this->userId = $userId;
+        $this->user = $user;
 
         return $this;
     }
@@ -196,7 +196,7 @@ class Recipes
     {
         if (!$this->ingredients->contains($ingredient)) {
             $this->ingredients->add($ingredient);
-            $ingredient->setRecipeId($this);
+            $ingredient->setRecipe($this);
         }
 
         return $this;
@@ -206,8 +206,8 @@ class Recipes
     {
         if ($this->ingredients->removeElement($ingredient)) {
             // set the owning side to null (unless already changed)
-            if ($ingredient->getRecipeId() === $this) {
-                $ingredient->setRecipeId(null);
+            if ($ingredient->getRecipe() === $this) {
+                $ingredient->setRecipe(null);
             }
         }
 
@@ -226,7 +226,7 @@ class Recipes
     {
         if (!$this->steps->contains($step)) {
             $this->steps->add($step);
-            $step->setRecipeId($this);
+            $step->setRecipe($this);
         }
 
         return $this;
@@ -236,8 +236,8 @@ class Recipes
     {
         if ($this->steps->removeElement($step)) {
             // set the owning side to null (unless already changed)
-            if ($step->getRecipeId() === $this) {
-                $step->setRecipeId(null);
+            if ($step->getRecipe() === $this) {
+                $step->setRecipe(null);
             }
         }
 
@@ -256,7 +256,7 @@ class Recipes
     {
         if (!$this->comments->contains($comment)) {
             $this->comments->add($comment);
-            $comment->setRecipeId($this);
+            $comment->setRecipe($this);
         }
 
         return $this;
@@ -266,8 +266,8 @@ class Recipes
     {
         if ($this->comments->removeElement($comment)) {
             // set the owning side to null (unless already changed)
-            if ($comment->getRecipeId() === $this) {
-                $comment->setRecipeId(null);
+            if ($comment->getRecipe() === $this) {
+                $comment->setRecipe(null);
             }
         }
 
@@ -286,7 +286,7 @@ class Recipes
     {
         if (!$this->favorites->contains($favorite)) {
             $this->favorites->add($favorite);
-            $favorite->setRecipeId($this);
+            $favorite->setRecipe($this);
         }
 
         return $this;
@@ -296,8 +296,8 @@ class Recipes
     {
         if ($this->favorites->removeElement($favorite)) {
             // set the owning side to null (unless already changed)
-            if ($favorite->getRecipeId() === $this) {
-                $favorite->setRecipeId(null);
+            if ($favorite->getRecipe() === $this) {
+                $favorite->setRecipe(null);
             }
         }
 

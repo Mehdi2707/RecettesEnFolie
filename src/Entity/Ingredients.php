@@ -30,7 +30,7 @@ class Ingredients
 
     #[ORM\ManyToOne(inversedBy: 'ingredients')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Recipes $recipeId = null;
+    private ?Recipes $recipe = null;
 
     public function __construct()
     {
@@ -79,14 +79,14 @@ class Ingredients
         return $this;
     }
 
-    public function getRecipeId(): ?Recipes
+    public function getRecipe(): ?Recipes
     {
-        return $this->recipeId;
+        return $this->recipe;
     }
 
-    public function setRecipeId(?Recipes $recipeId): self
+    public function setRecipe(?Recipes $recipe): self
     {
-        $this->recipeId = $recipeId;
+        $this->recipe = $recipe;
 
         return $this;
     }

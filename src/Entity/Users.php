@@ -40,18 +40,18 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?string $password = null;
 
-    #[ORM\OneToMany(mappedBy: 'userId', targetEntity: Recipes::class)]
-    private Collection $receipts;
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Recipes::class)]
+    private Collection $recipes;
 
-    #[ORM\OneToMany(mappedBy: 'userId', targetEntity: Comments::class)]
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Comments::class)]
     private Collection $comments;
 
-    #[ORM\OneToMany(mappedBy: 'userId', targetEntity: Favorites::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Favorites::class, orphanRemoval: true)]
     private Collection $favorites;
 
     public function __construct()
     {
-        $this->receipts = new ArrayCollection();
+        $this->recipes = new ArrayCollection();
         $this->comments = new ArrayCollection();
         $this->favorites = new ArrayCollection();
         $this->createdAt = new \DateTimeImmutable();
@@ -143,27 +143,27 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @return Collection<int, Recipes>
      */
-    public function getReceipts(): Collection
+    public function getRecipes(): Collection
     {
-        return $this->receipts;
+        return $this->recipes;
     }
 
-    public function addReceipt(Recipes $receipt): self
+    public function addRecipe(Recipes $recipe): self
     {
-        if (!$this->receipts->contains($receipt)) {
-            $this->receipts->add($receipt);
-            $receipt->setUserId($this);
+        if (!$this->recipes->contains($recipe)) {
+            $this->recipes->add($recipe);
+            $recipe->setUser($this);
         }
 
         return $this;
     }
 
-    public function removeReceipt(Recipes $receipt): self
+    public function removeRecipe(Recipes $recipe): self
     {
-        if ($this->receipts->removeElement($receipt)) {
+        if ($this->recipes->removeElement($recipe)) {
             // set the owning side to null (unless already changed)
-            if ($receipt->getUserId() === $this) {
-                $receipt->setUserId(null);
+            if ($recipe->getUser() === $this) {
+                $recipe->setUser(null);
             }
         }
 
@@ -182,7 +182,7 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if (!$this->comments->contains($comment)) {
             $this->comments->add($comment);
-            $comment->setUserId($this);
+            $comment->setUser($this);
         }
 
         return $this;
@@ -192,8 +192,8 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if ($this->comments->removeElement($comment)) {
             // set the owning side to null (unless already changed)
-            if ($comment->getUserId() === $this) {
-                $comment->setUserId(null);
+            if ($comment->getUser() === $this) {
+                $comment->setUser(null);
             }
         }
 
@@ -212,7 +212,7 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if (!$this->favorites->contains($favorite)) {
             $this->favorites->add($favorite);
-            $favorite->setUserId($this);
+            $favorite->setUser($this);
         }
 
         return $this;
@@ -222,8 +222,8 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if ($this->favorites->removeElement($favorite)) {
             // set the owning side to null (unless already changed)
-            if ($favorite->getUserId() === $this) {
-                $favorite->setUserId(null);
+            if ($favorite->getUser() === $this) {
+                $favorite->setUser(null);
             }
         }
 
