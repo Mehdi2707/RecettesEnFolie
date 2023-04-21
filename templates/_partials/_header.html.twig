@@ -1,7 +1,7 @@
 <!-- Preloader -->
 <div id="preloader">
     <i class="circle-preloader"></i>
-    <img src="{{ asset('assets/img/core-img/salad.png') }}" alt="">
+    <img src="{{ asset('assets/img/core-img/salad.png') }}" alt="recette facile">
 </div>
 
 <!-- Search Wrapper -->
@@ -33,9 +33,9 @@
                     <div class="breaking-news">
                         <div id="breakingNewsTicker" class="ticker">
                             <ul>
-                                <li><a href="#">Hello World!</a></li>
-                                <li><a href="#">Welcome to Colorlib Family.</a></li>
-                                <li><a href="#">Hello Delicious!</a></li>
+                                <li><a href="#">Trouve-moi une recette !</a></li>
+                                <li><a href="#">Astuce cuisine</a></li>
+                                <li><a href="#">Cuisine du monde</a></li>
                             </ul>
                         </div>
                     </div>
@@ -71,7 +71,7 @@
                 <nav class="classy-navbar justify-content-between" id="deliciousNav">
 
                     <!-- Logo -->
-                    <a class="nav-brand" href="index.html"><img src="{{ asset('assets/img/core-img/logo.png') }}" alt=""></a>
+                    <a class="nav-brand" href="{{ path('app_home') }}"><img src="{{ asset('assets/img/core-img/logo.png') }}" alt="recettes en folie"></a>
 
                     <!-- Navbar Toggler -->
                     <div class="classy-navbar-toggler">
@@ -89,7 +89,7 @@
                         <!-- Nav Start -->
                         <div class="classynav">
                             <ul>
-                                <li class="active"><a href="index.html">Home</a></li>
+                                <li class="active"><a href="{{ path('app_home') }}">Accueil</a></li>
                                 <li><a href="#">Pages</a>
                                     <ul class="dropdown">
                                         <li><a href="index.html">Home</a></li>

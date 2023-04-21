@@ -35,6 +35,17 @@
 
         {% include "_partials/_header.html.twig" %}
 
+        {% if app.user and app.user.isVerified == false %}
+            <div class="alert alert-warning alert-dismissible" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <strong>Votre compte n'est pas activé</strong>, <a href="{{ path('resend_verif') }}">renvoyer le lien d'activation</a>
+            </div>
+        {% endif %}
+
+        {% include "_partials/_flash.html.twig" %}
+
         {% block body %}{% endblock %}
 
         {% include "_partials/_footer.html.twig" %}
