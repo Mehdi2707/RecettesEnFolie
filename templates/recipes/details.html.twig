@@ -24,9 +24,9 @@
             <div class="row">
                 <div class="col-12">
                     <div class="receipe-slider owl-carousel">
-                        <img src="{{ asset('assets/img/bg-img/bg5.jpg') }}" alt="">
-                        <img src="{{ asset('assets/img/bg-img/bg5.jpg') }}" alt="">
-                        <img src="{{ asset('assets/img/bg-img/bg5.jpg') }}" alt="">
+                        {% for image in images %}
+                            <img class="{{ (loop.index0 == 0) ? 'active' : '' }}" src="{{ asset('assets/uploads/') ~ image.name }}" alt="{{ image.name }}">
+                        {% endfor %}
                     </div>
                 </div>
             </div>
