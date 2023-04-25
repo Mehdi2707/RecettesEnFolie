@@ -42,9 +42,6 @@ class Recipes
     #[ORM\Column(length: 50)]
     private ?string $difficultyLevel = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $image = null;
-
     #[ORM\ManyToOne(inversedBy: 'recipes')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Users $user = null;
@@ -61,6 +58,9 @@ class Recipes
     #[ORM\OneToMany(mappedBy: 'recipe', targetEntity: Favorites::class, orphanRemoval: true)]
     private Collection $favorites;
 
+    #[ORM\OneToMany(mappedBy: 'recipes', targetEntity: Images::class, orphanRemoval: true)]
+    private Collection $images;
+
     public function __construct()
     {
         $this->ingredients = new ArrayCollection();
@@ -69,6 +69,7 @@ class Recipes
         $this->favorites = new ArrayCollection();
         $this->createdAt = new \DateTimeImmutable();
         $this->updatedAt = new \DateTimeImmutable();
+        $this->images = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -156,18 +157,6 @@ class Recipes
     public function setDifficultyLevel(string $difficultyLevel): self
     {
         $this->difficultyLevel = $difficultyLevel;
-
-        return $this;
-    }
-
-    public function getImage(): ?string
-    {
-        return $this->image;
-    }
-
-    public function setImage(string $image): self
-    {
-        $this->image = $image;
 
         return $this;
     }
@@ -298,6 +287,36 @@ class Recipes
             // set the owning side to null (unless already changed)
             if ($favorite->getRecipe() === $this) {
                 $favorite->setRecipe(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Images>
+     */
+    public function getImages(): Collection
+    {
+        return $this->images;
+    }
+
+    public function addImage(Images $image): self
+    {
+        if (!$this->images->contains($image)) {
+            $this->images->add($image);
+            $image->setRecipes($this);
+        }
+
+        return $this;
+    }
+
+    public function removeImage(Images $image): self
+    {
+        if ($this->images->removeElement($image)) {
+            // set the owning side to null (unless already changed)
+            if ($image->getRecipes() === $this) {
+                $image->setRecipes(null);
             }
         }
 

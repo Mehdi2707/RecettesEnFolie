@@ -23,11 +23,13 @@ class RecipesController extends AbstractController
     {
         $ingredients = $recipes->getIngredients();
         $steps = $recipes->getSteps();
+        $images = $recipes->getImages();
 
         return $this->render('recipes/details.html.twig', [
             'ingredients' => $ingredients,
             'recipe' => $recipes,
-            'steps' => $steps
+            'steps' => $steps,
+            'images' => $images
         ]);
     }
 }
