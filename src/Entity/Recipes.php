@@ -58,7 +58,7 @@ class Recipes
     #[ORM\OneToMany(mappedBy: 'recipe', targetEntity: Favorites::class, orphanRemoval: true)]
     private Collection $favorites;
 
-    #[ORM\OneToMany(mappedBy: 'recipes', targetEntity: Images::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'recipes', targetEntity: Images::class, orphanRemoval: true, cascade: ['persist'])]
     private Collection $images;
 
     public function __construct()

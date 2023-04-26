@@ -6,6 +6,7 @@ use App\Entity\Recipes;
 use App\Entity\Users;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -55,7 +56,19 @@ class RecipesFormType extends AbstractType
             ->add('user', EntityType::class, [
                 'class' => Users::class,
                 'choice_label' => 'username',
-                'label' => 'Utilisateur'
+                'label' => 'Utilisateur',
+                'attr' => [
+                    'class' => 'mb-3'
+                ]
+            ])
+            ->add('images', FileType::class, [
+                'label' => false,
+                'multiple' => true,
+                'mapped' => false,
+                'required' => false,
+                'attr' => [
+                    'class' => 'form-control'
+                ]
             ])
         ;
     }

@@ -25,7 +25,7 @@
                 <div class="col-12">
                     <div class="receipe-slider owl-carousel">
                         {% for image in images %}
-                            <img class="{{ (loop.index0 == 0) ? 'active' : '' }}" src="{{ asset('assets/uploads/') ~ image.name }}" alt="{{ image.name }}">
+                            <img class="{{ (loop.index0 == 0) ? 'active' : '' }}" src="{{ asset('assets/uploads/recipes/') ~ image.name }}" alt="{{ recipe.title }}">
                         {% endfor %}
                     </div>
                 </div>
