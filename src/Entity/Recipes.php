@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: RecipesRepository::class)]
 class Recipes
@@ -22,6 +23,8 @@ class Recipes
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Le titre de la recette ne peut pas être vide')]
+    #[Assert\Length(min: 5, max: 50, minMessage: 'Le titre doit faire au moins {{ limit }} caractères', maxMessage: 'Le titre ne doit pas faire plus de {{ limit }} caractères')]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT)]
@@ -31,15 +34,20 @@ class Recipes
     private ?string $slug = null;
 
     #[ORM\Column]
+    #[Assert\Positive(message: 'Le temps de préparation ne peut pas être inférieur à 1')]
     private ?int $preparationTime = null;
 
     #[ORM\Column]
+    #[Assert\PositiveOrZero(message: 'Le temps de cuisson ne peut pas être négatif')]
     private ?int $cookingTime = null;
 
     #[ORM\Column]
+    #[Assert\Positive(message: 'Le nombre de portions ne peut pas être inférieur à 1')]
     private ?int $numberOfServings = null;
 
     #[ORM\Column(length: 50)]
+    #[Assert\NotBlank(message: 'Veuillez entrez un niveau de difficulté (facile/moyen/difficile)')]
+    #[Assert\Length(min: 5, max: 20, minMessage: 'Le champ doit faire au moins {{ limit }} caractères', maxMessage: 'Le champ ne doit pas faire plus de {{ limit }} caractères')]
     private ?string $difficultyLevel = null;
 
     #[ORM\ManyToOne(inversedBy: 'recipes')]
