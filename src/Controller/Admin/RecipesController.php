@@ -5,6 +5,7 @@ namespace App\Controller\Admin;
 use App\Entity\Images;
 use App\Entity\Recipes;
 use App\Form\RecipesFormType;
+use App\Repository\RecipesRepository;
 use App\Service\PictureService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -18,10 +19,12 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 class RecipesController extends AbstractController
 {
     #[Route('/', name: 'index')]
-    public function index(): Response
+    public function index(RecipesRepository $recipesRepository): Response
     {
+        $recipes = $recipesRepository->findAll();
+
         return $this->render('admin/recipes/index.html.twig', [
-            'controller_name' => 'HomeController',
+            'recipes' => $recipes,
         ]);
     }
 
