@@ -19,5 +19,15 @@
 
     {{ form_row(recipeForm.images) }}
 
+<h2>Ingredients</h2>
+<ul id="ingredients-list" data-prototype="{{ form_widget(recipeForm.ingredients.vars.prototype)|e }}">
+    {% for ingredientForm in recipeForm.ingredients %}
+        <li>{{ form_row(ingredientForm.quantity) }} {{ form_row(ingredientForm.name) }} {{ form_row(ingredientForm.unit) }}</li>
+    {% endfor %}
+</ul>
+<a href="#" id="add-ingredient">Add Ingredient</a>
+
     <button type="submit" class="btn btn-primary btn-lg my-3">{{ button_label|default('Ajouter') }}</button>
 {{ form_end(recipeForm) }}
+
+<script src="{{ asset('assets/js/ingredients.js') }}" defer></script>

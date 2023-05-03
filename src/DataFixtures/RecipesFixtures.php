@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Ingredients;
 use App\Entity\Recipes;
 use App\Entity\Users;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -17,6 +18,19 @@ class RecipesFixtures extends Fixture
     public function load(ObjectManager $manager): void
     {
         $user = $manager->getRepository(Users::class)->findOneBy(['username' => 'Mehdi']);
+        $ingredient = $manager->getRepository(Ingredients::class)->findOneBy(['name' => 'Steack haché de boeuf']);
+
+        $recipe = new Recipes();
+        $recipe->setTitle('Test');
+        $recipe->setDescription('test');
+        $recipe->setSlug($this->slugger->slug($recipe->getTitle())->lower());
+        $recipe->setPreparationTime(10);
+        $recipe->setCookingTime(10);
+        $recipe->setNumberOfServings(4);
+        $recipe->setDifficultyLevel('facile');
+        $recipe->addIngredient($ingredient);
+        $recipe->setUser($user);
+        $manager->persist($recipe);
 
         $this->createRecipe('Hamburger', 'Délicieux hamburger !', 20, 10, 4, 'facile', $user, $manager);
         $this->createRecipe('Tarte aux pommes', 'Tarte aux pommes healthy et gourmande', 20, 15, 6, 'facile', $user, $manager);

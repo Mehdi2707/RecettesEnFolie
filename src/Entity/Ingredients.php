@@ -5,6 +5,8 @@ namespace App\Entity;
 use App\Entity\Trait\CreatedAtTrait;
 use App\Entity\Trait\UpdatedAtTrait;
 use App\Repository\IngredientsRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -25,17 +27,18 @@ class Ingredients
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
     private ?string $quantity = null;
 
-    #[ORM\Column(length: 50)]
-    private ?string $unit = null;
+    #[ORM\ManyToMany(targetEntity: Recipes::class, mappedBy: 'ingredients')]
+    private Collection $recipes;
 
     #[ORM\ManyToOne(inversedBy: 'ingredients')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Recipes $recipe = null;
+    private ?Unit $unit = null;
 
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
         $this->updatedAt = new \DateTimeImmutable();
+        $this->recipes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -67,26 +70,41 @@ class Ingredients
         return $this;
     }
 
-    public function getUnit(): ?string
+    /**
+     * @return Collection<int, Recipes>
+     */
+    public function getRecipes(): Collection
     {
-        return $this->unit;
+        return $this->recipes;
     }
 
-    public function setUnit(string $unit): self
+    public function addRecipe(Recipes $recipe): self
     {
-        $this->unit = $unit;
+        if (!$this->recipes->contains($recipe)) {
+            $this->recipes->add($recipe);
+            $recipe->addIngredient($this);
+        }
 
         return $this;
     }
 
-    public function getRecipe(): ?Recipes
+    public function removeRecipe(Recipes $recipe): self
     {
-        return $this->recipe;
+        if ($this->recipes->removeElement($recipe)) {
+            $recipe->removeIngredient($this);
+        }
+
+        return $this;
     }
 
-    public function setRecipe(?Recipes $recipe): self
+    public function getUnit(): ?Unit
     {
-        $this->recipe = $recipe;
+        return $this->unit;
+    }
+
+    public function setUnit(?Unit $unit): self
+    {
+        $this->unit = $unit;
 
         return $this;
     }

@@ -6,6 +6,7 @@ use App\Entity\Recipes;
 use App\Entity\Users;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -78,6 +79,13 @@ class RecipesFormType extends AbstractType
                         ])
                     )
                 ]
+            ])
+            ->add('ingredients', CollectionType::class, [
+                'entry_type' => IngredientsFormType::class,
+                'allow_add' => true,
+                'allow_delete' => true,
+                'by_reference' => false,
+                'label' => false,
             ])
         ;
     }

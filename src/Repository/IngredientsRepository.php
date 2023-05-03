@@ -39,6 +39,18 @@ class IngredientsRepository extends ServiceEntityRepository
         }
     }
 
+    // Exemple de méthode findBySearchTerm dans le repository IngredientRepository
+    public function findBySearchTerm(string $searchTerm): array
+    {
+        $queryBuilder = $this->createQueryBuilder('i');
+
+        $queryBuilder->where('i.name LIKE :searchTerm')
+            ->setParameter('searchTerm', '%' . $searchTerm . '%')
+            ->orderBy('i.name', 'ASC');
+
+        return $queryBuilder->getQuery()->getResult();
+    }
+
 //    /**
 //     * @return Ingredients[] Returns an array of Ingredients objects
 //     */

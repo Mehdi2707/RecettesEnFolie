@@ -3,6 +3,7 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Images;
+use App\Entity\Ingredients;
 use App\Entity\Recipes;
 use App\Form\RecipesFormType;
 use App\Repository\RecipesRepository;
@@ -28,13 +29,33 @@ class RecipesController extends AbstractController
         ]);
     }
 
+    #[Route('/ingredients/recherche', name: 'ingredients_search')]
+    public function ingredientsSearch(Request $request, EntityManagerInterface $entityManager): JsonResponse
+    {
+        $searchTerm = $request->query->get('search');
+
+        // Effectuer la recherche des ingrédients dans l'entité Ingredient
+        $ingredients = $entityManager->getRepository(Ingredients::class)->findBySearchTerm($searchTerm);
+
+        $ingredientList = [];
+        foreach ($ingredients as $ingredient) {
+            $ingredientList[] = [
+                'id' => $ingredient->getId(),
+                'name' => $ingredient->getName(),
+                // Ajoutez d'autres propriétés d'ingrédient si nécessaire
+            ];
+        }
+
+        return new JsonResponse(['ingredients' => $ingredientList]);
+    }
+
     #[Route('/ajout', name: 'add')]
     public function add(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger, PictureService $pictureService): Response
     {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
 
         $recipe = new Recipes();
-
+// Ajouter un formulaire pour les ingredients
         $form = $this->createForm(RecipesFormType::class, $recipe);
 
         $form->handleRequest($request);

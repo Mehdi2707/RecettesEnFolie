@@ -54,7 +54,7 @@ class Recipes
     #[ORM\JoinColumn(nullable: false)]
     private ?Users $user = null;
 
-    #[ORM\OneToMany(mappedBy: 'recipe', targetEntity: Ingredients::class, orphanRemoval: true)]
+    #[ORM\ManyToMany(targetEntity: Ingredients::class, inversedBy: 'recipes')]
     private Collection $ingredients;
 
     #[ORM\OneToMany(mappedBy: 'recipe', targetEntity: Steps::class, orphanRemoval: true)]
@@ -71,7 +71,6 @@ class Recipes
 
     public function __construct()
     {
-        $this->ingredients = new ArrayCollection();
         $this->steps = new ArrayCollection();
         $this->comments = new ArrayCollection();
         $this->favorites = new ArrayCollection();
@@ -193,7 +192,6 @@ class Recipes
     {
         if (!$this->ingredients->contains($ingredient)) {
             $this->ingredients->add($ingredient);
-            $ingredient->setRecipe($this);
         }
 
         return $this;
@@ -201,12 +199,7 @@ class Recipes
 
     public function removeIngredient(Ingredients $ingredient): self
     {
-        if ($this->ingredients->removeElement($ingredient)) {
-            // set the owning side to null (unless already changed)
-            if ($ingredient->getRecipe() === $this) {
-                $ingredient->setRecipe(null);
-            }
-        }
+        $this->ingredients->removeElement($ingredient);
 
         return $this;
     }
