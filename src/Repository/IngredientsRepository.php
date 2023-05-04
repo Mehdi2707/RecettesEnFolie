@@ -45,7 +45,8 @@ class IngredientsRepository extends ServiceEntityRepository
         $queryBuilder = $this->createQueryBuilder('i');
 
         $queryBuilder->where('i.name LIKE :searchTerm')
-            ->setParameter('searchTerm', '%' . $searchTerm . '%')
+            ->setParameter('searchTerm', $searchTerm . '%')
+            ->setMaxResults(5)
             ->orderBy('i.name', 'ASC');
 
         return $queryBuilder->getQuery()->getResult();

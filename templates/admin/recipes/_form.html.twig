@@ -19,13 +19,30 @@
 
     {{ form_row(recipeForm.images) }}
 
-<h2>Ingredients</h2>
-<ul id="ingredients-list" data-prototype="{{ form_widget(recipeForm.ingredients.vars.prototype)|e }}">
-    {% for ingredientForm in recipeForm.ingredients %}
-        <li>{{ form_row(ingredientForm.quantity) }} {{ form_row(ingredientForm.name) }} {{ form_row(ingredientForm.unit) }}</li>
-    {% endfor %}
-</ul>
-<a href="#" id="add-ingredient">Add Ingredient</a>
+    {% if app.request.attributes.get('_route') == 'admin_recipes_edit' %}
+        <h2>Ingrédients</h2>
+    {% endif %}
+
+    <div class="my-3 form-group">
+        <ul id="ingredients-list" data-prototype="{{ form_widget(recipeForm.ingredients.vars.prototype)|e('html_attr') }}">
+            {% for ingredientForm in recipeForm.ingredients %}
+                <li>
+                    <div class="form-row">
+                        <div class="col-md-4">
+                            {{ form_row(ingredientForm.quantity) }}
+                        </div>
+                        <div class="col-md-4">
+                            {{ form_row(ingredientForm.name) }}
+                        </div>
+                        <div class="col-md-4">
+                            {{ form_row(ingredientForm.unit) }}
+                        </div>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+        <a href="#" class="btn btn-sm btn-success" id="add-ingredient" data-url="{{ path('admin_recipes_ingredients_search') }}">Ajouter un ingrédient</a>
+    </div>
 
     <button type="submit" class="btn btn-primary btn-lg my-3">{{ button_label|default('Ajouter') }}</button>
 {{ form_end(recipeForm) }}

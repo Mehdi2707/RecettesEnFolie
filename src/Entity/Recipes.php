@@ -54,7 +54,7 @@ class Recipes
     #[ORM\JoinColumn(nullable: false)]
     private ?Users $user = null;
 
-    #[ORM\ManyToMany(targetEntity: Ingredients::class, inversedBy: 'recipes')]
+    #[ORM\ManyToMany(targetEntity: Ingredients::class, inversedBy: 'recipes', cascade: ['persist'])]
     private Collection $ingredients;
 
     #[ORM\OneToMany(mappedBy: 'recipe', targetEntity: Steps::class, orphanRemoval: true)]
@@ -77,6 +77,7 @@ class Recipes
         $this->createdAt = new \DateTimeImmutable();
         $this->updatedAt = new \DateTimeImmutable();
         $this->images = new ArrayCollection();
+        $this->ingredients = new ArrayCollection();
     }
 
     public function getId(): ?int

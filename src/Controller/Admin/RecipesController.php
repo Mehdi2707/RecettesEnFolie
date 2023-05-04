@@ -10,6 +10,7 @@ use App\Repository\RecipesRepository;
 use App\Service\PictureService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -29,33 +30,13 @@ class RecipesController extends AbstractController
         ]);
     }
 
-    #[Route('/ingredients/recherche', name: 'ingredients_search')]
-    public function ingredientsSearch(Request $request, EntityManagerInterface $entityManager): JsonResponse
-    {
-        $searchTerm = $request->query->get('search');
-
-        // Effectuer la recherche des ingrédients dans l'entité Ingredient
-        $ingredients = $entityManager->getRepository(Ingredients::class)->findBySearchTerm($searchTerm);
-
-        $ingredientList = [];
-        foreach ($ingredients as $ingredient) {
-            $ingredientList[] = [
-                'id' => $ingredient->getId(),
-                'name' => $ingredient->getName(),
-                // Ajoutez d'autres propriétés d'ingrédient si nécessaire
-            ];
-        }
-
-        return new JsonResponse(['ingredients' => $ingredientList]);
-    }
-
     #[Route('/ajout', name: 'add')]
     public function add(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger, PictureService $pictureService): Response
     {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
 
         $recipe = new Recipes();
-// Ajouter un formulaire pour les ingredients
+
         $form = $this->createForm(RecipesFormType::class, $recipe);
 
         $form->handleRequest($request);
@@ -78,11 +59,25 @@ class RecipesController extends AbstractController
             $slug = $slugger->slug($recipe->getTitle())->lower();
             $recipe->setSlug($slug);
 
-            $entityManager->persist($recipe);
-            $entityManager->flush();
+            $ingredientForms = $form->get('ingredients');
+            $hasIngredients = false;
+            foreach ($ingredientForms as $ingredientForm) {
+                if (!empty($ingredientForm->get('name')->getData()) && !empty($ingredientForm->get('quantity')->getData())) {
+                    $hasIngredients = true;
+                    break;
+                }
+            }
+            
+            if (!$hasIngredients)
+                $this->addFlash('danger', 'Veuillez ajouter au moins un ingrédient');
+            else
+            {
+                $entityManager->persist($recipe);
+                $entityManager->flush();
 
-            $this->addFlash('success', 'Recette ajouté avec succès');
-            return $this->redirectToRoute('admin_recipes_index');
+                $this->addFlash('success', 'Recette ajouté avec succès');
+                return $this->redirectToRoute('admin_recipes_index');
+            }
         }
 
         return $this->render('admin/recipes/add.html.twig', [
@@ -160,5 +155,33 @@ class RecipesController extends AbstractController
         }
 
         return new JsonResponse(['error' => 'Token invalide'], 400);
+    }
+
+    #[Route('/ingredients/recherche', name: 'ingredients_search')]
+    public function ingredientsSearch(Request $request, EntityManagerInterface $entityManager): JsonResponse
+    {
+        $searchTerm = $request->query->get('search');
+
+        // Effectuer la recherche des ingrédients dans l'entité Ingredient
+        $ingredients = $entityManager->getRepository(Ingredients::class)->findBySearchTerm($searchTerm);
+
+        $uniqueIngredients = [];
+        $uniqueNames = [];
+
+        foreach ($ingredients as $ingredient) {
+            $ingredientId = $ingredient->getId();
+            $ingredientName = $ingredient->getName();
+
+            if (!in_array($ingredientName, $uniqueNames)) {
+                $uniqueIngredients[] = [
+                    'id' => $ingredientId,
+                    'name' => $ingredientName
+                ];
+
+                $uniqueNames[] = $ingredientName;
+            }
+        }
+
+        return new JsonResponse(['ingredients' => $uniqueIngredients]);
     }
 }
