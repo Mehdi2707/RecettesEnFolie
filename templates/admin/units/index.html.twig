@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des unités (Administration){% endblock %}
+
+{% block body %}
+    <section class="container">
+        <div class="row">
+            {% include "_partials/_adminnav.html.twig" %}
+            <div class="col">
+                <h1>Liste des unités</h1>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nom</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for unit in units %}
+                        <tr>
+                            <td>{{ unit.id }}</td>
+                            <td>{{ unit.name }}</td>
+                            <td>
+                                <a class="btn btn-warning" href="{{ path('admin_units_edit', {id: unit.id}) }}"><i class="fa fa-edit"></i></a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier une unité (Administration){% endblock %}
+
+{% block body %}
+    <section class="container">
+        <div class="row">
+            <div class="col">
+                <h1>Modifier une unité</h1>
+                {% include "admin/units/_form.html.twig" with {'button_label': 'Modifier'} %}
+            </div>
+        </div>
+    </section>
+{% endblock %}

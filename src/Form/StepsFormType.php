@@ -6,6 +6,7 @@ use App\Entity\Steps;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class StepsFormType extends AbstractType
 {
@@ -17,6 +18,12 @@ class StepsFormType extends AbstractType
                 'attr' => [
                     'rows' => 4,
                     'class' => 'form-control'
+                ],
+                'constraints' => [
+                    new Assert\Length([
+                        'min' => 10,
+                        'minMessage' => 'La description de l\'étape doit contenir au moins {{ limit }} caractères.',
+                    ]),
                 ],
             ])
         ;
