@@ -57,13 +57,13 @@ class Recipes
     #[ORM\ManyToMany(targetEntity: Ingredients::class, inversedBy: 'recipes', cascade: ['persist'])]
     private Collection $ingredients;
 
-    #[ORM\OneToMany(mappedBy: 'recipe', targetEntity: Steps::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'recipes', targetEntity: Steps::class, orphanRemoval: true, cascade: ['persist'])]
     private Collection $steps;
 
-    #[ORM\OneToMany(mappedBy: 'recipe', targetEntity: Comments::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'recipes', targetEntity: Comments::class, orphanRemoval: true)]
     private Collection $comments;
 
-    #[ORM\OneToMany(mappedBy: 'recipe', targetEntity: Favorites::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'recipes', targetEntity: Favorites::class, orphanRemoval: true)]
     private Collection $favorites;
 
     #[ORM\OneToMany(mappedBy: 'recipes', targetEntity: Images::class, orphanRemoval: true, cascade: ['persist'])]
@@ -217,7 +217,7 @@ class Recipes
     {
         if (!$this->steps->contains($step)) {
             $this->steps->add($step);
-            $step->setRecipe($this);
+            $step->setRecipes($this);
         }
 
         return $this;
@@ -227,8 +227,8 @@ class Recipes
     {
         if ($this->steps->removeElement($step)) {
             // set the owning side to null (unless already changed)
-            if ($step->getRecipe() === $this) {
-                $step->setRecipe(null);
+            if ($step->getRecipes() === $this) {
+                $step->setRecipes(null);
             }
         }
 
@@ -247,7 +247,7 @@ class Recipes
     {
         if (!$this->comments->contains($comment)) {
             $this->comments->add($comment);
-            $comment->setRecipe($this);
+            $comment->setRecipes($this);
         }
 
         return $this;
@@ -257,8 +257,8 @@ class Recipes
     {
         if ($this->comments->removeElement($comment)) {
             // set the owning side to null (unless already changed)
-            if ($comment->getRecipe() === $this) {
-                $comment->setRecipe(null);
+            if ($comment->getRecipes() === $this) {
+                $comment->setRecipes(null);
             }
         }
 
@@ -277,7 +277,7 @@ class Recipes
     {
         if (!$this->favorites->contains($favorite)) {
             $this->favorites->add($favorite);
-            $favorite->setRecipe($this);
+            $favorite->setRecipes($this);
         }
 
         return $this;
@@ -287,8 +287,8 @@ class Recipes
     {
         if ($this->favorites->removeElement($favorite)) {
             // set the owning side to null (unless already changed)
-            if ($favorite->getRecipe() === $this) {
-                $favorite->setRecipe(null);
+            if ($favorite->getRecipes() === $this) {
+                $favorite->setRecipes(null);
             }
         }
 

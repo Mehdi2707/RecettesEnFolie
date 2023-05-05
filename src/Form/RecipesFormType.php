@@ -8,6 +8,8 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\All;
@@ -82,6 +84,13 @@ class RecipesFormType extends AbstractType
             ])
             ->add('ingredients', CollectionType::class, [
                 'entry_type' => IngredientsFormType::class,
+                'allow_add' => true,
+                'allow_delete' => true,
+                'by_reference' => false,
+                'label' => false,
+            ])
+            ->add('steps', CollectionType::class, [
+                'entry_type' => StepsFormType::class,
                 'allow_add' => true,
                 'allow_delete' => true,
                 'by_reference' => false,

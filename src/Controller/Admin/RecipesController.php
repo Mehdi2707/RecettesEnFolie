@@ -59,25 +59,45 @@ class RecipesController extends AbstractController
             $slug = $slugger->slug($recipe->getTitle())->lower();
             $recipe->setSlug($slug);
 
-            $ingredientForms = $form->get('ingredients');
+            $ingredientsForm = $form->get('ingredients');
             $hasIngredients = false;
-            foreach ($ingredientForms as $ingredientForm) {
+            foreach ($ingredientsForm as $ingredientForm) {
                 if (!empty($ingredientForm->get('name')->getData()) && !empty($ingredientForm->get('quantity')->getData())) {
                     $hasIngredients = true;
                     break;
                 }
             }
-            
-            if (!$hasIngredients)
-                $this->addFlash('danger', 'Veuillez ajouter au moins un ingrédient');
-            else
-            {
-                $entityManager->persist($recipe);
-                $entityManager->flush();
 
-                $this->addFlash('success', 'Recette ajouté avec succès');
-                return $this->redirectToRoute('admin_recipes_index');
+            $stepsForm = $form->get('steps');
+            $hasSteps = false;
+            foreach ($stepsForm as $stepForm) {
+                if (!empty($stepForm->get('description')->getData())) {
+                    $hasSteps = true;
+                    break;
+                }
             }
+
+            if (!$hasIngredients)
+            {
+                $this->addFlash('danger', 'Veuillez ajouter au moins un ingrédient');
+                return $this->render('admin/recipes/add.html.twig', [
+                    'recipeForm' => $form->createView(),
+                ]);
+            }
+
+            if (!$hasSteps)
+            {
+                $this->addFlash('danger', 'Veuillez ajouter au moins une étape');
+                return $this->render('admin/recipes/add.html.twig', [
+                    'recipeForm' => $form->createView(),
+                ]);
+            }
+
+            $entityManager->persist($recipe);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Recette ajouté avec succès');
+            return $this->redirectToRoute('admin_recipes_index');
         }
 
         return $this->render('admin/recipes/add.html.twig', [

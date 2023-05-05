@@ -3,6 +3,11 @@ var $addIngredientLink = $('#add-ingredient');
 var ingredientList = $('#ingredients-list');
 var urlSearch = $('#add-ingredient').data('url');
 
+$(document).ready(function() {
+    if (!$addIngredientLink.hasClass('edit-page'))
+        $addIngredientLink.click();
+});
+
 $addIngredientLink.on('click', function(e) {
     e.preventDefault();
 
@@ -14,7 +19,7 @@ $addIngredientLink.on('click', function(e) {
 
     var ingredientForm = modifiedPrototype.replace(/__name__/g, ingredientIndex);
     var newIngredientItem = $('<li></li>').html(ingredientForm);
-    var removeIngredientLink = $('<a href="#" class="my-3 btn btn-sm btn-danger remove-ingredient">Supprimer un ingrédient</a>');
+    var removeIngredientLink = $('<a href="#" class="my-3 btn btn-sm btn-danger remove-ingredient">Supprimer l\'ingrédient</a>');
     newIngredientItem.append(removeIngredientLink);
     ingredientList.append(newIngredientItem);
 

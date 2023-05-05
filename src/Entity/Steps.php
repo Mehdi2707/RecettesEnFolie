@@ -24,7 +24,7 @@ class Steps
 
     #[ORM\ManyToOne(inversedBy: 'steps')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Recipes $recipe = null;
+    private ?Recipes $recipes = null;
 
     public function __construct()
     {
@@ -49,14 +49,14 @@ class Steps
         return $this;
     }
 
-    public function getRecipe(): ?Recipes
+    public function getRecipes(): ?Recipes
     {
-        return $this->recipe;
+        return $this->recipes;
     }
 
-    public function setRecipe(?Recipes $recipe): self
+    public function setRecipes(?Recipes $recipes): self
     {
-        $this->recipe = $recipe;
+        $this->recipes = $recipes;
 
         return $this;
     }

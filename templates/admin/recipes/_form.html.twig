@@ -1,3 +1,8 @@
+{% block javascripts %}
+    <script src="{{ asset('assets/js/ingredients.js') }}" defer></script>
+    <script src="{{ asset('assets/js/steps.js') }}" defer></script>
+{% endblock %}
+
 {{ form_start(recipeForm) }}
     {{ form_row(recipeForm.title) }}
     {{ form_row(recipeForm.description) }}
@@ -19,11 +24,8 @@
 
     {{ form_row(recipeForm.images) }}
 
-    {% if app.request.attributes.get('_route') == 'admin_recipes_edit' %}
-        <h2>Ingrédients</h2>
-    {% endif %}
-
     <div class="my-3 form-group">
+        <h2>Ingrédients</h2>
         <ul id="ingredients-list" data-prototype="{{ form_widget(recipeForm.ingredients.vars.prototype)|e('html_attr') }}">
             {% for ingredientForm in recipeForm.ingredients %}
                 <li>
@@ -41,10 +43,22 @@
                 </li>
             {% endfor %}
         </ul>
-        <a href="#" class="btn btn-sm btn-success" id="add-ingredient" data-url="{{ path('admin_recipes_ingredients_search') }}">Ajouter un ingrédient</a>
+        <a href="#" class="btn btn-sm btn-success {% if app.request.attributes.get('_route') == 'admin_recipes_edit' %}edit-page{% endif %}" id="add-ingredient" data-url="{{ path('admin_recipes_ingredients_search') }}">Ajouter un ingrédient</a>
+    </div>
+
+    <div class="my-3 form-group">
+        <h2>Étapes</h2>
+        <ul id="steps-list" data-prototype="{{ form_widget(recipeForm.steps.vars.prototype)|e('html_attr') }}">
+            {% for stepForm in recipeForm.steps %}
+                <div class="form-row">
+                    <li class="col-12 my-2">
+                        {{ form_row(stepForm.description) }}
+                    </li>
+                </div>
+            {% endfor %}
+        </ul>
+        <a href="#" class="btn btn-sm btn-success" id="add-step">Ajouter une étape</a>
     </div>
 
     <button type="submit" class="btn btn-primary btn-lg my-3">{{ button_label|default('Ajouter') }}</button>
 {{ form_end(recipeForm) }}
-
-<script src="{{ asset('assets/js/ingredients.js') }}" defer></script>
