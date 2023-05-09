@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modification de la recette '{{ recipe.title }}'{% endblock %}
+
+{% block body %}
+    <section class="container">
+        <div class="row">
+            <div class="col">
+                <h1>Modifier une recette</h1>
+                {% include "profile/recipe/_form.html.twig" with {'button_label': 'Modifier'} %}
+            </div>
+        </div>
+    </section>
+{% endblock %}

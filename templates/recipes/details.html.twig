@@ -25,7 +25,7 @@
                 <div class="col-12">
                     <div class="receipe-slider owl-carousel">
                         {% for image in images %}
-                            <img class="{{ (loop.index0 == 0) ? 'active' : '' }}" src="{{ asset('assets/uploads/recipes/') ~ image.name }}" alt="{{ recipe.title }}">
+                            <img class="{{ (loop.index0 == 0) ? 'active' : '' }}" src="{{ asset('assets/uploads/recipes/') ~ image.name }}" style="width:500px;" alt="{{ recipe.title }}">
                         {% endfor %}
                     </div>
                 </div>
@@ -81,11 +81,10 @@
                     <!-- Ingredients -->
                     <div class="col-12 col-lg-4">
                         <div class="ingredients">
-                            <h4>Ingredients</h4>
+                            <h4>Ingrédients</h4>
                             {% for ingredient in ingredients %}
-                                <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" class="custom-control-input" id="customCheck1">
-                                    <label class="custom-control-label" for="customCheck1">{{ ingredient.quantity }} {{ ingredient.unit }} {{ ingredient.name }}</label>
+                                <div style="font-size: 18px;">
+                                    <span class="font-weight-bold">{{ ingredient.quantity|number_format(2)|trim('.0')|replace({'.': ','}) }} {{ ingredient.unit.name }} {{ ingredient.name }}</span>
                                 </div>
                             {% endfor %}
                         </div>

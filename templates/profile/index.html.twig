@@ -1,20 +1,60 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello ProfileController!{% endblock %}
+{% block title %}Mon compte{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
-
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
-
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code><a href="{{ '/home/mehdi/RecettesEnFolie/src/Controller/ProfileController.php'|file_link(0) }}">src/Controller/ProfileController.php</a></code></li>
-        <li>Your template at <code><a href="{{ '/home/mehdi/RecettesEnFolie/templates/profile/index.html.twig'|file_link(0) }}">templates/profile/index.html.twig</a></code></li>
-    </ul>
-</div>
+    <section class="container">
+        <div class="row">
+            <div class="col">
+                <h1>Mon compte</h1>
+                {{ form_start(form) }}
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">@</div>
+                        </div>
+                        {{ form_row(form.username) }}
+                    </div>
+                    {{ form_row(form.email) }}
+                    <div>
+                        <span>Compte vérifié</span>
+                        {% if isVerified %}
+                            <span>✅</span>
+                        {% else %}
+                            <span>❌</span>
+                            <p>Pour envoyer le lien d'activation cliquer sur <a href="{{ path('resend_verif') }}">ce lien</a></p>
+                        {% endif %}
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg my-3">Enregistrer</button>
+                {{ form_end(form) }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <h1>Mes recettes</h1>
+                <div class="list-group">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Recette</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for recipe in recipes %}
+                            <tr>
+                                <td><a class="list-group-item list-group-item-action" href="{{ path('recipes_details', {slug: recipe.slug}) }}">{{ recipe.title }}</a></td>
+                                <td>
+                                    <form method="POST" action="{{ path('profile_recipe_edit') }}">
+                                        <input type="hidden" name="recipe_id" value="{{ recipe.id }}">
+                                        <button type="submit" class="btn btn-3 btn-warning"><i class="fa fa-edit"></i></button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
 {% endblock %}

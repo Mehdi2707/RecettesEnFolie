@@ -48,7 +48,7 @@
                             {% if is_granted('ROLE_RECIPE_ADMIN') %}
                                 <a class="nav-link" href="{{ path('admin_index') }}">Administration</a>
                             {% endif %}
-                            <a href="#">Mon profil</a>
+                            <a href="{{ path('profile_index') }}">Mon compte</a>
                             <a href="{{ path('app_logout') }}">Se déconnecter</a>
                         {% else %}
                             <a href="{{ path('app_login') }}">Connexion</a>
