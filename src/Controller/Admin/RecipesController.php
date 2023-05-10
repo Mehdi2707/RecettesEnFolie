@@ -5,7 +5,7 @@ namespace App\Controller\Admin;
 use App\Entity\Images;
 use App\Entity\Ingredients;
 use App\Entity\Recipes;
-use App\Form\RecipesFormType;
+use App\Form\AdminRecipesFormType;
 use App\Repository\RecipesRepository;
 use App\Service\PictureService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -36,7 +36,7 @@ class RecipesController extends AbstractController
 
         $recipe = new Recipes();
 
-        $form = $this->createForm(RecipesFormType::class, $recipe);
+        $form = $this->createForm(AdminRecipesFormType::class, $recipe);
 
         $form->handleRequest($request);
 
@@ -109,13 +109,12 @@ class RecipesController extends AbstractController
     {
         $this->denyAccessUnlessGranted('RECIPE_EDIT', $recipes);
 
-        $form = $this->createForm(RecipesFormType::class, $recipes);
+        $form = $this->createForm(AdminRecipesFormType::class, $recipes);
 
         $form->handleRequest($request);
 
         if($form->isSubmitted() && $form->isValid())
         {
-
             $images = $form->get('images')->getData();
 
             foreach($images as $image)

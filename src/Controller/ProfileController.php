@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Entity\Images;
 use App\Entity\Recipes;
-use App\Entity\Users;
 use App\Form\ProfileFormType;
 use App\Form\RecipesFormType;
 use App\Service\PictureService;
@@ -45,19 +44,15 @@ class ProfileController extends AbstractController
         ]);
     }
 
-    #[Route('/recette/edition', name: 'recipe_edit')]
-    public function edit(EntityManagerInterface $entityManager, Request $request, SluggerInterface $slugger, PictureService $pictureService): Response
+    #[Route('/recette/edition/{slug}', name: 'recipe_edit')]
+    public function edit(Recipes $recipes, EntityManagerInterface $entityManager, Request $request, SluggerInterface $slugger, PictureService $pictureService): Response
     {
-        $recipeId = $request->request->get('recipe_id');
-        $recipe = $entityManager->getRepository(Recipes::class)->find($recipeId);
-
-        $form = $this->createForm(RecipesFormType::class, $recipe);
+        $form = $this->createForm(RecipesFormType::class, $recipes);
 
         $form->handleRequest($request);
 
         if($form->isSubmitted() && $form->isValid())
         {
-
             $images = $form->get('images')->getData();
 
             foreach($images as $image)
@@ -68,21 +63,21 @@ class ProfileController extends AbstractController
 
                 $img = new Images();
                 $img->setName($file);
-                $recipe->addImage($img);
+                $recipes->addImage($img);
             }
 
-            $slug = $slugger->slug($recipe->getTitle())->lower();
-            $recipe->setSlug($slug);
-
-            $entityManager->persist($recipe);
+            $slug = $slugger->slug($recipes->getTitle())->lower();
+            $recipes->setSlug($slug);
+dd($recipes);
+            $entityManager->persist($recipes);
             $entityManager->flush();
 
             $this->addFlash('success', 'Recette modifié avec succès');
-            return $this->redirectToRoute('profile_recipe_index');
+            return $this->redirectToRoute('profile_index');
         }
 
         return $this->render('profile/recipe/edit.html.twig', [
-            'recipe' => $recipe,
+            'recipe' => $recipes,
             'recipeForm' => $form->createView()
         ]);
     }

@@ -13,7 +13,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\All;
 use Symfony\Component\Validator\Constraints\Image;
 
-class RecipesFormType extends AbstractType
+class AdminRecipesFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -52,6 +52,14 @@ class RecipesFormType extends AbstractType
                 'label' => 'Niveau de difficulté',
                 'attr' => [
                     'class' => 'form-control'
+                ]
+            ])
+            ->add('user', EntityType::class, [
+                'class' => Users::class,
+                'choice_label' => 'username',
+                'label' => 'Utilisateur',
+                'attr' => [
+                    'class' => 'mb-3'
                 ]
             ])
             ->add('images', FileType::class, [

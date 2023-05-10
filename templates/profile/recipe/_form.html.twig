@@ -10,9 +10,8 @@
     {{ form_row(recipeForm.cookingTime) }}
     {{ form_row(recipeForm.numberOfServings) }}
     {{ form_row(recipeForm.difficultyLevel) }}
-    {{ form_row(recipeForm.user) }}
 
-    {% if app.request.attributes.get('_route') == 'admin_recipes_edit' %}
+    {% if app.request.attributes.get('_route') == 'profile_recipe_edit' %}
         <h2>Images</h2>
         {% for image in recipe.images %}
             <div class="mb-3">
@@ -43,7 +42,7 @@
             </li>
         {% endfor %}
     </ul>
-    <a href="#" class="btn btn-sm btn-success {% if app.request.attributes.get('_route') == 'admin_recipes_edit' %}edit-page{% endif %}" id="add-ingredient" data-url="{{ path('admin_recipes_ingredients_search') }}">Ajouter un ingrédient</a>
+    <a href="#" class="btn btn-sm btn-success {% if app.request.attributes.get('_route') == 'profile_recipe_edit' %}edit-page{% endif %}" id="add-ingredient" data-url="{{ path('admin_recipes_ingredients_search') }}">Ajouter un ingrédient</a>
 </div>
 
 <div class="my-3 form-group">
