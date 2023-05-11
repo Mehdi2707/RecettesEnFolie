@@ -9,6 +9,7 @@ use App\Form\AdminRecipesFormType;
 use App\Repository\RecipesRepository;
 use App\Service\PictureService;
 use Doctrine\ORM\EntityManagerInterface;
+use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -55,7 +56,7 @@ class RecipesController extends AbstractController
                 $recipe->addImage($img);
             }
 
-            $slug = $slugger->slug($recipe->getTitle())->lower();
+            $slug = $slugger->slug($recipe->getTitle())->lower() . '-' . Uuid::uuid4()->toString();
             $recipe->setSlug($slug);
 
             $ingredientsForm = $form->get('ingredients');
@@ -128,8 +129,42 @@ class RecipesController extends AbstractController
                 $recipes->addImage($img);
             }
 
-            $slug = $slugger->slug($recipes->getTitle())->lower();
+            $slug = $slugger->slug($recipes->getTitle())->lower() . '-' . Uuid::uuid4()->toString();
             $recipes->setSlug($slug);
+
+            $ingredientsForm = $form->get('ingredients');
+            $hasIngredients = false;
+            foreach ($ingredientsForm as $ingredientForm) {
+                if (!empty($ingredientForm->get('name')->getData()) && !empty($ingredientForm->get('quantity')->getData())) {
+                    $hasIngredients = true;
+                    break;
+                }
+            }
+
+            $stepsForm = $form->get('steps');
+            $hasSteps = false;
+            foreach ($stepsForm as $stepForm) {
+                if (!empty($stepForm->get('description')->getData())) {
+                    $hasSteps = true;
+                    break;
+                }
+            }
+
+            if (!$hasIngredients)
+            {
+                $this->addFlash('danger', 'Veuillez ajouter au moins un ingrédient');
+                return $this->render('admin/recipes/edit.html.twig', [
+                    'recipeForm' => $form->createView(),
+                ]);
+            }
+
+            if (!$hasSteps)
+            {
+                $this->addFlash('danger', 'Veuillez ajouter au moins une étape');
+                return $this->render('admin/recipes/edit.html.twig', [
+                    'recipeForm' => $form->createView(),
+                ]);
+            }
 
             $entityManager->persist($recipes);
             $entityManager->flush();

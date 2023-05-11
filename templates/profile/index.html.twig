@@ -31,26 +31,33 @@
         <div class="row">
             <div class="col">
                 <h1>Mes recettes</h1>
-                <div class="list-group">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Recette</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        {% for recipe in recipes %}
-                            <tr>
-                                <td><a class="list-group-item list-group-item-action" href="{{ path('recipes_details', {slug: recipe.slug}) }}">{{ recipe.title }}</a></td>
-                                <td>
-                                    <a class="btn btn-3 btn-warning" href="{{ path('profile_recipe_edit', {slug: recipe.slug}) }}"><i class="fa fa-edit"></i></a>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
+                {% if recipes|length == 0 %}
+                    <div class="my-3">
+                        <p>Vous n'avez pas encore publié de recette</p>
+                    </div>
+                {% else %}
+                    <div class="list-group">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Recette</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for recipe in recipes %}
+                                <tr>
+                                    <td><a class="list-group-item list-group-item-action" href="{{ path('recipes_details', {slug: recipe.slug}) }}">{{ recipe.title }}</a></td>
+                                    <td>
+                                        <a class="btn btn-3 btn-warning" href="{{ path('profile_recipe_edit', {slug: recipe.slug}) }}"><i class="fa fa-edit"></i></a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% endif %}
+                <a class="my-3 btn btn-4 btn-success" href="{{ path('profile_recipe_add') }}">Publier une nouvelle recette</a>
             </div>
         </div>
     </section>

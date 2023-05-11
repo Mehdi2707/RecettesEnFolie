@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ajout d'une nouvelle recette{% endblock %}
+
+{% block body %}
+    <section class="container">
+        <div class="row">
+            <div class="col">
+                <h1>Ajouter une recette</h1>
+                {% include "profile/recipe/_form.html.twig" %}
+            </div>
+        </div>
+    </section>
+{% endblock %}

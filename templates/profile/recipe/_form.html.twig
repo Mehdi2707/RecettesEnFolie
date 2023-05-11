@@ -11,6 +11,8 @@
     {{ form_row(recipeForm.numberOfServings) }}
     {{ form_row(recipeForm.difficultyLevel) }}
 
+    <div class="my-3"></div>
+
     {% if app.request.attributes.get('_route') == 'profile_recipe_edit' %}
         <h2>Images</h2>
         {% for image in recipe.images %}
@@ -49,15 +51,13 @@
     <h2>Étapes</h2>
     <ul id="steps-list" data-prototype="{{ form_widget(recipeForm.steps.vars.prototype)|e('html_attr') }}">
         {% for stepForm in recipeForm.steps %}
-            <div class="form-row">
-                <li class="col-12 my-2">
-                    {{ form_row(stepForm.description) }}
-                </li>
-            </div>
+            <li class="col-12 my-2">
+                {{ form_row(stepForm.description) }}
+            </li>
         {% endfor %}
     </ul>
     <a href="#" class="btn btn-sm btn-success" id="add-step">Ajouter une étape</a>
 </div>
 
-<button type="submit" class="btn btn-primary btn-lg my-3">{{ button_label|default('Ajouter') }}</button>
+<button type="submit" class="btn btn-primary btn-lg my-3">{{ button_label|default('Publier') }}</button>
 {{ form_end(recipeForm) }}

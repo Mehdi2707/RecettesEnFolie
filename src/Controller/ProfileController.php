@@ -8,6 +8,7 @@ use App\Form\ProfileFormType;
 use App\Form\RecipesFormType;
 use App\Service\PictureService;
 use Doctrine\ORM\EntityManagerInterface;
+use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -44,6 +45,81 @@ class ProfileController extends AbstractController
         ]);
     }
 
+    #[Route('/recette/ajout', name: 'recipe_add')]
+    public function add(EntityManagerInterface $entityManager, Request $request, SluggerInterface $slugger, PictureService $pictureService): Response
+    {
+        $recipe = new Recipes();
+
+        $form = $this->createForm(RecipesFormType::class, $recipe);
+
+        $form->handleRequest($request);
+
+        if($form->isSubmitted() && $form->isValid())
+        {
+            $images = $form->get('images')->getData();
+
+            foreach($images as $image)
+            {
+                $folder = 'recipes';
+
+                $file = $pictureService->add($image, $folder, 300, 300);
+
+                $img = new Images();
+                $img->setName($file);
+                $recipe->addImage($img);
+            }
+
+            $slug = $slugger->slug($recipe->getTitle())->lower() . '-' . Uuid::uuid4()->toString();
+
+            $recipe->setSlug($slug);
+            $recipe->setUser($this->getUser());
+
+            $ingredientsForm = $form->get('ingredients');
+            $hasIngredients = false;
+            foreach ($ingredientsForm as $ingredientForm) {
+                if (!empty($ingredientForm->get('name')->getData()) && !empty($ingredientForm->get('quantity')->getData())) {
+                    $hasIngredients = true;
+                    break;
+                }
+            }
+
+            $stepsForm = $form->get('steps');
+            $hasSteps = false;
+            foreach ($stepsForm as $stepForm) {
+                if (!empty($stepForm->get('description')->getData())) {
+                    $hasSteps = true;
+                    break;
+                }
+            }
+
+            if (!$hasIngredients)
+            {
+                $this->addFlash('danger', 'Veuillez ajouter au moins un ingrédient');
+                return $this->render('profile/recipe/add.html.twig', [
+                    'recipeForm' => $form->createView(),
+                ]);
+            }
+
+            if (!$hasSteps)
+            {
+                $this->addFlash('danger', 'Veuillez ajouter au moins une étape');
+                return $this->render('profile/recipe/add.html.twig', [
+                    'recipeForm' => $form->createView(),
+                ]);
+            }
+
+            $entityManager->persist($recipe);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Recette publié avec succès');
+            return $this->redirectToRoute('profile_index');
+        }
+
+        return $this->render('profile/recipe/add.html.twig', [
+            'recipeForm' => $form->createView()
+        ]);
+    }
+
     #[Route('/recette/edition/{slug}', name: 'recipe_edit')]
     public function edit(Recipes $recipes, EntityManagerInterface $entityManager, Request $request, SluggerInterface $slugger, PictureService $pictureService): Response
     {
@@ -66,9 +142,43 @@ class ProfileController extends AbstractController
                 $recipes->addImage($img);
             }
 
-            $slug = $slugger->slug($recipes->getTitle())->lower();
+            $slug = $slugger->slug($recipes->getTitle())->lower() . '-' . Uuid::uuid4()->toString();
             $recipes->setSlug($slug);
-dd($recipes);
+
+            $ingredientsForm = $form->get('ingredients');
+            $hasIngredients = false;
+            foreach ($ingredientsForm as $ingredientForm) {
+                if (!empty($ingredientForm->get('name')->getData()) && !empty($ingredientForm->get('quantity')->getData())) {
+                    $hasIngredients = true;
+                    break;
+                }
+            }
+
+            $stepsForm = $form->get('steps');
+            $hasSteps = false;
+            foreach ($stepsForm as $stepForm) {
+                if (!empty($stepForm->get('description')->getData())) {
+                    $hasSteps = true;
+                    break;
+                }
+            }
+
+            if (!$hasIngredients)
+            {
+                $this->addFlash('danger', 'Veuillez ajouter au moins un ingrédient');
+                return $this->render('profile/recipe/edit.html.twig', [
+                    'recipeForm' => $form->createView(),
+                ]);
+            }
+
+            if (!$hasSteps)
+            {
+                $this->addFlash('danger', 'Veuillez ajouter au moins une étape');
+                return $this->render('profile/recipe/edit.html.twig', [
+                    'recipeForm' => $form->createView(),
+                ]);
+            }
+
             $entityManager->persist($recipes);
             $entityManager->flush();
 
