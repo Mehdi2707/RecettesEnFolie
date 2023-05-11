@@ -41,6 +41,7 @@
                         <div class="receipe-headline my-5">
                             <span>{{ recipe.createdAt | date('d/m/Y') }}</span>
                             <h2>{{ recipe.title }}</h2>
+                            <h5 class="mb-5">{{ recipe.description }}</h5>
                             <div class="receipe-duration">
                                 <h6>Temps de préparation : {{ recipe.preparationTime }} min</h6>
                                 <h6>Temps de cuisson : {{ recipe.cookingTime }} min</h6>
@@ -60,6 +61,7 @@
                             </div>
                             <a href="#" class="btn delicious-btn">{{ recipe.difficultyLevel }}</a>
                         </div>
+                        Créé par&nbsp;<a href="{{ path('profile_user', {user: recipe.user.username}) }}" class="badge badge-light" style="font-size: 15px;">@{{ recipe.user.username }}</a>
                     </div>
                 </div>
 

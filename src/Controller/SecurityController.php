@@ -39,6 +39,35 @@ class SecurityController extends AbstractController
         throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
     }
 
+    #[Route('/reinitialisation-mot-de-passe', name: 'change_password')]
+    public function changePassword(TokenGeneratorInterface $tokenGenerator, EntityManagerInterface $entityManager, SendMailService $mailService)
+    {
+        $user = $this->getUser();
+
+        $token = $tokenGenerator->generateToken();
+        $user->setResetToken($token);
+        $entityManager->persist($user);
+        $entityManager->flush();
+
+        $url = $this->generateUrl('reset_pass', ['token' => $token], UrlGeneratorInterface::ABSOLUTE_URL);
+
+        $context = [
+            'url' => $url,
+            'user' => $user
+        ];
+
+        $mailService->send(
+            'd38.h4ck3ur@live.fr',
+            $user->getEmail(),
+            'Réinitialisation du mot de passe',
+            'password_reset',
+            $context
+        );
+
+        $this->addFlash('success', 'Vous avez reçu un lien dans votre boite mail pour réinitialiser votre mot de passe');
+        return $this->redirectToRoute('profile_index');
+    }
+
     #[Route(path: '/mot-de-passe-oublie', name: 'forgotten_password')]
     public function forgottenPassword(Request $request, UsersRepository $usersRepository, TokenGeneratorInterface $tokenGenerator, EntityManagerInterface $entityManager, SendMailService $mailService): Response
     {

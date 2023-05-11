@@ -4,9 +4,11 @@ namespace App\Controller;
 
 use App\Entity\Images;
 use App\Entity\Recipes;
+use App\Entity\Users;
 use App\Form\ProfileFormType;
 use App\Form\RecipesFormType;
 use App\Service\PictureService;
+use Doctrine\DBAL\Exception;
 use Doctrine\ORM\EntityManagerInterface;
 use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -45,9 +47,33 @@ class ProfileController extends AbstractController
         ]);
     }
 
+    #[Route('/{user}', name: 'user')]
+    public function user(EntityManagerInterface $entityManager, $user): Response
+    {
+        $user = $entityManager->getRepository(Users::class)->findOneBy(['username' => $user]);
+
+        if(!$user)
+        {
+            $this->addFlash('warning', 'L\'utilisateur recherché n\'existe plus');
+            return $this->redirectToRoute('app_home');
+        }
+
+        $recipes = $entityManager->getRepository(Recipes::class)->findBy(['user' => $user]);
+
+        return $this->render('profile/user.html.twig', [
+            'user' => $user,
+            'recipes' => $recipes,
+        ]);
+    }
+
     #[Route('/recette/ajout', name: 'recipe_add')]
     public function add(EntityManagerInterface $entityManager, Request $request, SluggerInterface $slugger, PictureService $pictureService): Response
     {
+        if(!$this->getUser()->getIsVerified())
+        {
+            $this->addFlash('warning', 'Vous devez activer votre compte pour publier une recette');
+            return $this->redirectToRoute('profile_index');
+        }
         $recipe = new Recipes();
 
         $form = $this->createForm(RecipesFormType::class, $recipe);
@@ -123,6 +149,12 @@ class ProfileController extends AbstractController
     #[Route('/recette/edition/{slug}', name: 'recipe_edit')]
     public function edit(Recipes $recipes, EntityManagerInterface $entityManager, Request $request, SluggerInterface $slugger, PictureService $pictureService): Response
     {
+        $userRecipe = $recipes->getUser();
+        $user = $this->getUser();
+
+        if($userRecipe !== $user)
+            throw new Exception('Vous n\'êtes pas autorisé à accéder à cette page');
+
         $form = $this->createForm(RecipesFormType::class, $recipes);
 
         $form->handleRequest($request);
