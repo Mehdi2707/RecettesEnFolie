@@ -55,6 +55,9 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Favorites::class, orphanRemoval: true)]
     private Collection $favorites;
 
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Notes::class, orphanRemoval: true)]
+    private Collection $notes;
+
     public function __construct()
     {
         $this->recipes = new ArrayCollection();
@@ -62,6 +65,7 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
         $this->favorites = new ArrayCollection();
         $this->createdAt = new \DateTimeImmutable();
         $this->updatedAt = new \DateTimeImmutable();
+        $this->notes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -254,6 +258,36 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($favorite->getUser() === $this) {
                 $favorite->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Notes>
+     */
+    public function getNotes(): Collection
+    {
+        return $this->notes;
+    }
+
+    public function addNote(Notes $note): self
+    {
+        if (!$this->notes->contains($note)) {
+            $this->notes->add($note);
+            $note->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeNote(Notes $note): self
+    {
+        if ($this->notes->removeElement($note)) {
+            // set the owning side to null (unless already changed)
+            if ($note->getUser() === $this) {
+                $note->setUser(null);
             }
         }
 

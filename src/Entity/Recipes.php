@@ -69,6 +69,9 @@ class Recipes
     #[ORM\OneToMany(mappedBy: 'recipes', targetEntity: Images::class, orphanRemoval: true, cascade: ['persist'])]
     private Collection $images;
 
+    #[ORM\OneToMany(mappedBy: 'recipe', targetEntity: Notes::class, orphanRemoval: true)]
+    private Collection $notes;
+
     public function __construct()
     {
         $this->steps = new ArrayCollection();
@@ -78,6 +81,7 @@ class Recipes
         $this->updatedAt = new \DateTimeImmutable();
         $this->images = new ArrayCollection();
         $this->ingredients = new ArrayCollection();
+        $this->notes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -319,6 +323,36 @@ class Recipes
             // set the owning side to null (unless already changed)
             if ($image->getRecipes() === $this) {
                 $image->setRecipes(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Notes>
+     */
+    public function getNotes(): Collection
+    {
+        return $this->notes;
+    }
+
+    public function addNote(Notes $note): self
+    {
+        if (!$this->notes->contains($note)) {
+            $this->notes->add($note);
+            $note->setRecipe($this);
+        }
+
+        return $this;
+    }
+
+    public function removeNote(Notes $note): self
+    {
+        if ($this->notes->removeElement($note)) {
+            // set the owning side to null (unless already changed)
+            if ($note->getRecipe() === $this) {
+                $note->setRecipe(null);
             }
         }
 

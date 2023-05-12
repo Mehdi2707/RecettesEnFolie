@@ -4,6 +4,7 @@
 
 {% block javascripts %}
     <script src="{{ asset('assets/js/comments.js') }}" defer></script>
+    <script src="{{ asset('assets/js/stars.js') }}" defer></script>
 {% endblock %}
 
 {% block body %}
@@ -154,6 +155,27 @@
                     <div class="col-12">
                         <div class="mt-2 mb-3 text-left">
                             <h3>Laisser un commentaire</h3>
+                        </div>
+                        <div class="receipe-ratings">
+                            <div class="ratings stars">
+                                {% apply spaceless %}
+                                    {% if note == null %}
+                                        <i class="fa fa-star-o stars-form" aria-hidden="true" data-value="1"></i>
+                                        <i class="fa fa-star-o stars-form" aria-hidden="true" data-value="2"></i>
+                                        <i class="fa fa-star-o stars-form" aria-hidden="true" data-value="3"></i>
+                                        <i class="fa fa-star-o stars-form" aria-hidden="true" data-value="4"></i>
+                                        <i class="fa fa-star-o stars-form" aria-hidden="true" data-value="5"></i>
+                                    {% else %}
+                                        {% for i in 1..note.value %}
+                                        <i class="fa fa-star stars-form" aria-hidden="true" data-value="{{ i }}"></i>
+                                        {% endfor %}
+                                        {% for i in 1..(5 - note.value) %}
+                                        <i class="fa fa-star-o stars-form" aria-hidden="true" data-value="{{ note.value + i }}"></i>
+                                        {% endfor %}
+                                    {% endif %}
+                                {% endapply %}
+                            </div>
+                            <input data-request="{{ path('recipes_stars_request', {slug: recipe.slug}) }}" type="hidden" name="note" id="note" value="0">
                         </div>
                     </div>
                 </div>
