@@ -2,6 +2,10 @@
 
 {% block title %}{{ recipe.title }}{% endblock %}
 
+{% block javascripts %}
+    <script src="{{ asset('assets/js/comments.js') }}" defer></script>
+{% endblock %}
+
 {% block body %}
     <!-- ##### Breadcumb Area Start ##### -->
     <div class="breadcumb-area bg-img bg-overlay" style="background-image: url({{ asset('assets/img/bg-img/breadcumb3.jpg') }});">
@@ -24,7 +28,7 @@
             <div class="row">
                 <div class="col-12">
                     <div class="receipe-slider owl-carousel">
-                        {% for image in images %}
+                        {% for image in recipe.images %}
                             <img class="{{ (loop.index0 == 0) ? 'active' : '' }}" src="{{ asset('assets/uploads/recipes/') ~ image.name }}" style="width:500px;" alt="{{ recipe.title }}">
                         {% endfor %}
                     </div>
@@ -69,7 +73,7 @@
                     <div class="col-12 col-lg-8">
                         <!-- Single Preparation Step -->
                         {% set counter = 1 %}
-                        {% for step in steps %}
+                        {% for step in recipe.steps %}
                             <div class="single-preparation-step d-flex">
                                 <h4>0{{ counter }}.</h4>
                                 <p>
@@ -84,7 +88,7 @@
                     <div class="col-12 col-lg-4">
                         <div class="ingredients">
                             <h4>Ingrédients</h4>
-                            {% for ingredient in ingredients %}
+                            {% for ingredient in recipe.ingredients %}
                                 <div style="font-size: 18px;">
                                     <span class="font-weight-bold">{{ ingredient.quantity|number_format(2)|trim('.0')|replace({'.': ','}) }} {{ ingredient.unit.name }} {{ ingredient.name }}</span>
                                 </div>
@@ -94,8 +98,61 @@
                 </div>
 
                 <div class="row">
+                    <div class="col-12 ingredients">
+                        <h4>Commentaires</h4>
+                        {% if recipe.comments.empty() %}
+                            <span>Aucun commentaire pour l'instant</span>
+                        {% endif %}
+                        {% for comment in recipe.comments %}
+                            {% if comment.parent == null %}
+                                <div class="my-3">
+                                    <span>
+                                        Publié par&nbsp;
+                                        <a href="{{ path('profile_user', {user: comment.user.username}) }}" class="badge badge-light" style="font-size: 15px;">@{{ comment.user.username }}</a>
+                                        &nbsp;le {{ comment.createdAt|date("d/m/Y à H:i") }}
+                                    </span>
+                                    <div class="card">
+                                        <div class="card-body">{{ comment.content }}</div>
+                                {% if comment.replies == true %}
+                                    {% for reply in comment.replies %}
+                                        <div class="m-2">
+                                            <span>
+                                                Réponse publiée par&nbsp;
+                                                <a href="{{ path('profile_user', {user: reply.user.username}) }}" class="badge badge-light" style="font-size: 15px;">@{{ reply.user.username }}</a>
+                                                &nbsp;le {{ reply.createdAt|date("d/m/Y à H:i") }}
+                                            </span>
+                                            <div class="card">
+                                                <div class="card-body">{{ reply.content }}</div>
+                                        {% if reply.replies == true %}
+                                            {% for reply in reply.replies %}
+                                                <div class="m-2">
+                                                <span>
+                                                    Réponse publiée par&nbsp;
+                                                    <a href="{{ path('profile_user', {user: reply.user.username}) }}" class="badge badge-light" style="font-size: 15px;">@{{ reply.user.username }}</a>
+                                                    &nbsp;le {{ reply.createdAt|date("d/m/Y à H:i") }}
+                                                </span>
+                                                    <div class="card">
+                                                        <div class="card-body">{{ reply.content }}</div>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        {% endif %}
+                                            </div>
+                                            <p><a class="btn btn-sm btn-info" href="#ajout-commentaire" data-reply data-id="{{ reply.id }}">Répondre</a></p>
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
+                                    </div>
+                                    <p><a class="btn btn-sm btn-info" href="#ajout-commentaire" data-reply data-id="{{ comment.id }}">Répondre</a></p>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="row" id="ajout-commentaire">
                     <div class="col-12">
-                        <div class="section-heading text-left">
+                        <div class="mt-2 mb-3 text-left">
                             <h3>Laisser un commentaire</h3>
                         </div>
                     </div>
@@ -104,25 +161,15 @@
                 <div class="row">
                     <div class="col-12">
                         <div class="contact-form-area">
-                            <form action="#" method="post">
-                                <div class="row">
-                                    <div class="col-12 col-lg-6">
-                                        <input type="text" class="form-control" id="name" placeholder="Name">
-                                    </div>
-                                    <div class="col-12 col-lg-6">
-                                        <input type="email" class="form-control" id="email" placeholder="E-mail">
-                                    </div>
-                                    <div class="col-12">
-                                        <input type="text" class="form-control" id="subject" placeholder="Subject">
-                                    </div>
-                                    <div class="col-12">
-                                        <textarea name="message" class="form-control" id="message" cols="30" rows="10" placeholder="Message"></textarea>
-                                    </div>
-                                    <div class="col-12">
-                                        <button class="btn delicious-btn mt-30" type="submit">Post Comments</button>
-                                    </div>
+                            {{ form_start(form) }}
+                                <div class="col-12">
+                                    {{ form_row(form.content) }}
+                                    {{ form_row(form.parentid) }}
                                 </div>
-                            </form>
+                                <div class="col-12">
+                                    <button class="btn delicious-btn mt-30" type="submit">Envoyer</button>
+                                </div>
+                            {{ form_end(form) }}
                         </div>
                     </div>
                 </div>

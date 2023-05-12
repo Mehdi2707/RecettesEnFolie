@@ -2,7 +2,10 @@
 
 namespace App\Controller;
 
+use App\Entity\Comments;
 use App\Entity\Recipes;
+use App\Form\CommentsFormType;
+use App\Repository\RecipesRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,17 +24,40 @@ class RecipesController extends AbstractController
     }
 
     #[Route('/{slug}', name: 'details')]
-    public function details(Recipes $recipes): Response
+    public function details($slug, RecipesRepository $recipesRepository, Request $request, EntityManagerInterface $entityManager): Response
     {
-        $ingredients = $recipes->getIngredients();
-        $steps = $recipes->getSteps();
-        $images = $recipes->getImages();
+        $recipes = $recipesRepository->findOneBy(['slug' => $slug]);
+
+        $user = $this->getUser();
+
+        $comment = new Comments();
+
+        $form = $this->createForm(CommentsFormType::class, $comment);
+
+        $form->handleRequest($request);
+
+        if($form->isSubmitted() && $form->isValid())
+        {
+            $comment->setRecipes($recipes);
+            $comment->setIsActive(true);
+            $comment->setUser($user);
+
+            $parentId = $form->get('parentid')->getData();
+
+            if($parentId != null)
+                $parent = $entityManager->getRepository(Comments::class)->find($parentId);
+
+            $comment->setParent($parent ?? null);
+
+            $entityManager->persist($comment);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('recipes_details' , ['slug' => $recipes->getSlug()]);
+        }
 
         return $this->render('recipes/details.html.twig', [
-            'ingredients' => $ingredients,
             'recipe' => $recipes,
-            'steps' => $steps,
-            'images' => $images
+            'form' => $form->createView(),
         ]);
     }
 }

@@ -32,6 +32,8 @@ class ProfileController extends AbstractController
 
         if($form->isSubmitted() && $form->isValid())
         {
+            $user->setUpdatedAt(new \DateTimeImmutable());
+
             $entityManager->persist($user);
             $entityManager->flush();
 
@@ -95,7 +97,7 @@ class ProfileController extends AbstractController
                 $recipe->addImage($img);
             }
 
-            $slug = $slugger->slug($recipe->getTitle())->lower() . '-' . Uuid::uuid4()->toString();
+            $slug = $slugger->slug($recipe->getTitle())->lower() . '-i-' . Uuid::uuid4()->toString();
 
             $recipe->setSlug($slug);
             $recipe->setUser($this->getUser());
@@ -174,8 +176,13 @@ class ProfileController extends AbstractController
                 $recipes->addImage($img);
             }
 
-            $slug = $slugger->slug($recipes->getTitle())->lower() . '-' . Uuid::uuid4()->toString();
+            $slug = $recipes->getSlug();
+            $parts = explode("-i-", $slug);
+            $id = $parts[1];
+            $slug = $slugger->slug($recipes->getTitle())->lower() . '-i-' . $id;
             $recipes->setSlug($slug);
+
+            $recipes->setUpdatedAt(new \DateTimeImmutable());
 
             $ingredientsForm = $form->get('ingredients');
             $hasIngredients = false;
