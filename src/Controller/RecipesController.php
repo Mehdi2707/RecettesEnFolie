@@ -4,12 +4,9 @@ namespace App\Controller;
 
 use App\Entity\Comments;
 use App\Entity\Notes;
-use App\Entity\Recipes;
 use App\Form\CommentsFormType;
-use App\Form\NotesFormType;
 use App\Repository\NotesRepository;
 use App\Repository\RecipesRepository;
-use Doctrine\DBAL\Exception;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -33,7 +30,20 @@ class RecipesController extends AbstractController
     {
         $recipes = $recipesRepository->findOneBy(['slug' => $slug]);
         $user = $this->getUser();
-        $note = $notesRepository->findOneBy(['user' => $user, 'recipe' => $recipes]);
+        $noteUser = $notesRepository->findOneBy(['user' => $user, 'recipe' => $recipes]);
+        $notes = $recipes->getNotes();
+
+        $totalNote = 0;
+        $nbNote = 0;
+        foreach($notes as $note)
+        {
+            $totalNote = $totalNote + $note->getValue();
+            $nbNote++;
+        }
+        if(count($notes) == 0)
+            $moyenne = 0;
+        else
+            $moyenne = round($totalNote / $nbNote);
 
         $comment = new Comments();
 
@@ -63,7 +73,8 @@ class RecipesController extends AbstractController
         return $this->render('recipes/details.html.twig', [
             'recipe' => $recipes,
             'form' => $form->createView(),
-            'note' => $note
+            'note' => $noteUser,
+            'noteGeneral' => $moyenne
         ]);
     }
 

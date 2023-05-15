@@ -58,13 +58,20 @@
                     <div class="col-12 col-md-4">
                         <div class="receipe-ratings text-right my-5">
                             <div class="ratings">
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star-o" aria-hidden="true"></i>
+                                {% apply spaceless %}
+                                    {% if noteGeneral == 0 %}
+                                        <span class="text-info">Pas de note pour l'instant</span>
+                                    {% else %}
+                                        {% for i in 1..noteGeneral %}
+                                            <i class="fa fa-star" aria-hidden="true"></i>
+                                        {% endfor %}
+                                        {% for i in 1..(5 - noteGeneral) %}
+                                            <i class="fa fa-star-o" aria-hidden="true"></i>
+                                        {% endfor %}
+                                    {% endif %}
+                                {% endapply %}
                             </div>
-                            <a href="#" class="btn delicious-btn">{{ recipe.difficultyLevel }}</a>
+                            <span class="text-center delicious-btn">{{ recipe.difficultyLevel }}</span>
                         </div>
                         Créé par&nbsp;<a href="{{ path('profile_user', {user: recipe.user.username}) }}" class="badge badge-light" style="font-size: 15px;">@{{ recipe.user.username }}</a>
                     </div>
@@ -156,43 +163,54 @@
                         <div class="mt-2 mb-3 text-left">
                             <h3>Laisser un commentaire</h3>
                         </div>
-                        <div class="receipe-ratings">
-                            <div class="ratings stars">
-                                {% apply spaceless %}
-                                    {% if note == null %}
-                                        <i class="fa fa-star-o stars-form" aria-hidden="true" data-value="1"></i>
-                                        <i class="fa fa-star-o stars-form" aria-hidden="true" data-value="2"></i>
-                                        <i class="fa fa-star-o stars-form" aria-hidden="true" data-value="3"></i>
-                                        <i class="fa fa-star-o stars-form" aria-hidden="true" data-value="4"></i>
-                                        <i class="fa fa-star-o stars-form" aria-hidden="true" data-value="5"></i>
-                                    {% else %}
-                                        {% for i in 1..note.value %}
-                                        <i class="fa fa-star stars-form" aria-hidden="true" data-value="{{ i }}"></i>
-                                        {% endfor %}
-                                        {% for i in 1..(5 - note.value) %}
-                                        <i class="fa fa-star-o stars-form" aria-hidden="true" data-value="{{ note.value + i }}"></i>
-                                        {% endfor %}
-                                    {% endif %}
-                                {% endapply %}
+                        {% if app.user %}
+                            <div class="receipe-ratings">
+                                    {% apply spaceless %}
+                                        {% if note == null %}
+                                            <div class="ratings stars">
+                                                <i class="fa fa-star-o stars-form" aria-hidden="true" data-value="1"></i>
+                                                <i class="fa fa-star-o stars-form" aria-hidden="true" data-value="2"></i>
+                                                <i class="fa fa-star-o stars-form" aria-hidden="true" data-value="3"></i>
+                                                <i class="fa fa-star-o stars-form" aria-hidden="true" data-value="4"></i>
+                                                <i class="fa fa-star-o stars-form" aria-hidden="true" data-value="5"></i>
+                                            </div>
+                                            <input data-request="{{ path('recipes_stars_request', {slug: recipe.slug}) }}" type="hidden" name="note" id="note" value="0">
+                                        {% else %}
+                                            <div class="ratings stars">
+                                                {% for i in 1..note.value %}
+                                                    <i class="fa fa-star stars-form" aria-hidden="true" data-value="{{ i }}"></i>
+                                                {% endfor %}
+                                                {% if note.value < 5 %}
+                                                    {% for i in 1..(5 - note.value) %}
+                                                        <i class="fa fa-star-o stars-form" aria-hidden="true" data-value="{{ note.value + i }}"></i>
+                                                    {% endfor %}
+                                                {% endif %}
+                                            </div>
+                                            <input data-request="{{ path('recipes_stars_request', {slug: recipe.slug}) }}" type="hidden" name="note" id="note" value="{{ note.value }}">
+                                        {% endif %}
+                                    {% endapply %}
                             </div>
-                            <input data-request="{{ path('recipes_stars_request', {slug: recipe.slug}) }}" type="hidden" name="note" id="note" value="0">
-                        </div>
+                        {% endif %}
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="col-12">
-                        <div class="contact-form-area">
-                            {{ form_start(form) }}
-                                <div class="col-12">
-                                    {{ form_row(form.content) }}
-                                    {{ form_row(form.parentid) }}
-                                </div>
-                                <div class="col-12">
-                                    <button class="btn delicious-btn mt-30" type="submit">Envoyer</button>
-                                </div>
-                            {{ form_end(form) }}
-                        </div>
+                        {% if app.user %}
+                            <div class="contact-form-area">
+                                {{ form_start(form) }}
+                                    <div class="col-12">
+                                        {{ form_row(form.content) }}
+                                        {{ form_row(form.parentid) }}
+                                    </div>
+                                    <div class="col-12">
+                                        <button class="btn delicious-btn mt-30" type="submit">Envoyer</button>
+                                    </div>
+                                {{ form_end(form) }}
+                            </div>
+                        {% else %}
+                            <span>Vous devez vous connecter pour écrire un commentaire ou noté cette recette</span>
+                        {% endif %}
                     </div>
                 </div>
             </div>

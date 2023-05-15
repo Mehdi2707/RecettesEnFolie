@@ -240,6 +240,17 @@
         <div class="container">
             <div class="row">
                 {% for recipe in recipes %}
+                    {% set nbNote = 0 %}
+                    {% set totalNote = 0 %}
+                    {% for note in recipe.notes %}
+                        {% set totalNote = totalNote + note.value %}
+                        {% set nbNote = nbNote + 1 %}
+                    {% endfor %}
+                    {% if recipe.notes is empty %}
+                        {% set moyenne = 0 %}
+                    {% else %}
+                        {% set moyenne = (totalNote / nbNote)|round %}
+                    {% endif %}
                     <div class="col-12 col-sm-6 col-lg-4">
                         <div class="single-small-receipe-area d-flex">
                             <!-- Receipe Thumb -->
@@ -253,13 +264,28 @@
                                     <h5>{{ recipe.title }}</h5>
                                 </a>
                                 <div class="ratings">
-                                    <i class="fa fa-star" aria-hidden="true"></i>
-                                    <i class="fa fa-star" aria-hidden="true"></i>
-                                    <i class="fa fa-star" aria-hidden="true"></i>
-                                    <i class="fa fa-star" aria-hidden="true"></i>
-                                    <i class="fa fa-star-o" aria-hidden="true"></i>
+                                    {% apply spaceless %}
+                                        {% if moyenne == 0 %}
+                                            <span class="text-info">Pas de note pour l'instant</span>
+                                        {% else %}
+                                            {% for i in 1..moyenne %}
+                                                <i class="fa fa-star" aria-hidden="true"></i>
+                                            {% endfor %}
+                                            {% for i in 1..(5 - moyenne) %}
+                                                <i class="fa fa-star-o" aria-hidden="true"></i>
+                                            {% endfor %}
+                                        {% endif %}
+
+                                    {% endapply %}
                                 </div>
-                                <p>2 Comments</p>
+                                {% set nbComment = 0 %}
+                                {% for comment in recipe.comments %}
+                                    {% if comment.parent == null %}
+                                        {% set nbComment = nbComment + 1 %}
+                                    {% endif %}
+                                {% endfor %}
+
+                                <p>{{ nbComment }} Commentaire{{ nbComment <= 1 ? '' : 's' }}</p>
                             </div>
                         </div>
                     </div>
