@@ -136,4 +136,23 @@ class RecipesController extends AbstractController
 
         return new JsonResponse("Une erreur est survenue");
     }
+
+    #[Route('/recherche', name: 'search_recipes')]
+    public function searchRecipes(Request $request, RecipesRepository $recipesRepository)
+    {
+        $search = $request->get('search');
+
+        if($search == "" || strlen($search) < 3)
+        {
+            $this->addFlash('warning', 'Veuillez entrer un mot clé de minimum trois caractères pour effectuer votre recherche');
+            return $this->redirectToRoute('app_home');
+        }
+
+        $recipes = $recipesRepository->searchRecipes($search);
+
+        return $this->render('recipes/search.html.twig', [
+            'search' => $search,
+            'recipes' => $recipes
+        ]);
+    }
 }

@@ -27,6 +27,7 @@
     var searchwrapper = $('.search-wrapper');
     $('.search-btn').on('click', function () {
         searchwrapper.toggleClass('on');
+        $('#search').focus();
     });
     $('.close-btn').on('click', function () {
         searchwrapper.removeClass('on');
