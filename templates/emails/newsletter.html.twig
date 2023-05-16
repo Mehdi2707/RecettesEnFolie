@@ -1,0 +1,4 @@
+<h1>Inscription à la newsletter</h1>
+<p>Bonjour,</p>
+<p>Votre inscription à la newsletter de Recettes en folie est à valider en cliquant sur le lien ci-dessous :</p>
+<a href="{{ absolute_url(path('confirm_newsletter', {id: user.id, token: token})) }}">Activer ma newsletter</a>
