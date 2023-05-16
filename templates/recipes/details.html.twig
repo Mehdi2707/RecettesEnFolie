@@ -118,9 +118,18 @@
                                         Publié par&nbsp;
                                         <a href="{{ path('profile_user', {user: comment.user.username}) }}" class="badge badge-light" style="font-size: 15px;">@{{ comment.user.username }}</a>
                                         &nbsp;le {{ comment.createdAt|date("d/m/Y à H:i") }}
+                                        {% if comment.createdAt != comment.updatedAt %}
+                                            &nbsp;(modifié le {{ comment.updatedAt|date("d/m/Y à H:i") }})
+                                        {% endif %}
                                     </span>
                                     <div class="card">
-                                        <div class="card-body">{{ comment.content }}</div>
+                                        <div class="card-body">
+                                            <span class="comment-content">{{ comment.content }}</span>
+                                            {% if user == comment.user %}
+                                                <a class="float-right edit-comment-btn" href="#" data-request="{{ path('recipes_edit_comment') }}" data-id="{{ comment.id }}" >Modifier</a>
+                                            {% endif %}
+                                        </div>
+
                                 {% if comment.replies == true %}
                                     {% for reply in comment.replies %}
                                         <div class="m-2">
@@ -128,9 +137,17 @@
                                                 Réponse publiée par&nbsp;
                                                 <a href="{{ path('profile_user', {user: reply.user.username}) }}" class="badge badge-light" style="font-size: 15px;">@{{ reply.user.username }}</a>
                                                 &nbsp;le {{ reply.createdAt|date("d/m/Y à H:i") }}
+                                                {% if reply.createdAt != reply.updatedAt %}
+                                                    &nbsp;(modifié le {{ reply.updatedAt|date("d/m/Y à H:i") }})
+                                                {% endif %}
                                             </span>
                                             <div class="card">
-                                                <div class="card-body">{{ reply.content }}</div>
+                                                <div class="card-body">
+                                                    <span class="comment-content">{{ reply.content }}</span>
+                                                    {% if user == reply.user %}
+                                                        <a class="float-right edit-comment-btn" href="#" data-request="{{ path('recipes_edit_comment') }}" data-id="{{ reply.id }}" >Modifier</a>
+                                                    {% endif %}
+                                                </div>
                                         {% if reply.replies == true %}
                                             {% for reply in reply.replies %}
                                                 <div class="m-2">
@@ -138,9 +155,17 @@
                                                     Réponse publiée par&nbsp;
                                                     <a href="{{ path('profile_user', {user: reply.user.username}) }}" class="badge badge-light" style="font-size: 15px;">@{{ reply.user.username }}</a>
                                                     &nbsp;le {{ reply.createdAt|date("d/m/Y à H:i") }}
+                                                    {% if reply.createdAt != reply.updatedAt %}
+                                                        &nbsp;(modifié le {{ reply.updatedAt|date("d/m/Y à H:i") }})
+                                                    {% endif %}
                                                 </span>
                                                     <div class="card">
-                                                        <div class="card-body">{{ reply.content }}</div>
+                                                        <div class="card-body">
+                                                            <span class="comment-content">{{ reply.content }}</span>
+                                                            {% if user == reply.user %}
+                                                                <a class="float-right edit-comment-btn" href="#" data-request="{{ path('recipes_edit_comment') }}" data-id="{{ reply.id }}" >Modifier</a>
+                                                            {% endif %}
+                                                        </div>
                                                     </div>
                                                 </div>
                                             {% endfor %}
