@@ -45,11 +45,6 @@ class Recipes
     #[Assert\Positive(message: 'Le nombre de portions ne peut pas être inférieur à 1')]
     private ?int $numberOfServings = null;
 
-    #[ORM\Column(length: 50)]
-    #[Assert\NotBlank(message: 'Veuillez entrez un niveau de difficulté (facile/moyen/difficile)')]
-    #[Assert\Length(min: 5, max: 20, minMessage: 'Le champ doit faire au moins {{ limit }} caractères', maxMessage: 'Le champ ne doit pas faire plus de {{ limit }} caractères')]
-    private ?string $difficultyLevel = null;
-
     #[ORM\ManyToOne(inversedBy: 'recipes')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Users $user = null;
@@ -71,6 +66,10 @@ class Recipes
 
     #[ORM\OneToMany(mappedBy: 'recipe', targetEntity: Notes::class, orphanRemoval: true)]
     private Collection $notes;
+
+    #[ORM\ManyToOne(inversedBy: 'recipes')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?DifficultyLevel $difficultyLevel = null;
 
     public function __construct()
     {
@@ -157,18 +156,6 @@ class Recipes
     public function setNumberOfServings(int $numberOfServings): self
     {
         $this->numberOfServings = $numberOfServings;
-
-        return $this;
-    }
-
-    public function getDifficultyLevel(): ?string
-    {
-        return $this->difficultyLevel;
-    }
-
-    public function setDifficultyLevel(string $difficultyLevel): self
-    {
-        $this->difficultyLevel = $difficultyLevel;
 
         return $this;
     }
@@ -355,6 +342,18 @@ class Recipes
                 $note->setRecipe(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getDifficultyLevel(): ?DifficultyLevel
+    {
+        return $this->difficultyLevel;
+    }
+
+    public function setDifficultyLevel(?DifficultyLevel $difficultyLevel): self
+    {
+        $this->difficultyLevel = $difficultyLevel;
 
         return $this;
     }

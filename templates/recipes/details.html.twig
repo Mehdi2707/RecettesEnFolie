@@ -71,7 +71,7 @@
                                     {% endif %}
                                 {% endapply %}
                             </div>
-                            <span class="text-center delicious-btn">{{ recipe.difficultyLevel }}</span>
+                            <span class="text-center delicious-btn">{{ recipe.difficultyLevel.name }}</span>
                         </div>
                         Créé par&nbsp;<a href="{{ path('profile_user', {user: recipe.user.username}) }}" class="badge badge-light" style="font-size: 15px;">@{{ recipe.user.username }}</a>
                     </div>

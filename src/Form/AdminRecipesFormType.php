@@ -2,6 +2,7 @@
 
 namespace App\Form;
 
+use App\Entity\DifficultyLevel;
 use App\Entity\Recipes;
 use App\Entity\Users;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -48,10 +49,12 @@ class AdminRecipesFormType extends AbstractType
                     'class' => 'form-control'
                 ]
             ])
-            ->add('difficultyLevel', options: [
-                'label' => 'Niveau de difficulté',
+            ->add('difficultyLevel', EntityType::class, [
+                'class' => DifficultyLevel::class,
+                'choice_label' => 'name',
+                'label' => 'Difficulté',
                 'attr' => [
-                    'class' => 'form-control'
+                    'class' => 'mb-3'
                 ]
             ])
             ->add('user', EntityType::class, [

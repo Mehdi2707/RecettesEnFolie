@@ -3,7 +3,6 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Newsletter\Newsletters;
-use App\Entity\Newsletter\UsersN;
 use App\Form\NewslettersFormType;
 use App\Repository\Newsletter\NewslettersRepository;
 use App\Repository\Newsletter\UsersNRepository;

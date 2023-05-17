@@ -10,6 +10,15 @@
     </article>
     <article class="card mb-3">
         <div class="card-header">
+            Difficultés
+        </div>
+        <div class="card-body">
+            <p><a href="{{ path('admin_difficulty_index') }}">Liste des difficultés</a></p>
+            <p><a href="{{ path('admin_difficulty_add') }}">Ajouter une difficulté</a></p>
+        </div>
+    </article>
+    <article class="card mb-3">
+        <div class="card-header">
             Unités (ingrédients)
         </div>
         <div class="card-body">
@@ -30,7 +39,8 @@
             Newsletter
         </div>
         <div class="card-body">
-            <p><a href="{{ path('admin_newsletter') }}">Faire une newsletter</a></p>
+            <p><a href="{{ path('admin_newsletter_list') }}">Liste des newsletters</a></p>
+            <p><a href="{{ path('admin_newsletter') }}">Écrire une newsletter</a></p>
         </div>
     </article>
 </aside>
