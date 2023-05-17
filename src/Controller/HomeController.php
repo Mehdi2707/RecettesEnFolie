@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Newsletter\Newsletters;
 use App\Entity\Newsletter\UsersN;
 use App\Form\NewslettersUsersNFormType;
 use App\Repository\RecipesRepository;
@@ -64,6 +65,21 @@ class HomeController extends AbstractController
         $entityManager->flush();
 
         $this->addFlash('success', 'Vous êtes bien inscrit à notre newsletter');
+        return $this->redirectToRoute('app_home');
+    }
+
+    #[Route('/newsletter/desinscription/{id}/{token}', name: 'unsubscribe_newsletter')]
+    public function unsubscribeNewsletter(UsersN $usersN, $token, EntityManagerInterface $entityManager): Response
+    {
+        if($usersN->getValidationToken() != $token)
+            throw $this->createNotFoundException('Page non trouvée');
+
+        $usersN->setIsValid(false);
+
+        $entityManager->persist($usersN);
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Vous êtes bien désinscrit à notre newsletter');
         return $this->redirectToRoute('app_home');
     }
 }

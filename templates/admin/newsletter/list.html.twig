@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Newsletters (Administration){% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            {% include "_partials/_adminnav.html.twig" %}
+            <div class="col">
+                <h1>Liste des Newsletters</h1>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Titre</th>
+                            <th>Date</th>
+                            <th>Inscrits</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for newsletter in newsletters %}
+                            <tr>
+                                <td>{{ newsletter.id }}</td>
+                                <td>{{ newsletter.name }}</td>
+                                <td>{{ newsletter.createdAt|date('d/m/Y à H:i') }}</td>
+                                <td>{{ usersInscrit }}</td>
+                                <td>
+                                    {% if newsletter.isSent == false %}
+                                        <a class="btn btn-sm btn-success" href="{{ path('admin_newsletter_send', {id: newsletter.id}) }}">Envoyer</a>
+                                    {% else %}
+                                        <span class="text-info">Newsletter envoyé</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -322,8 +322,9 @@
                         <!-- Form -->
                         <div class="newsletter-form bg-img bg-overlay" style="background-image: url({{ asset('assets/img/bg-img/bg1.jpg') }});">
                             {{ form_start(form) }}
-                                {{ form_row(form.email) }}
-                                <div class=" col-12 text-white">
+                                <span class="text-danger">{{ form_errors(form.email) }}</span>
+                                {{ form_widget(form.email) }}
+                                <div class="col-12 text-white">
                                     {{ form_label(form.is_rgpd) }}
                                     </br>
                                     {{ form_widget(form.is_rgpd) }}

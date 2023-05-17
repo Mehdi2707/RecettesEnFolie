@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Newsletter (Administration){% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset('assets/ckeditor5/ckeditor.js') }}" defer></script>
+    <script src="{{ asset('assets/js/ckeditor.js') }}" defer></script>
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            {% include "_partials/_adminnav.html.twig" %}
+            <div class="col">
+                <h1>Newsletter</h1>
+                {{ form_start(form) }}
+                    {{ form_row(form.name) }}
+                    <p class="text-dark mt-2">Contenu</p>
+                    <div class="border-dark" id="editor"></div>
+                    <button type="submit" class="my-3 btn btn-sm btn-primary">Enregistrer</button>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

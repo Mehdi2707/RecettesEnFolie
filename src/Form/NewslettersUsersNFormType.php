@@ -9,6 +9,7 @@ use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\IsTrue;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 class NewslettersUsersNFormType extends AbstractType
 {
@@ -19,7 +20,12 @@ class NewslettersUsersNFormType extends AbstractType
                 'attr' => [
                     'placeholder' => 'Entrer votre adresse mail'
                 ],
-                'label' => false
+                'label' => false,
+                'constraints' => [
+                    new NotBlank([
+                        'message' => 'Veuillez entrer votre adresse mail'
+                    ])
+                ]
             ])
             ->add('is_rgpd', CheckboxType::class, [
                 'constraints' => [
