@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Demandes de contact (Administration){% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            {% include "_partials/_adminnav.html.twig" %}
+            <div class="col">
+                <h1>Liste des demandes</h1>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nom</th>
+                        <th>Email</th>
+                        <th>Date</th>
+                        <th>Sujet</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for contact in contacts %}
+                        <tr>
+                            <td>{{ contact.id }}</td>
+                            <td>{{ contact.name }}</td>
+                            <td>{{ contact.email }}</td>
+                            <td>{{ contact.createdAt|date('d/m/Y à H:i') }}</td>
+                            <td>{{ contact.subject }}</td>
+                            <td>
+                                <a class="btn btn-sm btn-success" href="{{ path('admin_contact_details', {id: contact.id}) }}">Voir la demande</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

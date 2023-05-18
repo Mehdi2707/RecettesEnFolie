@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Demande de {{ contact.name }} (Administration){% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            {% include "_partials/_adminnav.html.twig" %}
+            <div class="col">
+                <h1>Demande de {{ contact.name }}</h1>
+                <div class="m-3">
+                    <span class="mr-3">Sujet :</span>
+                    <span>{{ contact.subject }}</span>
+                </div>
+                <div class="m-3">
+                    <span class="mb-3">Message :</span>
+                </div>
+                <div class="m-3">
+                    {{ contact.message }}
+                </div>
+                <div class="float-right m-3">
+                    <a href="{{ path('admin_contact_send', {id: contact.id}) }}" class="btn btn-sm btn-success">Répondre</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

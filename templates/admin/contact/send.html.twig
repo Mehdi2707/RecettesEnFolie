@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Demande de {{ contact.name }} (Administration){% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset('assets/ckeditor5/ckeditor.js') }}" defer></script>
+    <script src="{{ asset('assets/js/ckeditorContact.js') }}" defer></script>
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            {% include "_partials/_adminnav.html.twig" %}
+            <div class="col">
+                <h1>Demande de {{ contact.name }}</h1>
+                <div class="m-2">
+                    Répondez à la demande ci-dessous :
+                </div>
+                <div>
+                    <form method="post" action="#">
+                        <div class="border-dark" id="editor"></div>
+                        <input type="hidden" id="contact_form_content" name="contact_form">
+                        <button type="submit" class="m-3 btn btn-sm btn-success">Envoyer</button>
+                    </form>
+                </div>
+                <div class="m-3">
+                    <span class="mr-3">Sujet :</span>
+                    <span>{{ contact.subject }}</span>
+                </div>
+                <div class="m-3">
+                    <span class="mb-3">Message :</span>
+                </div>
+                <div class="m-3">
+                    {{ contact.message }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

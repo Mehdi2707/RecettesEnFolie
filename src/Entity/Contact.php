@@ -34,6 +34,9 @@ class Contact
     #[Assert\NotBlank()]
     private ?string $message = null;
 
+    #[ORM\Column]
+    private ?bool $is_done = false;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
@@ -88,6 +91,18 @@ class Contact
     public function setMessage(string $message): self
     {
         $this->message = $message;
+
+        return $this;
+    }
+
+    public function isIsDone(): ?bool
+    {
+        return $this->is_done;
+    }
+
+    public function setIsDone(bool $is_done): self
+    {
+        $this->is_done = $is_done;
 
         return $this;
     }

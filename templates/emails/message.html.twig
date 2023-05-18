@@ -1,0 +1,14 @@
+<h1>Votre demande de contact sur Recettes en folie</h1>
+<p>Bonjour {{ contact.name }},</p>
+
+<div>
+    {{ message|raw }}
+</div>
+
+<p>Récapitulatif de votre demande :</p>
+
+<div>
+    <p>De : {{ contact.email }}</p>
+    <p>Sujet : {{ contact.subject }}</p>
+    <p>Message : {{ contact.message }}</p>
+</div>
