@@ -27,6 +27,11 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 50, unique: true)]
+    #[Assert\Regex(
+        pattern: "/^[a-zA-Z0-9\_\.\-]{3,50}$/",
+        htmlPattern: "/^[a-zA-Z0-9\_\.\-]{3,50}$/",
+        message: "Le nom d'utilisateur ne doit pas contenir d'espaces ou d'autres symboles que '-', '_' et '.'."
+    )]
     private ?string $username = null;
 
     #[ORM\Column(length: 180, unique: true)]

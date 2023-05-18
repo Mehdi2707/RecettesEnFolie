@@ -36,7 +36,7 @@ class HomeController extends AbstractController
             $entityManager->flush();
 
             $mailService->send(
-                'd38.h4ck3ur@live.fr',
+                $this->getParameter('app.mailaddress'),
                 $userN->getEmail(),
                 "Inscription à la newsletter - Recettes en folie",
                 "newsletter",

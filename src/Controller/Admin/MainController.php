@@ -64,7 +64,7 @@ class MainController extends AbstractController
         foreach($users as $user)
         {
             $mailService->send(
-                'd38.h4ck3ur@live.fr',
+                $this->getParameter('app.mailaddress'),
                 $user->getEmail(),
                 $newsletters->getName(),
                 'newsletterSend',

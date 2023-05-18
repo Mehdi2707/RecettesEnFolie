@@ -27,7 +27,7 @@ class ContactController extends AbstractController
             $entityManager->flush();
 
             $mailService->send(
-                'd38.h4ck3ur@live.fr',
+                $this->getParameter('app.mailaddress'),
                 $contact->getEmail(),
                 'Votre demande de contact - Recettes en folie',
                 'contact',

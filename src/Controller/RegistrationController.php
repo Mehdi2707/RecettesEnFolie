@@ -51,7 +51,7 @@ class RegistrationController extends AbstractController
             $token = $JWTService->generate($header, $payload, $this->getParameter('app.jwtsecret'));
 
             $mailService->send(
-                'd38.h4ck3ur@live.fr',
+                $this->getParameter('app.mailaddress'),
                 $user->getEmail(),
                 "Activation du compte - Recettes en folie",
                 "register",
@@ -119,7 +119,7 @@ class RegistrationController extends AbstractController
         $token = $JWTService->generate($header, $payload, $this->getParameter('app.jwtsecret'));
 
         $mailService->send(
-            'd38.h4ck3ur@live.fr',
+            $this->getParameter('app.mailaddress'),
             $user->getEmail(),
             "Activation du compte - Recettes en folie",
             "register",
