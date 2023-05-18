@@ -27,6 +27,8 @@ class ContactController extends AbstractController
     #[Route('/details/{id}', name: 'details')]
     public function details(Contact $contact): Response
     {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
         return $this->render('admin/contact/details.html.twig', [
             'contact' => $contact
         ]);
@@ -35,6 +37,8 @@ class ContactController extends AbstractController
     #[Route('/répondre/{id}', name: 'send')]
     public function send(Contact $contact, Request $request, SendMailService $mailService, EntityManagerInterface $entityManager): Response
     {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
         if($request->request->count() > 0)
         {
             $message = $request->request->get('contact_form');

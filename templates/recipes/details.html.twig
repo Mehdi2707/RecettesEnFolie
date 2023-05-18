@@ -5,23 +5,10 @@
 {% block javascripts %}
     <script src="{{ asset('assets/js/comments.js') }}" defer></script>
     <script src="{{ asset('assets/js/stars.js') }}" defer></script>
+    <script src="{{ asset('assets/js/favorites.js') }}" defer></script>
 {% endblock %}
 
 {% block body %}
-    <!-- ##### Breadcumb Area Start ##### -->
-    <div class="breadcumb-area bg-img bg-overlay" style="background-image: url({{ asset('assets/img/bg-img/breadcumb3.jpg') }});">
-        <div class="container h-100">
-            <div class="row h-100 align-items-center">
-                <div class="col-12">
-                    <div class="breadcumb-text text-center">
-                        <h2>Recette</h2>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- ##### Breadcumb Area End ##### -->
-
     <div class="receipe-post-area section-padding-80">
 
         <!-- Receipe Slider -->
@@ -74,6 +61,17 @@
                             <span class="text-center delicious-btn">{{ recipe.difficultyLevel.name }}</span>
                         </div>
                         Créé par&nbsp;<a href="{{ path('profile_user', {user: recipe.user.username}) }}" class="badge badge-light" style="font-size: 15px;">@{{ recipe.user.username }}</a>
+                        {% if app.user %}
+                            {% if favorite is empty %}
+                                <div class="m-2">
+                                    <button class="btn" id="favorite" data-status="false" data-request="{{ path('recipes_favorites_add', {slug: recipe.slug}) }}"><i class="text-success fa fa-bookmark" aria-hidden="true"></i>&nbsp;&nbsp;Ajouter aux favoris</button>
+                                </div>
+                            {% else %}
+                                <div class="m-2">
+                                    <button class="btn" id="favorite" data-status="true" data-request="{{ path('recipes_favorites_delete', {slug: recipe.slug}) }}"><i class="text-warning fa fa-bookmark" aria-hidden="true"></i>&nbsp;&nbsp;Enlever des favoris</button>
+                                </div>
+                            {% endif %}
+                        {% endif %}
                     </div>
                 </div>
 

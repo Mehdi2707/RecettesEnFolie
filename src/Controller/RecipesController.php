@@ -3,9 +3,11 @@
 namespace App\Controller;
 
 use App\Entity\Comments;
+use App\Entity\Favorites;
 use App\Entity\Notes;
 use App\Form\CommentsFormType;
 use App\Repository\CommentsRepository;
+use App\Repository\FavoritesRepository;
 use App\Repository\NotesRepository;
 use App\Repository\RecipesRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -27,12 +29,13 @@ class RecipesController extends AbstractController
     }
 
     #[Route('/recette/{slug}', name: 'details')]
-    public function details($slug, RecipesRepository $recipesRepository, NotesRepository $notesRepository, Request $request, EntityManagerInterface $entityManager): Response
+    public function details($slug, RecipesRepository $recipesRepository, NotesRepository $notesRepository, Request $request, EntityManagerInterface $entityManager, FavoritesRepository $favoritesRepository): Response
     {
         $recipes = $recipesRepository->findOneBy(['slug' => $slug]);
         $user = $this->getUser();
         $noteUser = $notesRepository->findOneBy(['user' => $user, 'recipe' => $recipes]);
         $notes = $recipes->getNotes();
+        $favorite = $favoritesRepository->findOneBy(['user' => $user, 'recipes' => $recipes]);
 
         $totalNote = 0;
         $nbNote = 0;
@@ -76,7 +79,8 @@ class RecipesController extends AbstractController
             'form' => $form->createView(),
             'note' => $noteUser,
             'noteGeneral' => $moyenne,
-            'user' => $user
+            'user' => $user,
+            'favorite' => $favorite
         ]);
     }
 
@@ -154,5 +158,54 @@ class RecipesController extends AbstractController
             'search' => $search,
             'recipes' => $recipes
         ]);
+    }
+
+    #[Route('/favoris/ajout/{slug}', name: 'favorites_add')]
+    public function addFavorite($slug, RecipesRepository $recipesRepository, EntityManagerInterface $entityManager, FavoritesRepository $favoritesRepository)
+    {
+        $user = $this->getUser();
+        $recipe = $recipesRepository->findOneBy(['slug' => $slug]);
+        $existingFavorite = $favoritesRepository->findOneBy(['user' => $user, 'recipes' => $recipe]);
+
+        if($existingFavorite)
+        {
+            throw new \Exception("Erreur interne");
+        }
+        else
+        {
+            $favorites = new Favorites();
+
+            $favorites->setUser($user);
+            $favorites->setRecipes($recipe);
+
+            $entityManager->persist($favorites);
+            $entityManager->flush();
+
+            return new JsonResponse(["success" => true]);
+        }
+    }
+
+    #[Route('/favoris/suppression/{slug}', name: 'favorites_delete')]
+    public function deleteFavorite($slug, RecipesRepository $recipesRepository, EntityManagerInterface $entityManager, FavoritesRepository $favoritesRepository)
+    {
+        $user = $this->getUser();
+        $recipe = $recipesRepository->findOneBy(['slug' => $slug]);
+        $existingFavorite = $favoritesRepository->findOneBy(['user' => $user, 'recipes' => $recipe]);
+
+        if($existingFavorite)
+        {
+            $user->removeFavorite($existingFavorite);
+            $recipe->removeFavorite($existingFavorite);
+
+            $entityManager->persist($user);
+            $entityManager->persist($recipe);
+            $entityManager->flush();
+
+            return new JsonResponse(["success" => true]);
+        }
+        else
+        {
+           throw new \Exception("Erreur interne");
+        }
     }
 }

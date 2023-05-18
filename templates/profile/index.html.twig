@@ -5,7 +5,7 @@
 {% block body %}
     <section class="container">
         <div class="row">
-            <div class="col">
+            <div class="col-12 col-sm-6">
                 <h1>Mon compte</h1>
                 {{ form_start(form) }}
                     <div class="input-group mb-3">
@@ -27,6 +27,27 @@
                     <button type="submit" class="btn btn-primary btn-lg my-3">Enregistrer</button>
                 {{ form_end(form) }}
                 <a href="{{ path('change_password') }}" class="btn btn-info btn-sm">Modifier mon mot de passe</a>
+            </div>
+            <div class="col-12 col-sm-6">
+                <h2>Mes recettes favoris</h2>
+                {% if favorites is empty %}
+                    <span>Aucune recette dans vos favoris. N'hésitez pas à ajouter les recettes qui vous intéresse dans vos favoris afin de les retrouvez plus facilement !</span>
+                {% else %}
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>Recette</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            {% for favorite in favorites %}
+                                <tr>
+                                    <td><a class="list-group-item list-group-item-action" href="{{ path('recipes_details', {slug: favorite.recipes.slug}) }}">{{ favorite.recipes.title }}</a></td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
             </div>
         </div>
         <div class="row my-3">

@@ -7,6 +7,7 @@ use App\Entity\Recipes;
 use App\Entity\Users;
 use App\Form\ProfileFormType;
 use App\Form\RecipesFormType;
+use App\Repository\FavoritesRepository;
 use App\Service\PictureService;
 use Doctrine\DBAL\Exception;
 use Doctrine\ORM\EntityManagerInterface;
@@ -21,12 +22,13 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 class ProfileController extends AbstractController
 {
     #[Route('/', name: 'index')]
-    public function index(Request $request, EntityManagerInterface $entityManager): Response
+    public function index(Request $request, EntityManagerInterface $entityManager, FavoritesRepository $favoritesRepository): Response
     {
         $user = $this->getUser();
         $recipes = $entityManager->getRepository(Recipes::class)->findBy(['user' => $user]);
         $isVerified = $user->getIsVerified();
         $form = $this->createForm(ProfileFormType::class, $user, ['user' => $user]);
+        $favorites = $favoritesRepository->findBy(['user' => $user]);
 
         $form->handleRequest($request);
 
@@ -45,7 +47,8 @@ class ProfileController extends AbstractController
             'form' => $form->createView(),
             'user' => $user,
             'recipes' => $recipes,
-            'isVerified' => $isVerified
+            'isVerified' => $isVerified,
+            'favorites' => $favorites
         ]);
     }
 
