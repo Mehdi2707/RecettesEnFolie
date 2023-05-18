@@ -5,6 +5,7 @@ namespace App\Entity\Newsletter;
 use App\Entity\Trait\CreatedAtTrait;
 use App\Repository\Newsletter\UsersNRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UsersNRepository::class)]
 class UsersN
@@ -17,6 +18,7 @@ class UsersN
     private ?int $id = null;
 
     #[ORM\Column(length: 255, unique: true)]
+    #[Assert\Email()]
     private ?string $email = null;
 
     #[ORM\Column]
