@@ -1,3 +1,7 @@
+<div style="text-align: center;">
+    {% set imagePath = absolute_url(asset('assets/img/core-img/logo.png')) %}
+    <img src="{{ imagePath }}" alt="Logo" width="305" style="display: block; margin: 0 auto;" />
+</div>
 <h1>{{ newsletter.name }}</h1>
 <div>
     {{ newsletter.content|raw }}

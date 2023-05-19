@@ -1,3 +1,7 @@
+<div style="text-align: center;">
+    {% set imagePath = absolute_url(asset('assets/img/core-img/logo.png')) %}
+    <img src="{{ imagePath }}" alt="Logo" width="305" style="display: block; margin: 0 auto;" />
+</div>
 <h1>Activez votre compte</h1>
 <p>Bonjour, {{ user.username }}</p>
 <p>Votre inscription sur Recettes en folie est à valider en cliquant sur le lien ci-dessous :</p>
