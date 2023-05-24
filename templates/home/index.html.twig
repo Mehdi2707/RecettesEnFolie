@@ -325,9 +325,10 @@
                                 <span class="text-danger">{{ form_errors(form.email) }}</span>
                                 {{ form_widget(form.email) }}
                                 <div class="col-12 text-white">
-                                    {{ form_label(form.is_rgpd) }}
-                                    </br>
-                                    {{ form_widget(form.is_rgpd) }}
+                                    {{ form_row(form.is_rgpd, {
+                                        label: 'J\'accepte la collecte de mes données personnelles tel que décrit dans la <a href="' ~ path('rgpd') ~ '">Politique de confidentialité</a>',
+                                        label_html: true
+                                    }) }}
                                 </div>
                                 <button type="submit" class="btn delicious-btn w-100">Souscrire</button>
                             {{ form_end(form) }}

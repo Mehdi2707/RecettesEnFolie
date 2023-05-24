@@ -31,6 +31,12 @@
                                 <div class="col-12">
                                     {{ form_row(form.message) }}
                                 </div>
+                                <div class="col-12">
+                                    {{ form_row(form.agreeTerms, {
+                                        label: 'J\'accepte la collecte de mes données personnelles tel que décrit dans la <a href="' ~ path('rgpd') ~ '">Politique de confidentialité</a>',
+                                        label_html: true
+                                    }) }}
+                                </div>
                                 <div class="col-12 text-center">
                                     <button class="btn delicious-btn mt-30" type="submit">Envoyer</button>
                                 </div>

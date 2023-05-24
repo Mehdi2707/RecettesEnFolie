@@ -82,4 +82,12 @@ class HomeController extends AbstractController
         $this->addFlash('success', 'Vous êtes bien désinscrit à notre newsletter');
         return $this->redirectToRoute('app_home');
     }
+
+    #[Route('/politique-de-confidentialite', name: 'rgpd')]
+    public function rgpd(): Response
+    {
+        return $this->render('home/rgpd.html.twig', [
+
+        ]);
+    }
 }
