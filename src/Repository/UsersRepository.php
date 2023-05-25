@@ -53,6 +53,14 @@ class UsersRepository extends ServiceEntityRepository implements PasswordUpgrade
         $this->save($user, true);
     }
 
+    public function findInactiveUsers()
+    {
+        $qb = $this->createQueryBuilder('u')
+            ->where('u.is_active = false');
+
+        return $qb->getQuery()->getResult();
+    }
+
 //    /**
 //     * @return Users[] Returns an array of Users objects
 //     */
