@@ -20,6 +20,9 @@ class HomeController extends AbstractController
     #[Route('/', name: 'app_home')]
     public function index(RecipesRepository $recipesRepository, Request $request, EntityManagerInterface $entityManager, SendMailService $mailService): Response
     {
+        if($request->query->has('status') && $request->query->has('message'))
+            $this->addFlash($request->query->get('status'), $request->query->get('message'));
+
         $recipes = $recipesRepository->findBy([], ['createdAt' => 'desc']);
 
         $userN = new UsersN();

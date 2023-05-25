@@ -65,6 +65,12 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Notes::class, orphanRemoval: true)]
     private Collection $notes;
 
+    #[ORM\Column]
+    private ?bool $is_active = true;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $disabled_at = null;
+
     public function __construct()
     {
         $this->recipes = new ArrayCollection();
@@ -297,6 +303,30 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
                 $note->setUser(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getIsActive(): ?bool
+    {
+        return $this->is_active;
+    }
+
+    public function setIsActive(bool $is_active): self
+    {
+        $this->is_active = $is_active;
+
+        return $this;
+    }
+
+    public function getDisabledAt(): ?\DateTimeImmutable
+    {
+        return $this->disabled_at;
+    }
+
+    public function setDisabledAt(?\DateTimeImmutable $disabled_at): self
+    {
+        $this->disabled_at = $disabled_at;
 
         return $this;
     }

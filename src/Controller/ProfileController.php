@@ -13,16 +13,22 @@ use Doctrine\DBAL\Exception;
 use Doctrine\ORM\EntityManagerInterface;
 use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\PasswordHasher\PasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Csrf\TokenStorage\TokenStorageInterface;
+use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Symfony\Component\Security\Http\Logout\LogoutUrlGenerator;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
 #[Route('/profil', name: 'profile_')]
 class ProfileController extends AbstractController
 {
     #[Route('/', name: 'index')]
-    public function index(Request $request, EntityManagerInterface $entityManager, FavoritesRepository $favoritesRepository): Response
+    public function index(Request $request, EntityManagerInterface $entityManager, FavoritesRepository $favoritesRepository, UserPasswordHasherInterface $passwordHasher, Security $security): Response
     {
         $user = $this->getUser();
         $recipes = $entityManager->getRepository(Recipes::class)->findBy(['user' => $user]);
@@ -41,6 +47,28 @@ class ProfileController extends AbstractController
 
             $this->addFlash('success', 'Enregistré');
             return $this->redirectToRoute('profile_index');
+        }
+
+        if($request->request->get('confirm_delete'))
+        {
+            $validPassword = $passwordHasher->isPasswordValid($user, $request->request->get('confirm_delete'));
+
+            if($validPassword)
+            {
+                $user->setIsActive(false);
+                $user->setDisabledAt(new \DateTimeImmutable());
+
+                $entityManager->persist($user);
+                $entityManager->flush();
+
+                $security->logout(false);
+                $this->addFlash('warning', 'Votre compte à bien été désactivé');
+                return $this->redirectToRoute('app_home');
+            }
+            else
+            {
+                $this->addFlash('warning', 'Mot de passe incorrect');
+            }
         }
 
         return $this->render('profile/index.html.twig', [

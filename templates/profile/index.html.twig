@@ -82,5 +82,43 @@
                 <a class="my-3 btn btn-4 btn-success" href="{{ path('profile_recipe_add') }}">Publier une nouvelle recette</a>
             </div>
         </div>
+        <div class="row">
+            <div class="col mb-3">
+
+                <!-- Button trigger modal -->
+                <button type="button" class="btn btn-danger" id="deleteUser" data-toggle="modal" data-target="#modal">
+                    Supprimer mon compte
+                </button>
+
+                <!-- Modal -->
+                <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="modalTitle">Supprimer mon compte</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <form method="post">
+                                <div class="modal-body">
+                                    <div class="form-group">
+                                        <span>Après confirmation, votre compte sera désactivé et vous serez automatiquement déconnecté. Nous conserverons vos informations pour une durée maximale de 24 mois, au delà de laquelle elles seront irréversiblement effacées.</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="confirmation-mot-de-passe" class="col-form-label">Mot de passe :</label>
+                                        <input name="confirm_delete" type="password" class="form-control" id="confirmation-mot-de-passe" />
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                                    <button type="submit" class="btn btn-danger">Confirmer</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </section>
 {% endblock %}
