@@ -44,7 +44,7 @@
             </li>
         {% endfor %}
     </ul>
-    <a href="#" class="btn btn-sm btn-success {% if app.request.attributes.get('_route') == 'profile_recipe_edit' %}edit-page{% endif %}" id="add-ingredient" data-url="{{ path('admin_recipes_ingredients_search') }}">Ajouter un ingrédient</a>
+    <a href="#" class="btn btn-sm btn-success {% if app.request.attributes.get('_route') == 'profile_recipe_edit' %}edit-page{% endif %}" id="add-ingredient" data-url="{{ path('recipes_ingredients_search') }}">Ajouter un ingrédient</a>
 </div>
 
 <div class="my-3 form-group">

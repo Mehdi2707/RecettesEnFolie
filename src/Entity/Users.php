@@ -53,10 +53,10 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 180, nullable: true)]
     private ?string $resetToken = null;
 
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Recipes::class)]
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Recipes::class, orphanRemoval: true)]
     private Collection $recipes;
 
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Comments::class)]
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Comments::class, orphanRemoval: true)]
     private Collection $comments;
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Favorites::class, orphanRemoval: true)]

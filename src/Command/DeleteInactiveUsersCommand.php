@@ -3,7 +3,6 @@
 namespace App\Command;
 
 use App\Entity\Users;
-use App\Service\SendMailService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -12,7 +11,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand(
     name: 'app:delete-inactive-users',
-    description: 'Add a short description for your command',
+    description: 'Delete inactive users disabled for two years.',
 )]
 class DeleteInactiveUsersCommand extends Command
 {
@@ -31,7 +30,7 @@ class DeleteInactiveUsersCommand extends Command
     {
         $this
             ->setName('app:delete-inactive-users')
-            ->setDescription('Delete inactive users who have been disabled for two years.')
+            ->setDescription('Supprimer les utilisateurs inactifs qui ont été désactivés pendant deux ans.')
             ->setHelp('This command deletes users who have been disabled for two years and have not reactivated their accounts.')
         ;
     }
@@ -41,11 +40,11 @@ class DeleteInactiveUsersCommand extends Command
         // Date actuelle
         $currentDate = new \DateTimeImmutable();
 
-        // Récupérer les utilisateurs désactivés depuis deux ans ou plus
+        // Récupérer les utilisateurs désactivés
         $userRepository = $this->entityManager->getRepository(Users::class);
         $usersToDelete = $userRepository->findInactiveUsers();
 
-        // Supprimer les utilisateurs et leurs données associées
+        // Supprimer les utilisateurs et leurs données associées désactivés depuis deux ans ou plus
         foreach ($usersToDelete as $user)
         {
             $limitDate = $user->getDisabledAt()->modify('+2 years');

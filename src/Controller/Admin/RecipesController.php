@@ -214,32 +214,4 @@ class RecipesController extends AbstractController
 
         return new JsonResponse(['error' => 'Token invalide'], 400);
     }
-
-    #[Route('/ingredients/recherche', name: 'ingredients_search')]
-    public function ingredientsSearch(Request $request, EntityManagerInterface $entityManager): JsonResponse
-    {
-        $searchTerm = $request->query->get('search');
-
-        // Effectuer la recherche des ingrédients dans l'entité Ingredient
-        $ingredients = $entityManager->getRepository(Ingredients::class)->findBySearchTerm($searchTerm);
-
-        $uniqueIngredients = [];
-        $uniqueNames = [];
-
-        foreach ($ingredients as $ingredient) {
-            $ingredientId = $ingredient->getId();
-            $ingredientName = $ingredient->getName();
-
-            if (!in_array($ingredientName, $uniqueNames)) {
-                $uniqueIngredients[] = [
-                    'id' => $ingredientId,
-                    'name' => $ingredientName
-                ];
-
-                $uniqueNames[] = $ingredientName;
-            }
-        }
-
-        return new JsonResponse(['ingredients' => $uniqueIngredients]);
-    }
 }
