@@ -43,7 +43,7 @@
                     </div>
 
                     <div class="col-12 col-md-4">
-                        <div class="receipe-ratings text-right my-5">
+                        <div class="receipe-ratings text-center my-5">
                             <div class="ratings">
                                 {% apply spaceless %}
                                     {% if noteGeneral == 0 %}
@@ -58,24 +58,39 @@
                                     {% endif %}
                                 {% endapply %}
                             </div>
-                            <span class="text-center delicious-btn">{{ recipe.difficultyLevel.name }}</span>
-                        </div>
-                        Créé par&nbsp;<a href="{{ path('profile_user', {user: recipe.user.username}) }}" class="badge badge-light" style="font-size: 15px;">@{{ recipe.user.username }}</a>
-                        {% if app.user %}
-                            {% if favorite is empty %}
-                                <div class="m-2">
-                                    <button class="btn" id="favorite" data-status="false" data-request="{{ path('recipes_favorites_add', {slug: recipe.slug}) }}"><i class="text-success fa fa-bookmark" aria-hidden="true"></i>&nbsp;&nbsp;Ajouter aux favoris</button>
-                                </div>
-                            {% else %}
-                                <div class="m-2">
-                                    <button class="btn" id="favorite" data-status="true" data-request="{{ path('recipes_favorites_delete', {slug: recipe.slug}) }}"><i class="text-warning fa fa-bookmark" aria-hidden="true"></i>&nbsp;&nbsp;Enlever des favoris</button>
-                                </div>
+                            {% if app.user %}
+                                {% if favorite is empty %}
+                                    <div class="mb-4">
+                                        <button class="btn" id="favorite" data-status="false" data-request="{{ path('recipes_favorites_add', {slug: recipe.slug}) }}"><i class="text-success fa fa-bookmark" aria-hidden="true"></i>&nbsp;&nbsp;Ajouter aux favoris</button>
+                                    </div>
+                                {% else %}
+                                    <div class="mb-4">
+                                        <button class="btn" id="favorite" data-status="true" data-request="{{ path('recipes_favorites_delete', {slug: recipe.slug}) }}"><i class="text-warning fa fa-bookmark" aria-hidden="true"></i>&nbsp;&nbsp;Enlever des favoris</button>
+                                    </div>
+                                {% endif %}
                             {% endif %}
-                        {% endif %}
+                            <div class="mb-5">
+                                <span class="delicious-btn">{{ recipe.difficultyLevel.name }}</span>
+                            </div>
+                            <div>
+                                Créé par&nbsp;<a href="{{ path('profile_user', {user: recipe.user.username}) }}" class="badge badge-light" style="font-size: 15px;">@{{ recipe.user.username }}</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
                 <div class="row">
+                    <!-- Ingredients -->
+                    <div class="col-12 col-lg-4">
+                        <div class="ingredients">
+                            <h4>Ingrédients</h4>
+                            {% for ingredient in recipe.ingredients %}
+                                <div style="font-size: 18px;">
+                                    <span class="font-weight-bold">{{ ingredient.quantity|number_format(2, '.', '')|trim('0')|trim('.')|replace({'.': ','}) }} {{ ingredient.unit.name }} {{ ingredient.name }}</span>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
                     <div class="col-12 col-lg-8">
                         <!-- Single Preparation Step -->
                         {% set counter = 1 %}
@@ -88,18 +103,6 @@
                             </div>
                             {% set counter = counter + 1 %}
                         {% endfor %}
-                    </div>
-
-                    <!-- Ingredients -->
-                    <div class="col-12 col-lg-4">
-                        <div class="ingredients">
-                            <h4>Ingrédients</h4>
-                            {% for ingredient in recipe.ingredients %}
-                                <div style="font-size: 18px;">
-                                    <span class="font-weight-bold">{{ ingredient.quantity|number_format(2)|trim('.0')|replace({'.': ','}) }} {{ ingredient.unit.name }} {{ ingredient.name }}</span>
-                                </div>
-                            {% endfor %}
-                        </div>
                     </div>
                 </div>
 

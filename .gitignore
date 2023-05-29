@@ -9,7 +9,6 @@
 /public/assets/uploads/
 /var/
 /vendor/
-/cron.php
 ###< symfony/framework-bundle ###
 
 ###> phpunit/phpunit ###
