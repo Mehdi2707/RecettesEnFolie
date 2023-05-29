@@ -98,7 +98,7 @@
                             <div class="single-preparation-step d-flex">
                                 <h4>0{{ counter }}.</h4>
                                 <div style="font-size: 16px;">
-                                    {{ step.description }}
+                                    {{ step.description|nl2br }}
                                 </div>
                             </div>
                             {% set counter = counter + 1 %}
