@@ -10,7 +10,7 @@ $(document).ready(function() {
 // Ajouter une étape
 $addStepButton.click(function(e) {
     e.preventDefault();
-    var prototype = $stepsList.data('prototype'); console.log(prototype);
+    var prototype = $stepsList.data('prototype');
     var index = $stepsList.children('li').length;
     var newForm = prototype.replace(/__name__/g, index);
     var $newItem = $('<li class="col-12 my-2">' + newForm + '</li>');

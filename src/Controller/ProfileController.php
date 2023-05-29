@@ -14,6 +14,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -260,5 +261,27 @@ class ProfileController extends AbstractController
             'recipe' => $recipes,
             'recipeForm' => $form->createView()
         ]);
+    }
+
+    #[Route('/suppression/image/{id}', name: 'recipe_delete_image', methods: ['DELETE'])]
+    public function deleteImage(Images $images, Request $request, EntityManagerInterface $entityManager, PictureService $pictureService): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+
+        if($this->isCsrfTokenValid('delete' . $images->getId(), $data['_token']))
+        {
+            $name = $images->getName();
+
+            if($pictureService->delete($name, 'recipes', 300, 300))
+            {
+                $entityManager->remove($images);
+                $entityManager->flush();
+
+                return new JsonResponse(['success' => true], 200);
+            }
+            return new JsonResponse(['error' => 'Ereur de suppression'], 400);
+        }
+
+        return new JsonResponse(['error' => 'Token invalide'], 400);
     }
 }

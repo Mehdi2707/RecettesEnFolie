@@ -1,6 +1,7 @@
 {% block javascripts %}
     <script src="{{ asset('assets/js/ingredients.js') }}" defer></script>
     <script src="{{ asset('assets/js/steps.js') }}" defer></script>
+    <script src="{{ asset('assets/js/images.js') }}" defer></script>
 {% endblock %}
 
 {{ form_start(recipeForm) }}
@@ -18,7 +19,7 @@
         {% for image in recipe.images %}
             <div class="mb-3">
                 <img src="{{ asset('assets/uploads/recipes/mini/300x300-' ~ image.name) }}" alt="{{ recipe.title }}" width="150">
-                <a href="{{ path('admin_recipes_delete_image', {id: image.id}) }}" data-delete data-token="{{ csrf_token('delete' ~ image.id) }}">Supprimer</a>
+                <a href="{{ path('profile_recipe_delete_image', {id: image.id}) }}" data-delete data-token="{{ csrf_token('delete' ~ image.id) }}">Supprimer</a>
             </div>
         {% endfor %}
     {% endif %}
