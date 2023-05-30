@@ -95,11 +95,12 @@
         {% block body %}{% endblock %}
 
         {% include "_partials/_footer.html.twig" %}
-
+        
         <script type="text/javascript">
-            tarteaucitron.user.gajsUa = 'G-7RFQDD4QKZ';
-            tarteaucitron.user.gajsMore = function () { /* add here your optionnal _ga.push() */ };
-            (tarteaucitron.job = tarteaucitron.job || []).push('gajs');
+            tarteaucitron.user.gtagUa = 'G-7RFQDD4QKZ';
+            // tarteaucitron.user.gtagCrossdomain = ['example.com', 'example2.com'];
+            tarteaucitron.user.gtagMore = function () { /* add here your optionnal gtag() */ };
+            (tarteaucitron.job = tarteaucitron.job || []).push('gtag');
         </script>
     </body>
 </html>
