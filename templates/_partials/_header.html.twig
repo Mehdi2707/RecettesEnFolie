@@ -25,12 +25,12 @@
 <header class="header-area">
 
     <!-- Top Header Area -->
-    <div class="top-header-area">
+    <div class="top-header-area h-100">
         <div class="container h-100">
             <div class="row h-100 align-items-center justify-content-between">
                 <!-- Breaking News -->
                 <div class="col-12 col-sm-6">
-                    <div class="breaking-news">
+                    <div class="breaking-news m-2">
                         <div id="breakingNewsTicker" class="ticker">
                             <ul>
                                 <li><a href="#">Trouve-moi une recette !</a></li>
@@ -42,25 +42,25 @@
                 </div>
 
                 <!-- Top Social Info -->
-                <div class="col-12 col-sm-6">
-                    <div class="top-social-info text-right">
-                        {% if app.user %}
-                            {% if is_granted('ROLE_RECIPE_ADMIN') %}
-                                <a class="nav-link" href="{{ path('admin_index') }}">Administration</a>
-                            {% endif %}
-                            <a href="{{ path('profile_index') }}">Mon compte</a>
-                            <a href="{{ path('app_logout') }}">Se déconnecter</a>
-                        {% else %}
-                            <a href="{{ path('app_login') }}">Connexion</a>
-                            <a href="{{ path('app_register') }}">Inscription</a>
+                <div class="col-12 col-sm-6 my-3 top-social-info">
+                    <a href="#"><i class="fa fa-pinterest" aria-hidden="true"></i></a>
+                    <a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a>
+                    <a href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+                    <a href="#"><i class="fa fa-dribbble" aria-hidden="true"></i></a>
+                    <a href="#"><i class="fa fa-behance" aria-hidden="true"></i></a>
+                    <a href="#"><i class="fa fa-linkedin" aria-hidden="true"></i></a>
+                </div>
+                <div class="col-12 mb-2 text-right p-2">
+                    {% if app.user %}
+                        {% if is_granted('ROLE_RECIPE_ADMIN') %}
+                            <a class="p-2" style="border-bottom: 3px solid #1c8314;" href="{{ path('admin_index') }}">Administration</a>
                         {% endif %}
-                        <a href="#"><i class="fa fa-pinterest" aria-hidden="true"></i></a>
-                        <a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a>
-                        <a href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a>
-                        <a href="#"><i class="fa fa-dribbble" aria-hidden="true"></i></a>
-                        <a href="#"><i class="fa fa-behance" aria-hidden="true"></i></a>
-                        <a href="#"><i class="fa fa-linkedin" aria-hidden="true"></i></a>
-                    </div>
+                        <a class="p-2" style="color: #ffffff; background-color: #40ba37; border-bottom: 3px solid #1c8314;" href="{{ path('profile_index') }}">Mon compte</a>
+                        <a class="p-2" style="border-bottom: 3px solid #1c8314;" href="{{ path('app_logout') }}">Se déconnecter</a>
+                    {% else %}
+                        <a class="p-2" style="border-bottom: 3px solid #1c8314;" href="{{ path('app_login') }}">Connexion</a>
+                        <a class="p-2" style="color: #ffffff; background-color: #40ba37; border-bottom: 3px solid #1c8314;" href="{{ path('app_register') }}">Inscription</a>
+                    {% endif %}
                 </div>
             </div>
         </div>

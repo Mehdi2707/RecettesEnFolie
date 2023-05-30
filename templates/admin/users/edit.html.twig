@@ -6,6 +6,7 @@
     <section class="container">
         <div class="row">
             <div class="col">
+                {% include "_partials/_adminnav.html.twig" %}
                 <h1>Modifier un utilisateur</h1>
                 {{ form_start(form) }}
                     {{ form_row(form.username) }}

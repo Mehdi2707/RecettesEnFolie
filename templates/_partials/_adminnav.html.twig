@@ -1,57 +1,59 @@
-<aside class="col-3 border border-light bg-white p-2">
-    <article class="card mb-3">
-        <div class="card-header">
-            Recettes
-        </div>
-        <div class="card-body">
-            <p><a href="{{ path('admin_recipes_index') }}">Liste des recettes</a></p>
-            <p><a href="{{ path('admin_recipes_add') }}">Ajouter une recette</a></p>
-        </div>
-    </article>
-    <article class="card mb-3">
-        <div class="card-header">
-            Difficultés
-        </div>
-        <div class="card-body">
-            <p><a href="{{ path('admin_difficulty_index') }}">Liste des difficultés</a></p>
-            <p><a href="{{ path('admin_difficulty_add') }}">Ajouter une difficulté</a></p>
-        </div>
-    </article>
-    <article class="card mb-3">
-        <div class="card-header">
-            Unités (ingrédients)
-        </div>
-        <div class="card-body">
-            <p><a href="{{ path('admin_units_index') }}">Liste des unités</a></p>
-            <p><a href="{{ path('admin_units_add') }}">Ajouter une unité</a></p>
-        </div>
-    </article>
-    {% if is_granted('ROLE_ADMIN') %}
-        <article class="card mb-3">
-            <div class="card-header">
-                Utilisateurs
-            </div>
-            <div class="card-body">
-                <p><a href="{{ path('admin_users_index') }}">Liste des utilisateurs</a></p>
-            </div>
-        </article>
-        <article class="card mb-3">
-            <div class="card-header">
-                Demandes
-            </div>
-            <div class="card-body">
-                <p><a href="{{ path('admin_contact_index') }}">Liste des demandes</a></p>
-                <p><a href="{{ path('admin_contact_done') }}">Liste des demandes terminés</a></p>
-            </div>
-        </article>
-    {% endif %}
-    <article class="card mb-3">
-        <div class="card-header">
-            Newsletter
-        </div>
-        <div class="card-body">
-            <p><a href="{{ path('admin_newsletter_list') }}">Liste des newsletters</a></p>
-            <p><a href="{{ path('admin_newsletter') }}">Écrire une newsletter</a></p>
-        </div>
-    </article>
-</aside>
+<nav class="navbar navbar-expand-lg navbar-light bg-light w-100 mb-2">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerAdmin" aria-controls="navbarTogglerAdmin" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <a class="active p-2" href="{{ path('admin_index') }}">Administration</a>
+
+    <div class="collapse navbar-collapse" id="navbarTogglerAdmin">
+        <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+            <li class="dropdown p-2">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuRecipes" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Recettes
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuRecipes">
+                    <a class="dropdown-item" href="{{ path('admin_recipes_index') }}">Liste des recettes</a>
+                    <a class="dropdown-item" href="{{ path('admin_recipes_add') }}">Ajouter une recette</a>
+                </div>
+            </li>
+            <li class="dropdown p-2">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuDifficult" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Difficultés
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuDifficult">
+                    <a class="dropdown-item" href="{{ path('admin_difficulty_index') }}">Liste des difficultés</a>
+                    <a class="dropdown-item" href="{{ path('admin_difficulty_add') }}">Ajouter une difficulté</a>
+                </div>
+            </li>
+            <li class="dropdown p-2">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuUnit" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Unités (ingrédients)
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuUnit">
+                    <a class="dropdown-item" href="{{ path('admin_units_index') }}">Liste des unités</a>
+                    <a class="dropdown-item" href="{{ path('admin_units_add') }}">Ajouter une unité</a>
+                </div>
+            </li>
+            <li class="nav-item p-2">
+                <a class="nav-link" href="{{ path('admin_users_index') }}">Liste des utilisateurs</a>
+            </li>
+            <li class="dropdown p-2">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuContact" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Demandes
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuContact">
+                    <a class="dropdown-item" href="{{ path('admin_contact_index') }}">Liste des demandes</a>
+                    <a class="dropdown-item" href="{{ path('admin_contact_done') }}">Liste des demandes terminés</a>
+                </div>
+            </li>
+            <li class="dropdown p-2">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuNewsletter" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Newsletter
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuNewsletter">
+                    <a class="dropdown-item" href="{{ path('admin_newsletter_list') }}">Liste des newsletters</a>
+                    <a class="dropdown-item" href="{{ path('admin_newsletter') }}">Écrire une newsletter</a>
+                </div>
+            </li>
+        </ul>
+    </div>
+</nav>
