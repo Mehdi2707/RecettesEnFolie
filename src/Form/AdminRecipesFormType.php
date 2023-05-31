@@ -2,9 +2,11 @@
 
 namespace App\Form;
 
+use App\Entity\Categories;
 use App\Entity\DifficultyLevel;
 use App\Entity\Recipes;
 use App\Entity\Users;
+use App\Repository\CategoriesRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
@@ -65,6 +67,21 @@ class AdminRecipesFormType extends AbstractType
                     'class' => 'mb-3'
                 ]
             ])
+            ->add('categories', EntityType::class, [
+                'class' => Categories::class,
+                'choice_label' => 'name',
+                'label' => 'Catégorie',
+                'attr' => [
+                    'class' => 'mb-3'
+                ],
+                'group_by' =>'parent.name',
+                'query_builder' => function(CategoriesRepository $categoriesRepository)
+                {
+                    return $categoriesRepository->createQueryBuilder('c')
+                        ->where('c.parent IS NOT NULL')
+                        ->orderBy('c.name', 'ASC');
+                }
+            ])
             ->add('images', FileType::class, [
                 'label' => false,
                 'multiple' => true,
@@ -76,7 +93,7 @@ class AdminRecipesFormType extends AbstractType
                 'constraints' => [
                     new All(
                         new Image([
-                            'maxWidth' => 1280,
+                            'maxWidth' => 6000,
                             'maxWidthMessage' => 'L\'image doit faire {{ max_width }} pixels de large au maximum'
                         ])
                     )

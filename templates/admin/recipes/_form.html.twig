@@ -10,6 +10,7 @@
     {{ form_row(recipeForm.cookingTime) }}
     {{ form_row(recipeForm.numberOfServings) }}
     {{ form_row(recipeForm.difficultyLevel) }}
+    {{ form_row(recipeForm.categories) }}
     {{ form_row(recipeForm.user) }}
 
     {% if app.request.attributes.get('_route') == 'admin_recipes_edit' %}

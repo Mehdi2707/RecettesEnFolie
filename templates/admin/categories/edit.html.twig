@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier une catégorie (Administration){% endblock %}
+
+{% block body %}
+    <section class="container">
+        <div class="row">
+            <div class="col">
+                {% include "_partials/_adminnav.html.twig" %}
+                <h1>Modifier une catégorie</h1>
+                {% include "admin/categories/_form.html.twig" with {'button_label': 'Modifier'} %}
+            </div>
+        </div>
+    </section>
+{% endblock %}

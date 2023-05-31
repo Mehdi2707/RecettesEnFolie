@@ -71,6 +71,10 @@ class Recipes
     #[ORM\JoinColumn(nullable: false)]
     private ?DifficultyLevel $difficultyLevel = null;
 
+    #[ORM\ManyToOne(inversedBy: 'recipes')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Categories $categories = null;
+
     public function __construct()
     {
         $this->steps = new ArrayCollection();
@@ -354,6 +358,18 @@ class Recipes
     public function setDifficultyLevel(?DifficultyLevel $difficultyLevel): self
     {
         $this->difficultyLevel = $difficultyLevel;
+
+        return $this;
+    }
+
+    public function getCategories(): ?Categories
+    {
+        return $this->categories;
+    }
+
+    public function setCategories(?Categories $categories): self
+    {
+        $this->categories = $categories;
 
         return $this;
     }

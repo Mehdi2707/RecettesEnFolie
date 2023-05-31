@@ -9,7 +9,16 @@
 {% endblock %}
 
 {% block body %}
-    <div class="receipe-post-area section-padding-80">
+    <nav class="navbar navbar-light bg-light" style="justify-content: center!important;">
+        <a class="nav-link" style="text-transform: capitalize;" href="">
+            {{ recipe.categories.parent.name }}
+        </a>
+        <span>/</span>
+        <a class="nav-link" style="text-transform: capitalize;" href="">
+            {{ recipe.categories.name }}
+        </a>
+    </nav>
+    <div class="receipe-post-area pt-3">
 
         <!-- Receipe Slider -->
         <div class="container">
@@ -17,7 +26,7 @@
                 <div class="col-12">
                     <div class="receipe-slider owl-carousel">
                         {% for image in recipe.images %}
-                            <img class="m-auto {{ (loop.index0 == 0) ? 'active' : '' }}" src="{{ asset('assets/uploads/recipes/') ~ image.name }}" style="width:500px;" alt="{{ recipe.title }}">
+                            <img class="m-auto {{ (loop.index0 == 0) ? 'active' : '' }}" src="{{ asset('assets/uploads/recipes/') ~ image.name }}" style="width:600px;" alt="{{ recipe.title }}">
                         {% endfor %}
                     </div>
                 </div>
