@@ -13,7 +13,8 @@
         <div class="row">
             <div class="col-12">
                 <form action="{{ path('recipes_search_recipes') }}" method="get">
-                    <input id="search" type="search" name="search" placeholder="Rechercher une recette...">
+                    <label for="search" style="display: none;"></label>
+                    <input id="search" type="search" name="search" placeholder="Rechercher une recette..." />
                     <button type="submit"><i class="fa fa-search" aria-hidden="true"></i></button>
                 </form>
             </div>
@@ -74,7 +75,7 @@
                 <nav class="classy-navbar justify-content-between" id="deliciousNav">
 
                     <!-- Logo -->
-                    <a class="nav-brand" href="{{ path('app_home') }}"><img width="305" src="{{ asset('assets/img/core-img/logo.png') }}" alt="logo recettes en folie"></a>
+                    <a class="nav-brand" href="{{ path('app_home') }}"><img width="330" src="{{ asset('assets/img/core-img/logo.png') }}" alt="logo recettes en folie"></a>
 
                     <!-- Navbar Toggler -->
                     <div class="classy-navbar-toggler">

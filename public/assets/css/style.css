@@ -526,7 +526,7 @@ textarea:focus {
           margin-top: 30px; } }
   @media only screen and (max-width: 767px) {
     .header-area .nav-brand img {
-      max-width: 90px; } }
+      max-width: 180px; } }
 
 /* :: 6.0 Welcome Area CSS */
 .hero-area {
