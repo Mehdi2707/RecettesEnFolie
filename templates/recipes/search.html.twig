@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Recherche de '{{ search }}'{% endblock %}
+{% block title %}Recettes de '{{ search }}'{% endblock %}
 
 {% block body %}
     <section>
@@ -30,7 +30,7 @@
                             {% set moyenne = (totalNote / nbNote)|round %}
                         {% endif %}
                         <div class="col-12 col-sm-6 col-lg-4">
-                            <a href="{{ path('recipes_details', {slug: recipe.slug}) }}">
+                            <a href="{{ path('recipes_details', {slug: recipe.slug, category: recipe.categories.parent.slug, sCategory: recipe.categories.slug}) }}">
                                 <div class="single-best-receipe-area mb-30">
                                     <img style="width: 100%;" src="{% if recipe.images[0] is defined %}{{ asset('assets/uploads/recipes/' ~ recipe.images[0].name) }}{% else %}{{ asset('assets/img/bg-img/sr1.jpg') }}{% endif %}" alt="{{ recipe.title }}">
                                     <div class="receipe-content">

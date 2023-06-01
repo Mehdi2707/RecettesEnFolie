@@ -14,6 +14,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 #[Route('/admin/categorie', name: 'admin_categories_')]
 class CategoriesController extends AbstractController
@@ -29,7 +30,7 @@ class CategoriesController extends AbstractController
     }
 
     #[Route('/ajout', name: 'add')]
-    public function add(Request $request, EntityManagerInterface $entityManager): Response
+    public function add(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
     {
         $this->denyAccessUnlessGranted('ROLE_RECIPE_ADMIN');
 
@@ -41,6 +42,9 @@ class CategoriesController extends AbstractController
 
         if($form->isSubmitted() && $form->isValid())
         {
+            $slug = $slugger->slug($category->getName())->lower();
+            $category->setSlug($slug);
+
             $entityManager->persist($category);
             $entityManager->flush();
 
@@ -54,7 +58,7 @@ class CategoriesController extends AbstractController
     }
 
     #[Route('/edition/{id}', name: 'edit')]
-    public function edit(Categories $categories, Request $request, EntityManagerInterface $entityManager): Response
+    public function edit(Categories $categories, Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
     {
         $this->denyAccessUnlessGranted('CATEGORY_EDIT', $categories);
 
@@ -64,6 +68,9 @@ class CategoriesController extends AbstractController
 
         if($form->isSubmitted() && $form->isValid())
         {
+            $slug = $slugger->slug($categories->getName())->lower();
+            $categories->setSlug($slug);
+
             $entityManager->persist($categories);
             $entityManager->flush();
 

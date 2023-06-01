@@ -18,17 +18,33 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route('/recettes', name: 'recipes_')]
+#[Route('/', name: 'recipes_')]
 class RecipesController extends AbstractController
 {
-    #[Route('/', name: 'index')]
+    #[Route('/recettes', name: 'index')]
     public function index(): Response
     {
         return $this->render('recipes/index.html.twig', [
         ]);
     }
 
-    #[Route('/recette/{slug}', name: 'details')]
+    #[Route('/recettes/{category}', name: 'category')]
+    public function category($category): Response
+    {
+        return $this->render('recipes/category.html.twig', [
+            'category' => $category
+        ]);
+    }
+
+    #[Route('/recettes/{category}/{sCategory}', name: 'sousCategory')]
+    public function sousCategory($category, $sCategory): Response
+    {
+        return $this->render('recipes/sousCategory.html.twig', [
+            'sCategory' => $sCategory
+        ]);
+    }
+
+    #[Route('/recettes/{category}/{sCategory}/{slug}', name: 'details')]
     public function details($slug, RecipesRepository $recipesRepository, NotesRepository $notesRepository, Request $request, EntityManagerInterface $entityManager, FavoritesRepository $favoritesRepository): Response
     {
         $recipes = $recipesRepository->findOneBy(['slug' => $slug]);

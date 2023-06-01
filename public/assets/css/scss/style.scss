@@ -386,10 +386,10 @@ textarea:focus {
     display: inline-block;
     min-width: 160px;
     height: 60px;
-    color: $white-color;
+    color: #000000;
     border: none;
     border-left: 3px solid $border-color;
-    border-radius: 0;
+    border-radius: 0.25rem;
     padding: 0 30px;
     font-size: 16px;
     line-height: 58px;

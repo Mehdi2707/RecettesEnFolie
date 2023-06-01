@@ -75,7 +75,7 @@
                             {% for category in categories %}
                                 {% if category.parent is null %}
                                     <li>
-                                        <a class="linkHeader" href="#">{{ category.name }}</a>
+                                        <a class="linkHeader" href="{{ path('recipes_category', {category: category.slug}) }}">{{ category.name }}</a>
                                         {% set childCategories = [] %}
                                         {% for childCategory in categories %}
                                             {% if childCategory.parent == category %}
@@ -85,7 +85,7 @@
                                         {% if childCategories is not empty %}
                                             <ul class="dropdown">
                                                 {% for childCategory in childCategories %}
-                                                    <li><a class="nav-link" style="text-transform: capitalize" href="#">{{ childCategory.name }}</a></li>
+                                                    <li><a class="nav-link" style="text-transform: capitalize" href="{{ path('recipes_sousCategory', {category: category.slug, sCategory: childCategory.slug}) }}">{{ childCategory.name }}</a></li>
                                                 {% endfor %}
                                             </ul>
                                         {% endif %}

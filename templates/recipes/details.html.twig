@@ -200,30 +200,30 @@
                         </div>
                         {% if app.user %}
                             <div class="receipe-ratings">
-                                    {% apply spaceless %}
-                                        {% if note == null %}
-                                            <div class="ratings stars">
-                                                <i class="fa fa-star-o stars-form" aria-hidden="true" data-value="1"></i>
-                                                <i class="fa fa-star-o stars-form" aria-hidden="true" data-value="2"></i>
-                                                <i class="fa fa-star-o stars-form" aria-hidden="true" data-value="3"></i>
-                                                <i class="fa fa-star-o stars-form" aria-hidden="true" data-value="4"></i>
-                                                <i class="fa fa-star-o stars-form" aria-hidden="true" data-value="5"></i>
-                                            </div>
-                                            <input data-request="{{ path('recipes_stars_request', {slug: recipe.slug}) }}" type="hidden" name="note" id="note" value="0">
-                                        {% else %}
-                                            <div class="ratings stars">
-                                                {% for i in 1..note.value %}
-                                                    <i class="fa fa-star stars-form" aria-hidden="true" data-value="{{ i }}"></i>
+                                {% apply spaceless %}
+                                    {% if note == null %}
+                                        <div class="ratings stars">
+                                            <i class="fa fa-star-o stars-form" aria-hidden="true" data-value="1"></i>
+                                            <i class="fa fa-star-o stars-form" aria-hidden="true" data-value="2"></i>
+                                            <i class="fa fa-star-o stars-form" aria-hidden="true" data-value="3"></i>
+                                            <i class="fa fa-star-o stars-form" aria-hidden="true" data-value="4"></i>
+                                            <i class="fa fa-star-o stars-form" aria-hidden="true" data-value="5"></i>
+                                        </div>
+                                        <input data-request="{{ path('recipes_stars_request', {slug: recipe.slug}) }}" type="hidden" name="note" id="note" value="0">
+                                    {% else %}
+                                        <div class="ratings stars">
+                                            {% for i in 1..note.value %}
+                                                <i class="fa fa-star stars-form" aria-hidden="true" data-value="{{ i }}"></i>
+                                            {% endfor %}
+                                            {% if note.value < 5 %}
+                                                {% for i in 1..(5 - note.value) %}
+                                                    <i class="fa fa-star-o stars-form" aria-hidden="true" data-value="{{ note.value + i }}"></i>
                                                 {% endfor %}
-                                                {% if note.value < 5 %}
-                                                    {% for i in 1..(5 - note.value) %}
-                                                        <i class="fa fa-star-o stars-form" aria-hidden="true" data-value="{{ note.value + i }}"></i>
-                                                    {% endfor %}
-                                                {% endif %}
-                                            </div>
-                                            <input data-request="{{ path('recipes_stars_request', {slug: recipe.slug}) }}" type="hidden" name="note" id="note" value="{{ note.value }}">
-                                        {% endif %}
-                                    {% endapply %}
+                                            {% endif %}
+                                        </div>
+                                        <input data-request="{{ path('recipes_stars_request', {slug: recipe.slug}) }}" type="hidden" name="note" id="note" value="{{ note.value }}">
+                                    {% endif %}
+                                {% endapply %}
                             </div>
                         {% endif %}
                     </div>
@@ -232,7 +232,7 @@
                 <div class="row">
                     <div class="col-12">
                         {% if app.user %}
-                            <div class="contact-form-area">
+                            <div class="contact-form-area mb-3">
                                 {{ form_start(form) }}
                                     <div class="col-12">
                                         {{ form_row(form.content) }}
