@@ -4,63 +4,41 @@
     <img src="{{ asset('assets/img/core-img/salad.png') }}" alt="recette facile">
 </div>
 
-<!-- Search Wrapper -->
-<div class="search-wrapper">
-    <!-- Close Btn -->
-    <div class="close-btn"><i class="fa fa-times" aria-hidden="true"></i></div>
-
-    <div class="container">
-        <div class="row">
-            <div class="col-12">
-                <form action="{{ path('recipes_search_recipes') }}" method="get">
-                    <label for="search" style="display: none;"></label>
-                    <input id="search" type="search" name="search" placeholder="Rechercher une recette..." />
-                    <button type="submit"><i class="fa fa-search" aria-hidden="true"></i></button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
 <!-- ##### Header Area Start ##### -->
-<header class="header-area">
+<header class="header-area mb-3">
 
     <!-- Top Header Area -->
     <div class="top-header-area h-100">
         <div class="container h-100">
             <div class="row h-100 align-items-center justify-content-between">
                 <!-- Breaking News -->
-                <div class="col-12 col-sm-6">
+                <div class="col-12 col-sm-4">
                     <div class="breaking-news m-2">
                         <div id="breakingNewsTicker" class="ticker">
                             <ul>
-                                <li><a href="#">Trouve-moi une recette !</a></li>
-                                <li><a href="#">Astuce cuisine</a></li>
-                                <li><a href="#">Cuisine du monde</a></li>
+                                <li class="text-center"><a style="font-size: 16px;" href="#">Trouve-moi une recette !</a></li>
+                                <li class="text-center"><a style="font-size: 16px;" href="#">Astuce cuisine</a></li>
+                                <li class="text-center"><a style="font-size: 16px;" href="#">Cuisine du monde</a></li>
                             </ul>
                         </div>
                     </div>
                 </div>
-
-                <!-- Top Social Info -->
-                <div class="col-12 col-sm-6 my-3 top-social-info">
-                    <a href="#"><i class="fa fa-pinterest" aria-hidden="true"></i></a>
-                    <a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a>
-                    <a href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a>
-                    <a href="#"><i class="fa fa-dribbble" aria-hidden="true"></i></a>
-                    <a href="#"><i class="fa fa-behance" aria-hidden="true"></i></a>
-                    <a href="#"><i class="fa fa-linkedin" aria-hidden="true"></i></a>
+                <div class="col-12 col-sm-4">
+                    <a href="{{ path('app_home') }}">
+                        <img width="330" src="{{ asset('assets/img/core-img/logo.png') }}" alt="logo recettes en folie">
+                    </a>
                 </div>
-                <div class="col-12 mb-2 text-right p-2">
+
+                <div class="col-12 col-sm-4 mb-2 text-center p-2">
                     {% if app.user %}
                         {% if is_granted('ROLE_RECIPE_ADMIN') %}
-                            <a class="p-2" style="border-bottom: 3px solid #1c8314;" href="{{ path('admin_index') }}">Administration</a>
+                            <a class="p-2 m-3" style="border-bottom: 3px solid #4FCCA3;" href="{{ path('admin_index') }}">Administration</a>
                         {% endif %}
-                        <a class="p-2" style="color: #ffffff; background-color: #40ba37; border-bottom: 3px solid #1c8314;" href="{{ path('profile_index') }}">Mon compte</a>
-                        <a class="p-2" style="border-bottom: 3px solid #1c8314;" href="{{ path('app_logout') }}">Se déconnecter</a>
+                        <a class="p-2 m-3 linkHeader" href="{{ path('profile_index') }}">Mon compte</a>
+                        <a class="p-2 m-3" href="{{ path('app_logout') }}"><i style="font-size: 18px; color: red;" class="fa fa-power-off"></i></a>
                     {% else %}
-                        <a class="p-2" style="border-bottom: 3px solid #1c8314;" href="{{ path('app_login') }}">Connexion</a>
-                        <a class="p-2" style="color: #ffffff; background-color: #40ba37; border-bottom: 3px solid #1c8314;" href="{{ path('app_register') }}">Inscription</a>
+                        <a class="p-2 m-3" style="border-bottom: 3px solid #4FCCA3;" href="{{ path('app_login') }}">Connexion</a>
+                        <a class="p-2 m-3 linkHeader" href="{{ path('app_register') }}">Inscription</a>
                     {% endif %}
                 </div>
             </div>
@@ -70,112 +48,71 @@
     <!-- Navbar Area -->
     <div class="delicious-main-menu">
         <div class="classy-nav-container breakpoint-off">
-            <div class="container">
+            <!-- Menu -->
+            <nav class="classy-navbar justify-content-center" id="deliciousNav">
+
+                <!-- Navbar Toggler -->
+                <div class="classy-navbar-toggler ml-auto mr-5">
+                    <span class="navbarToggler"><span></span><span></span><span></span></span>
+                </div>
+
                 <!-- Menu -->
-                <nav class="classy-navbar justify-content-between" id="deliciousNav">
+                <div class="classy-menu w-100">
 
-                    <!-- Logo -->
-                    <a class="nav-brand" href="{{ path('app_home') }}"><img width="330" src="{{ asset('assets/img/core-img/logo.png') }}" alt="logo recettes en folie"></a>
-
-                    <!-- Navbar Toggler -->
-                    <div class="classy-navbar-toggler">
-                        <span class="navbarToggler"><span></span><span></span><span></span></span>
+                    <!-- close btn -->
+                    <div class="classycloseIcon">
+                        <div class="cross-wrap"><span class="top"></span><span class="bottom"></span></div>
                     </div>
 
-                    <!-- Menu -->
-                    <div class="classy-menu">
-
-                        <!-- close btn -->
-                        <div class="classycloseIcon">
-                            <div class="cross-wrap"><span class="top"></span><span class="bottom"></span></div>
+                    <!-- Nav Start -->
+                    <div style="background-color: #4FCCA3;" class="classynav justify-content-center h-100">
+                        <div class="logoToggler text-center">
+                            <a href="/">
+                                <img width="330" src="{{ asset('assets/img/core-img/logo.png') }}" alt="logo recettes en folie">
+                            </a>
                         </div>
+                        <ul>
+                            {% for category in categories %}
+                                {% if category.parent is null %}
+                                    <li>
+                                        <a class="linkHeader" href="#">{{ category.name }}</a>
+                                        {% set childCategories = [] %}
+                                        {% for childCategory in categories %}
+                                            {% if childCategory.parent == category %}
+                                                {% set childCategories = childCategories|merge([childCategory]) %}
+                                            {% endif %}
+                                        {% endfor %}
+                                        {% if childCategories is not empty %}
+                                            <ul class="dropdown">
+                                                {% for childCategory in childCategories %}
+                                                    <li><a class="nav-link" style="text-transform: capitalize" href="#">{{ childCategory.name }}</a></li>
+                                                {% endfor %}
+                                            </ul>
+                                        {% endif %}
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                            <li><a class="linkHeader" href="{{ path('app_contact') }}">Contact</a></li>
+                        </ul>
 
-                        <!-- Nav Start -->
-                        <div class="classynav">
-                            <ul>
-                                <li class="active"><a href="{{ path('app_home') }}">Accueil</a></li>
-{#                                <li><a href="#">Pages</a>#}
-{#                                    <ul class="dropdown">#}
-{#                                        <li><a href="index.html">Home</a></li>#}
-{#                                        <li><a href="about.html">About Us</a></li>#}
-{#                                        <li><a href="blog-post.html">Blog Post</a></li>#}
-{#                                        <li><a href="receipe-post.html">Receipe Post</a></li>#}
-{#                                        <li><a href="contact.html">Contact</a></li>#}
-{#                                        <li><a href="elements.html">Elements</a></li>#}
-{#                                        <li><a href="#">Dropdown</a>#}
-{#                                            <ul class="dropdown">#}
-{#                                                <li><a href="index.html">Home</a></li>#}
-{#                                                <li><a href="about.html">About Us</a></li>#}
-{#                                                <li><a href="blog-post.html">Blog Post</a></li>#}
-{#                                                <li><a href="receipe-post.html">Receipe Post</a></li>#}
-{#                                                <li><a href="contact.html">Contact</a></li>#}
-{#                                                <li><a href="elements.html">Elements</a></li>#}
-{#                                                <li><a href="#">Dropdown</a>#}
-{#                                                    <ul class="dropdown">#}
-{#                                                        <li><a href="index.html">Home</a></li>#}
-{#                                                        <li><a href="about.html">About Us</a></li>#}
-{#                                                        <li><a href="blog-post.html">Blog Post</a></li>#}
-{#                                                        <li><a href="receipe-post.html">Receipe Post</a></li>#}
-{#                                                        <li><a href="contact.html">Contact</a></li>#}
-{#                                                        <li><a href="elements.html">Elements</a></li>#}
-{#                                                    </ul>#}
-{#                                                </li>#}
-{#                                            </ul>#}
-{#                                        </li>#}
-{#                                    </ul>#}
-{#                                </li>#}
-{#                                <li><a href="#">Mega Menu</a>#}
-{#                                    <div class="megamenu">#}
-{#                                        <ul class="single-mega cn-col-4">#}
-{#                                            <li class="title">Catagory</li>#}
-{#                                            <li><a href="index.html">Home</a></li>#}
-{#                                            <li><a href="about.html">About Us</a></li>#}
-{#                                            <li><a href="blog-post.html">Blog Post</a></li>#}
-{#                                            <li><a href="receipe-post.html">Receipe Post</a></li>#}
-{#                                            <li><a href="contact.html">Contact</a></li>#}
-{#                                            <li><a href="elements.html">Elements</a></li>#}
-{#                                        </ul>#}
-{#                                        <ul class="single-mega cn-col-4">#}
-{#                                            <li class="title">Catagory</li>#}
-{#                                            <li><a href="index.html">Home</a></li>#}
-{#                                            <li><a href="about.html">About Us</a></li>#}
-{#                                            <li><a href="blog-post.html">Blog Post</a></li>#}
-{#                                            <li><a href="receipe-post.html">Receipe Post</a></li>#}
-{#                                            <li><a href="contact.html">Contact</a></li>#}
-{#                                            <li><a href="elements.html">Elements</a></li>#}
-{#                                        </ul>#}
-{#                                        <ul class="single-mega cn-col-4">#}
-{#                                            <li class="title">Catagory</li>#}
-{#                                            <li><a href="index.html">Home</a></li>#}
-{#                                            <li><a href="about.html">About Us</a></li>#}
-{#                                            <li><a href="blog-post.html">Blog Post</a></li>#}
-{#                                            <li><a href="receipe-post.html">Receipe Post</a></li>#}
-{#                                            <li><a href="contact.html">Contact</a></li>#}
-{#                                            <li><a href="elements.html">Elements</a></li>#}
-{#                                        </ul>#}
-{#                                        <div class="single-mega cn-col-4">#}
-{#                                            <div class="receipe-slider owl-carousel">#}
-{#                                                <a href="#"><img src="{{ asset('assets/img/bg-img/bg1.jpg') }}" alt=""></a>#}
-{#                                                <a href="#"><img src="{{ asset('assets/img/bg-img/bg6.jpg') }}" alt=""></a>#}
-{#                                            </div>#}
-{#                                        </div>#}
-{#                                    </div>#}
-{#                                </li>#}
-{#                                <li><a href="receipe-post.html">Receipies</a></li>#}
-{#                                <li><a href="receipe-post.html">4 Vegans</a></li>#}
-                                <li><a href="{{ path('app_contact') }}">Contact</a></li>
-                            </ul>
-
-                            <!-- Newsletter Form -->
-                            <div class="search-btn">
-                                <i class="fa fa-search" aria-hidden="true"></i>
-                            </div>
-
+                        <!-- Newsletter Form -->
+                        <div class="search-btn">
+                            <!-- Search Wrapper -->
+                            <form action="{{ path('recipes_search_recipes') }}" method="get">
+                                <label for="search" class="d-none"></label>
+                                <div class="input-group m-2">
+                                    <input type="search" class="form-control" id="search" name="search" placeholder="Rechercher une recette..." aria-label="Rechercher une recette..." aria-describedby="searchInput">
+                                    <div class="input-group-append">
+                                        <span class="input-group-text" id="searchInput"><i class="fa fa-search" aria-hidden="true"></i></span>
+                                    </div>
+                                </div>
+                                <button type="submit" class="d-none"></button>
+                            </form>
                         </div>
-                        <!-- Nav End -->
                     </div>
-                </nav>
-            </div>
+                    <!-- Nav End -->
+                </div>
+            </nav>
         </div>
     </div>
 </header>

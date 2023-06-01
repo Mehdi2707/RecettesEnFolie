@@ -577,7 +577,6 @@ textarea:focus {
         position: relative;
         width: 100%;
         z-index: 100;
-        height: 145px;
         @media #{$breakpoint-xs} {
             height: 80px;
         }
@@ -585,7 +584,6 @@ textarea:focus {
             background-color: transparent;
         }
         .classy-navbar {
-            height: 145px;
             padding: 0;
             @media #{$breakpoint-xs} {
                 height: 80px;
@@ -642,13 +640,16 @@ textarea:focus {
                 }
                 @media #{$breakpoint-lg} {
                     margin-left: 50px;
+                    margin-right: 35px;
                 }
                 @media #{$breakpoint-md} {
                     margin-left: 30px;
+                    margin-right: 35px;
                     margin-top: 30px;
                 }
                 @media #{$breakpoint-xs} {
                     margin-left: 30px;
+                    margin-right: 35px;
                     margin-top: 30px;
                 }
             }
@@ -1693,3 +1694,23 @@ textarea:focus {
         padding-left: 30px;
     }
 }
+
+/* Start Custom CSS */
+.linkHeader {
+    color: #000000 !important;
+    background-color: #4FCCA3 !important;
+    border-radius: 0.25rem;
+}
+
+.linkHeader:hover, .linkHeader:focus {
+    background-color: #4FCCA3 !important;
+    color: #ffffff !important;
+}
+
+.logoToggler {
+    display: none;
+    @media (max-width: 768px) {
+        display: block;
+    }
+}
+/* End Custom CSS */
