@@ -7,6 +7,7 @@ use App\Entity\Favorites;
 use App\Entity\Ingredients;
 use App\Entity\Notes;
 use App\Form\CommentsFormType;
+use App\Repository\CategoriesRepository;
 use App\Repository\CommentsRepository;
 use App\Repository\FavoritesRepository;
 use App\Repository\NotesRepository;
@@ -29,18 +30,104 @@ class RecipesController extends AbstractController
     }
 
     #[Route('/recettes/{category}', name: 'category')]
-    public function category($category): Response
+    public function category($category, CategoriesRepository $categoriesRepository): Response
     {
+        $parentCategory = $categoriesRepository->findOneBy(['slug' => $category]);
+
+        if($parentCategory == null)
+        {
+            $this->addFlash('warning', 'Un problème est survenue');
+            return $this->redirectToRoute('recipes_index');
+        }
+
+        $categories = [];
+
+        foreach($parentCategory->getCategories() as $category)
+        {
+            $categories[$category->getName()] = $category->getRecipes();
+            foreach($categories[$category->getName()] as $recipe)
+            {
+                $notes = $recipe->getNotes();
+
+                $totalNote = 0;
+                $nbNote = 0;
+                foreach($notes as $note)
+                {
+                    $totalNote = $totalNote + $note->getValue();
+                    $nbNote++;
+                }
+                if(count($notes) == 0)
+                    $moyenne = 0;
+                else
+                    $moyenne = round($totalNote / $nbNote, 1);
+
+                $noteRounded = floor($moyenne);
+                $hasHalfStar = false;
+                $decimal = '' . ($moyenne - $noteRounded);
+
+                if($decimal == 0.3 || $decimal == 0.4 || $decimal == 0.5 || $decimal == 0.6 || $decimal == 0.7)
+                    $hasHalfStar = true;
+
+                if($decimal == 0.8 || $decimal == 0.9)
+                    $noteRounded++;
+
+                $recipe->noteRounded = $noteRounded;
+                $recipe->hasHalfStar = $hasHalfStar;
+            }
+        }
+
         return $this->render('recipes/category.html.twig', [
-            'category' => $category
+            'parentCategory' => $parentCategory,
+            'childCategories' => $categories
         ]);
     }
 
     #[Route('/recettes/{category}/{sCategory}', name: 'sousCategory')]
-    public function sousCategory($category, $sCategory): Response
+    public function sousCategory($category, $sCategory, CategoriesRepository $categoriesRepository): Response
     {
+        $parentCategory = $categoriesRepository->findOneBy(['slug' => $category]);
+        $childCategory = $categoriesRepository->findOneBy(['slug' => $sCategory]);
+
+        if($parentCategory == null || $childCategory == null)
+        {
+            $this->addFlash('warning', 'Un problème est survenue');
+            return $this->redirectToRoute('recipes_index');
+        }
+
+        foreach($childCategory->getRecipes() as $recipe)
+        {
+            $notes = $recipe->getNotes();
+
+            $totalNote = 0;
+            $nbNote = 0;
+            foreach($notes as $note)
+            {
+                $totalNote = $totalNote + $note->getValue();
+                $nbNote++;
+            }
+            if(count($notes) == 0)
+                $moyenne = 0;
+            else
+                $moyenne = round($totalNote / $nbNote, 1);
+
+            $noteRounded = floor($moyenne);
+            $hasHalfStar = false;
+            $decimal = '' . ($moyenne - $noteRounded);
+
+            if($decimal == 0.3 || $decimal == 0.4 || $decimal == 0.5 || $decimal == 0.6 || $decimal == 0.7)
+                $hasHalfStar = true;
+
+            if($decimal == 0.8 || $decimal == 0.9)
+                $noteRounded++;
+
+            $recipe->noteRounded = $noteRounded;
+            $recipe->hasHalfStar = $hasHalfStar;
+        }
+
         return $this->render('recipes/sousCategory.html.twig', [
-            'sCategory' => $sCategory
+            'parentCategory' => $parentCategory,
+            'childCategory' => $childCategory,
+            'recipes' => $childCategory->getRecipes()
         ]);
     }
 

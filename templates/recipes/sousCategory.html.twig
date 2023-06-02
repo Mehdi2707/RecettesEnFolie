@@ -1,6 +1,64 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Recettes pour les {{ sCategory }}{% endblock %}
+{% block title %}Recettes pour les {{ childCategory.name|capitalize }}{% endblock %}
 
 {% block body %}
+    <section>
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="section-heading">
+                        <h3>Recettes pour les {{ childCategory.name|capitalize }}</h3>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                {% if recipes is not empty %}
+                    {% for recipe in recipes %}
+                        <div class="col-12 col-sm-6 col-lg-4">
+                            <a href="{{ path('recipes_details', {slug: recipe.slug, category: recipe.categories.parent.slug, sCategory: recipe.categories.slug}) }}">
+                                <div class="single-best-receipe-area mb-30 text-center">
+                                    <img style="height: 15rem;" src="{% if recipe.images[0] is defined %}{{ asset('assets/uploads/recipes/' ~ recipe.images[0].name) }}{% else %}{{ asset('assets/img/bg-img/sr1.jpg') }}{% endif %}" alt="{{ recipe.title }}">
+                                    <div class="receipe-content">
+                                        <h5>{{ recipe.title }}</h5>
+                                        <div class="ratings">
+                                            {% apply spaceless %}
+                                                {% if recipe.noteRounded == 0 %}
+                                                    <span class="text-info">Pas de note pour l'instant</span>
+                                                {% else %}
+                                                    {% set fullStars = recipe.noteRounded %}
+                                                    {% set hasHalfStar = recipe.hasHalfStar %}
+
+                                                    {% for i in 1..fullStars %}
+                                                        <i class="fa fa-star" aria-hidden="true"></i>
+                                                    {% endfor %}
+
+                                                    {% if hasHalfStar %}
+                                                        <i class="fa fa-star-half-o" aria-hidden="true"></i>
+                                                    {% endif %}
+
+                                                    {% set emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0) %}
+
+                                                    {% if emptyStars > 0 %}
+                                                        {% for i in 1..emptyStars %}
+                                                            <i class="fa fa-star-o" aria-hidden="true"></i>
+                                                        {% endfor %}
+                                                    {% endif %}
+                                                {% endif %}
+                                            {% endapply %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="col-12 mb-3">
+                        <span>Aucune recette dans cette catégorie</span>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </section>
 {% endblock %}
