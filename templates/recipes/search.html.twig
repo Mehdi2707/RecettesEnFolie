@@ -18,34 +18,35 @@
                     <span class="mb-5">Aucun résultat ! Essayez de faire une recherche sur un mot clé tel que 'burger' ou encore 'pâtes'</span>
                 {% else %}
                     {% for recipe in recipes %}
-                        {% set nbNote = 0 %}
-                        {% set totalNote = 0 %}
-                        {% for note in recipe.notes %}
-                            {% set totalNote = totalNote + note.value %}
-                            {% set nbNote = nbNote + 1 %}
-                        {% endfor %}
-                        {% if recipe.notes is empty %}
-                            {% set moyenne = 0 %}
-                        {% else %}
-                            {% set moyenne = (totalNote / nbNote)|round %}
-                        {% endif %}
                         <div class="col-12 col-sm-6 col-lg-4">
                             <a href="{{ path('recipes_details', {slug: recipe.slug, category: recipe.categories.parent.slug, sCategory: recipe.categories.slug}) }}">
-                                <div class="single-best-receipe-area mb-30">
-                                    <img style="width: 100%;" src="{% if recipe.images[0] is defined %}{{ asset('assets/uploads/recipes/' ~ recipe.images[0].name) }}{% else %}{{ asset('assets/img/bg-img/sr1.jpg') }}{% endif %}" alt="{{ recipe.title }}">
+                                <div class="single-best-receipe-area mb-30 text-center">
+                                    <img style="height: 15rem;" src="{% if recipe.images[0] is defined %}{{ asset('assets/uploads/recipes/' ~ recipe.images[0].name) }}{% else %}{{ asset('assets/img/bg-img/sr1.jpg') }}{% endif %}" alt="{{ recipe.title }}">
                                     <div class="receipe-content">
                                         <h5>{{ recipe.title }}</h5>
                                         <div class="ratings">
                                             {% apply spaceless %}
-                                                {% if moyenne == 0 %}
+                                                {% if recipe.noteRounded == 0 %}
                                                     <span class="text-info">Pas de note pour l'instant</span>
                                                 {% else %}
-                                                    {% for i in 1..moyenne %}
+                                                    {% set fullStars = recipe.noteRounded %}
+                                                    {% set hasHalfStar = recipe.hasHalfStar %}
+
+                                                    {% for i in 1..fullStars %}
                                                         <i class="fa fa-star" aria-hidden="true"></i>
                                                     {% endfor %}
-                                                    {% for i in 1..(5 - moyenne) %}
-                                                        <i class="fa fa-star-o" aria-hidden="true"></i>
-                                                    {% endfor %}
+
+                                                    {% if hasHalfStar %}
+                                                        <i class="fa fa-star-half-o" aria-hidden="true"></i>
+                                                    {% endif %}
+
+                                                    {% set emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0) %}
+
+                                                    {% if emptyStars > 0 %}
+                                                        {% for i in 1..emptyStars %}
+                                                            <i class="fa fa-star-o" aria-hidden="true"></i>
+                                                        {% endfor %}
+                                                    {% endif %}
                                                 {% endif %}
                                             {% endapply %}
                                         </div>

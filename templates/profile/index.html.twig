@@ -42,7 +42,7 @@
                         <tbody>
                             {% for favorite in favorites %}
                                 <tr>
-                                    <td><a class="list-group-item list-group-item-action" href="{{ path('recipes_details', {slug: favorite.recipes.slug}) }}">{{ favorite.recipes.title }}</a></td>
+                                    <td><a class="list-group-item list-group-item-action" href="{{ path('recipes_details', {slug: favorite.recipes.slug, category: favorite.recipes.categories.parent.slug, sCategory: favorite.recipes.categories.slug}) }}">{{ favorite.recipes.title }}</a></td>
                                 </tr>
                             {% endfor %}
                         </tbody>

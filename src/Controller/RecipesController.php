@@ -63,7 +63,17 @@ class RecipesController extends AbstractController
         if(count($notes) == 0)
             $moyenne = 0;
         else
-            $moyenne = round($totalNote / $nbNote);
+            $moyenne = round($totalNote / $nbNote, 1);
+
+        $noteRounded = floor($moyenne);
+        $hasHalfStar = false;
+        $decimal = '' . ($moyenne - $noteRounded);
+
+        if($decimal == 0.3 || $decimal == 0.4 || $decimal == 0.5 || $decimal == 0.6 || $decimal == 0.7)
+            $hasHalfStar = true;
+
+        if($decimal == 0.8 || $decimal == 0.9)
+            $noteRounded++;
 
         $comment = new Comments();
 
@@ -94,7 +104,7 @@ class RecipesController extends AbstractController
             'recipe' => $recipes,
             'form' => $form->createView(),
             'note' => $noteUser,
-            'noteGeneral' => $moyenne,
+            'noteGeneral' => [ 'integer' => $noteRounded, 'hasHalfStar' => $hasHalfStar ],
             'user' => $user,
             'favorite' => $favorite
         ]);
@@ -169,6 +179,36 @@ class RecipesController extends AbstractController
         }
 
         $recipes = $recipesRepository->searchRecipes($search);
+
+        foreach($recipes as $recipe)
+        {
+            $notes = $recipe->getNotes();
+
+            $totalNote = 0;
+            $nbNote = 0;
+            foreach($notes as $note)
+            {
+                $totalNote = $totalNote + $note->getValue();
+                $nbNote++;
+            }
+            if(count($notes) == 0)
+                $moyenne = 0;
+            else
+                $moyenne = round($totalNote / $nbNote, 1);
+
+            $noteRounded = floor($moyenne);
+            $hasHalfStar = false;
+            $decimal = '' . ($moyenne - $noteRounded);
+
+            if($decimal == 0.3 || $decimal == 0.4 || $decimal == 0.5 || $decimal == 0.6 || $decimal == 0.7)
+                $hasHalfStar = true;
+
+            if($decimal == 0.8 || $decimal == 0.9)
+                $noteRounded++;
+
+            $recipe->noteRounded = $noteRounded;
+            $recipe->hasHalfStar = $hasHalfStar;
+        }
 
         return $this->render('recipes/search.html.twig', [
             'search' => $search,
