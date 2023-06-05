@@ -3,11 +3,21 @@
 {% block title %}Recettes {{ childCategory.slug starts with 'entree' ? 'd\'' : 'de '}}{{ childCategory.name|capitalize }}{% endblock %}
 
 {% block body %}
+    <nav class="navbar navbar-light bg-light" style="justify-content: center!important;">
+        <a class="nav-link" style="text-transform: capitalize;" href="{{ path('recipes_category', {category: parentCategory.slug}) }}">
+            {{ parentCategory.name }}
+        </a>
+        <span>/</span>
+        <a class="nav-link" style="text-transform: capitalize;" href="{{ path('recipes_sousCategory', {category: parentCategory.slug, sCategory:childCategory.slug}) }}">
+            {{ childCategory.name }}
+        </a>
+    </nav>
+
     <section>
         <div class="container">
             <div class="row">
                 <div class="col-12">
-                    <div class="section-heading">
+                    <div class="section-heading mt-3">
                         <h3>Recettes {{ childCategory.slug starts with 'entree' ? 'd\'' : 'de '}}{{ childCategory.name|capitalize }}</h3>
                     </div>
                 </div>

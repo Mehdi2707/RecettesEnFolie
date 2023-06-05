@@ -119,7 +119,7 @@ class RecipesController extends AbstractController
             $entityManager->persist($comment);
             $entityManager->flush();
 
-            return $this->redirectToRoute('recipes_details' , ['slug' => $recipes->getSlug()]);
+            return $this->redirectToRoute('recipes_details' , ['category' => $recipes->getCategories()->getParent()->getSlug(), 'sCategory' => $recipes->getCategories()->getSlug(), 'slug' => $recipes->getSlug()]);
         }
 
         return $this->render('recipes/details.html.twig', [

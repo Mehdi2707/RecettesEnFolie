@@ -10,14 +10,15 @@
 
 {% block body %}
     <nav class="navbar navbar-light bg-light" style="justify-content: center!important;">
-        <a class="nav-link" style="text-transform: capitalize;" href="">
+        <a class="nav-link" style="text-transform: capitalize;" href="{{ path('recipes_category', {category: recipe.categories.parent.slug}) }}">
             {{ recipe.categories.parent.name }}
         </a>
         <span>/</span>
-        <a class="nav-link" style="text-transform: capitalize;" href="">
+        <a class="nav-link" style="text-transform: capitalize;" href="{{ path('recipes_sousCategory', {category: recipe.categories.parent.slug, sCategory: recipe.categories.slug}) }}">
             {{ recipe.categories.name }}
         </a>
     </nav>
+
     <div class="receipe-post-area pt-3">
 
         <!-- Receipe Slider -->
