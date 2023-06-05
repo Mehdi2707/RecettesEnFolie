@@ -98,7 +98,7 @@
                         <!-- Newsletter Form -->
                         <div class="search-btn">
                             <!-- Search Wrapper -->
-                            <form action="{{ path('recipes_search_recipes') }}" method="get">
+                            <form id="searchForm" action="{{ path('recipes_search_recipes', {search: ''}) }}" method="POST">
                                 <label for="search" class="d-none"></label>
                                 <div class="input-group m-2">
                                     <input type="search" class="form-control" id="search" name="search" placeholder="Rechercher une recette..." aria-label="Rechercher une recette..." aria-describedby="searchInput">
@@ -117,3 +117,16 @@
     </div>
 </header>
 <!-- ##### Header Area End ##### -->
+<script>
+    document.getElementById("searchForm").addEventListener("submit", function(event) {
+        event.preventDefault(); // Empêche le formulaire de se soumettre normalement
+
+        var searchQuery = document.getElementsByName("search")[0].value;
+        var lowercaseSearchQuery = searchQuery.toLowerCase().trim();
+        var formattedSearchQuery = lowercaseSearchQuery.replace(/ /g, '-');
+        var encodedSearchQuery = encodeURIComponent(formattedSearchQuery);
+        var redirectUrl = "{{ path('recipes_search_recipes', {'search': ''}) }}/" + encodedSearchQuery;
+
+        window.location.href = redirectUrl;
+    });
+</script>

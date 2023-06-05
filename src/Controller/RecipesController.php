@@ -12,6 +12,7 @@ use App\Repository\CommentsRepository;
 use App\Repository\FavoritesRepository;
 use App\Repository\NotesRepository;
 use App\Repository\RecipesRepository;
+use App\Service\GetStars;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -30,7 +31,7 @@ class RecipesController extends AbstractController
     }
 
     #[Route('/recettes/{category}', name: 'category')]
-    public function category($category, CategoriesRepository $categoriesRepository): Response
+    public function category($category, CategoriesRepository $categoriesRepository, GetStars $getStars): Response
     {
         $parentCategory = $categoriesRepository->findOneBy(['slug' => $category]);
 
@@ -49,30 +50,8 @@ class RecipesController extends AbstractController
             {
                 $notes = $recipe->getNotes();
 
-                $totalNote = 0;
-                $nbNote = 0;
-                foreach($notes as $note)
-                {
-                    $totalNote = $totalNote + $note->getValue();
-                    $nbNote++;
-                }
-                if(count($notes) == 0)
-                    $moyenne = 0;
-                else
-                    $moyenne = round($totalNote / $nbNote, 1);
-
-                $noteRounded = floor($moyenne);
-                $hasHalfStar = false;
-                $decimal = '' . ($moyenne - $noteRounded);
-
-                if($decimal == 0.3 || $decimal == 0.4 || $decimal == 0.5 || $decimal == 0.6 || $decimal == 0.7)
-                    $hasHalfStar = true;
-
-                if($decimal == 0.8 || $decimal == 0.9)
-                    $noteRounded++;
-
-                $recipe->noteRounded = $noteRounded;
-                $recipe->hasHalfStar = $hasHalfStar;
+                $recipe->noteRounded = $getStars->getStars($notes)[0];
+                $recipe->hasHalfStar = $getStars->getStars($notes)[1];
             }
         }
 
@@ -83,7 +62,7 @@ class RecipesController extends AbstractController
     }
 
     #[Route('/recettes/{category}/{sCategory}', name: 'sousCategory')]
-    public function sousCategory($category, $sCategory, CategoriesRepository $categoriesRepository): Response
+    public function sousCategory($category, $sCategory, CategoriesRepository $categoriesRepository, GetStars $getStars): Response
     {
         $parentCategory = $categoriesRepository->findOneBy(['slug' => $category]);
         $childCategory = $categoriesRepository->findOneBy(['slug' => $sCategory]);
@@ -98,30 +77,8 @@ class RecipesController extends AbstractController
         {
             $notes = $recipe->getNotes();
 
-            $totalNote = 0;
-            $nbNote = 0;
-            foreach($notes as $note)
-            {
-                $totalNote = $totalNote + $note->getValue();
-                $nbNote++;
-            }
-            if(count($notes) == 0)
-                $moyenne = 0;
-            else
-                $moyenne = round($totalNote / $nbNote, 1);
-
-            $noteRounded = floor($moyenne);
-            $hasHalfStar = false;
-            $decimal = '' . ($moyenne - $noteRounded);
-
-            if($decimal == 0.3 || $decimal == 0.4 || $decimal == 0.5 || $decimal == 0.6 || $decimal == 0.7)
-                $hasHalfStar = true;
-
-            if($decimal == 0.8 || $decimal == 0.9)
-                $noteRounded++;
-
-            $recipe->noteRounded = $noteRounded;
-            $recipe->hasHalfStar = $hasHalfStar;
+            $recipe->noteRounded = $getStars->getStars($notes)[0];
+            $recipe->hasHalfStar = $getStars->getStars($notes)[1];
         }
 
         return $this->render('recipes/sousCategory.html.twig', [
@@ -132,35 +89,13 @@ class RecipesController extends AbstractController
     }
 
     #[Route('/recettes/{category}/{sCategory}/{slug}', name: 'details')]
-    public function details($slug, RecipesRepository $recipesRepository, NotesRepository $notesRepository, Request $request, EntityManagerInterface $entityManager, FavoritesRepository $favoritesRepository): Response
+    public function details($slug, RecipesRepository $recipesRepository, NotesRepository $notesRepository, Request $request, EntityManagerInterface $entityManager, FavoritesRepository $favoritesRepository, GetStars $getStars): Response
     {
         $recipes = $recipesRepository->findOneBy(['slug' => $slug]);
         $user = $this->getUser();
         $noteUser = $notesRepository->findOneBy(['user' => $user, 'recipe' => $recipes]);
         $notes = $recipes->getNotes();
         $favorite = $favoritesRepository->findOneBy(['user' => $user, 'recipes' => $recipes]);
-
-        $totalNote = 0;
-        $nbNote = 0;
-        foreach($notes as $note)
-        {
-            $totalNote = $totalNote + $note->getValue();
-            $nbNote++;
-        }
-        if(count($notes) == 0)
-            $moyenne = 0;
-        else
-            $moyenne = round($totalNote / $nbNote, 1);
-
-        $noteRounded = floor($moyenne);
-        $hasHalfStar = false;
-        $decimal = '' . ($moyenne - $noteRounded);
-
-        if($decimal == 0.3 || $decimal == 0.4 || $decimal == 0.5 || $decimal == 0.6 || $decimal == 0.7)
-            $hasHalfStar = true;
-
-        if($decimal == 0.8 || $decimal == 0.9)
-            $noteRounded++;
 
         $comment = new Comments();
 
@@ -191,7 +126,7 @@ class RecipesController extends AbstractController
             'recipe' => $recipes,
             'form' => $form->createView(),
             'note' => $noteUser,
-            'noteGeneral' => [ 'integer' => $noteRounded, 'hasHalfStar' => $hasHalfStar ],
+            'noteGeneral' => [ 'integer' => $getStars->getStars($notes)[0], 'hasHalfStar' => $getStars->getStars($notes)[1] ],
             'user' => $user,
             'favorite' => $favorite
         ]);
@@ -250,14 +185,12 @@ class RecipesController extends AbstractController
 
             return new JsonResponse("Note enregistré : " . $noteSend . " étoiles");
         }
-
-        return new JsonResponse("Une erreur est survenue");
     }
 
-    #[Route('/recherche', name: 'search_recipes')]
-    public function searchRecipes(Request $request, RecipesRepository $recipesRepository)
+    #[Route('/recherche/recettes/{search}', name: 'search_recipes')]
+    public function searchRecipes(Request $request, RecipesRepository $recipesRepository, GetStars $getStars, $search = '')
     {
-        $search = $request->get('search');
+        $search = str_replace('-', ' ', $search);
 
         if($search == "" || strlen($search) < 3)
         {
@@ -271,30 +204,8 @@ class RecipesController extends AbstractController
         {
             $notes = $recipe->getNotes();
 
-            $totalNote = 0;
-            $nbNote = 0;
-            foreach($notes as $note)
-            {
-                $totalNote = $totalNote + $note->getValue();
-                $nbNote++;
-            }
-            if(count($notes) == 0)
-                $moyenne = 0;
-            else
-                $moyenne = round($totalNote / $nbNote, 1);
-
-            $noteRounded = floor($moyenne);
-            $hasHalfStar = false;
-            $decimal = '' . ($moyenne - $noteRounded);
-
-            if($decimal == 0.3 || $decimal == 0.4 || $decimal == 0.5 || $decimal == 0.6 || $decimal == 0.7)
-                $hasHalfStar = true;
-
-            if($decimal == 0.8 || $decimal == 0.9)
-                $noteRounded++;
-
-            $recipe->noteRounded = $noteRounded;
-            $recipe->hasHalfStar = $hasHalfStar;
+            $recipe->noteRounded =  $getStars->getStars($notes)[0];
+            $recipe->hasHalfStar = $getStars->getStars($notes)[1];
         }
 
         return $this->render('recipes/search.html.twig', [

@@ -2,23 +2,21 @@
 
 namespace App\Controller;
 
-use App\Entity\Newsletter\Newsletters;
 use App\Entity\Newsletter\UsersN;
 use App\Form\NewslettersUsersNFormType;
 use App\Repository\RecipesRepository;
+use App\Service\GetStars;
 use App\Service\SendMailService;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 class HomeController extends AbstractController
 {
     #[Route('/', name: 'app_home')]
-    public function index(RecipesRepository $recipesRepository, Request $request, EntityManagerInterface $entityManager, SendMailService $mailService): Response
+    public function index(RecipesRepository $recipesRepository, Request $request, EntityManagerInterface $entityManager, SendMailService $mailService, GetStars $getStars): Response
     {
         if($request->query->has('status') && $request->query->has('message'))
             $this->addFlash($request->query->get('status'), $request->query->get('message'));
@@ -29,30 +27,8 @@ class HomeController extends AbstractController
         {
             $notes = $recipe->getNotes();
 
-            $totalNote = 0;
-            $nbNote = 0;
-            foreach($notes as $note)
-            {
-                $totalNote = $totalNote + $note->getValue();
-                $nbNote++;
-            }
-            if(count($notes) == 0)
-                $moyenne = 0;
-            else
-                $moyenne = round($totalNote / $nbNote, 1);
-
-            $noteRounded = floor($moyenne);
-            $hasHalfStar = false;
-            $decimal = '' . ($moyenne - $noteRounded);
-
-            if($decimal == 0.3 || $decimal == 0.4 || $decimal == 0.5 || $decimal == 0.6 || $decimal == 0.7)
-                $hasHalfStar = true;
-
-            if($decimal == 0.8 || $decimal == 0.9)
-                $noteRounded++;
-
-            $recipe->noteRounded = $noteRounded;
-            $recipe->hasHalfStar = $hasHalfStar;
+            $recipe->noteRounded = $getStars->getStars($notes)[0];
+            $recipe->hasHalfStar = $getStars->getStars($notes)[1];
         }
 
         $userN = new UsersN();
