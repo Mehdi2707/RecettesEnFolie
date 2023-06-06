@@ -34,7 +34,7 @@
                         {% if is_granted('ROLE_RECIPE_ADMIN') %}
                             <a class="p-2 m-3" style="border-bottom: 3px solid #4FCCA3;" href="{{ path('admin_index') }}">Administration</a>
                         {% endif %}
-                        <a class="p-2 m-3 linkHeader" href="{{ path('profile_index') }}">Mon compte</a>
+                        <a class="p-2 m-3 linkHeader" href="{{ path('profile_index', {user: app.user.username}) }}">Mon compte</a>
                         <a class="p-2 m-3" href="{{ path('app_logout') }}"><i style="font-size: 18px; color: red;" class="fa fa-power-off"></i></a>
                     {% else %}
                         <a class="p-2 m-3" style="border-bottom: 3px solid #4FCCA3;" href="{{ path('app_login') }}">Connexion</a>
@@ -66,7 +66,7 @@
 
                     <!-- Nav Start -->
                     <div style="background-color: #4FCCA3;" class="classynav justify-content-center h-100">
-                        <div class="logoToggler text-center">
+                        <div class="logoToggler text-center mb-3">
                             <a href="/">
                                 <img width="330" src="{{ asset('assets/img/core-img/logo.png') }}" alt="logo recettes en folie">
                             </a>
@@ -119,7 +119,7 @@
 <!-- ##### Header Area End ##### -->
 <script>
     document.getElementById("searchForm").addEventListener("submit", function(event) {
-        event.preventDefault(); // Empêche le formulaire de se soumettre normalement
+        event.preventDefault();
 
         var searchQuery = document.getElementsByName("search")[0].value;
         var lowercaseSearchQuery = searchQuery.toLowerCase().trim();

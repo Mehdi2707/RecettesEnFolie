@@ -34,7 +34,7 @@ security:
     access_control:
         - { path: ^/admin/utilisateurs, roles: ROLE_ADMIN }
         - { path: ^/admin, roles: ROLE_RECIPE_ADMIN }
-        - { path: ^/profil, roles: ROLE_USER }
+#        - { path: ^/profil, roles: ROLE_USER }
 
     role_hierarchy:
         ROLE_RECIPE_ADMIN: ROLE_USER

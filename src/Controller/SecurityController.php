@@ -65,7 +65,7 @@ class SecurityController extends AbstractController
         );
 
         $this->addFlash('success', 'Vous avez reçu un lien dans votre boite mail pour réinitialiser votre mot de passe');
-        return $this->redirectToRoute('profile_index');
+        return $this->redirectToRoute('profile_index', ['user' => $user->getUsername()]);
     }
 
     #[Route(path: '/mot-de-passe-oublie', name: 'forgotten_password')]

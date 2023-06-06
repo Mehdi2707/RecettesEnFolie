@@ -8,6 +8,7 @@ use App\Entity\Users;
 use App\Form\ProfileFormType;
 use App\Form\RecipesFormType;
 use App\Repository\FavoritesRepository;
+use App\Service\GetStars;
 use App\Service\PictureService;
 use Doctrine\DBAL\Exception;
 use Doctrine\ORM\EntityManagerInterface;
@@ -28,76 +29,102 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 #[Route('/profil', name: 'profile_')]
 class ProfileController extends AbstractController
 {
-    #[Route('/', name: 'index')]
-    public function index(Request $request, EntityManagerInterface $entityManager, FavoritesRepository $favoritesRepository, UserPasswordHasherInterface $passwordHasher, Security $security): Response
+    #[Route('/', name: 'redirect_profile')]
+    public function OldIndex(): Response
     {
-        $user = $this->getUser();
-        $recipes = $entityManager->getRepository(Recipes::class)->findBy(['user' => $user]);
-        $isVerified = $user->getIsVerified();
-        $form = $this->createForm(ProfileFormType::class, $user, ['user' => $user]);
-        $favorites = $favoritesRepository->findBy(['user' => $user]);
+        if($this->getUser())
+            return $this->redirectToRoute('profile_index', ['user' => $this->getUser()->getUsername()]);
 
-        $form->handleRequest($request);
+        return $this->redirectToRoute('app_login');
+    }
 
-        if($form->isSubmitted() && $form->isValid())
+    #[Route('/{user}', name: 'index')]
+    public function user($user, EntityManagerInterface $entityManager, Request $request, FavoritesRepository $favoritesRepository, UserPasswordHasherInterface $passwordHasher, Security $security, GetStars $getStars): Response
+    {
+        $user = $entityManager->getRepository(Users::class)->findOneBy(['username' => $user]);
+        $currentUser = $this->getUser();
+
+        if($user === $currentUser && $user)
         {
-            $user->setUpdatedAt(new \DateTimeImmutable());
+            $recipes = $entityManager->getRepository(Recipes::class)->findBy(['user' => $user]);
+            $isVerified = $user->getIsVerified();
+            $form = $this->createForm(ProfileFormType::class, $user, ['user' => $user]);
+            $favorites = $favoritesRepository->findBy(['user' => $user]);
 
-            $entityManager->persist($user);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'Enregistré');
-            return $this->redirectToRoute('profile_index');
-        }
-
-        if($request->request->get('confirm_delete'))
-        {
-            $validPassword = $passwordHasher->isPasswordValid($user, $request->request->get('confirm_delete'));
-
-            if($validPassword)
+            foreach($favorites as $recipe)
             {
-                $user->setIsActive(false);
-                $user->setDisabledAt(new \DateTimeImmutable());
+                $notes = $recipe->getRecipes()->getNotes();
+
+                $recipe->getRecipes()->noteRounded = $getStars->getStars($notes)[0];
+                $recipe->getRecipes()->hasHalfStar = $getStars->getStars($notes)[1];
+            }
+
+            foreach($recipes as $recipe)
+            {
+                $notes = $recipe->getNotes();
+
+                $recipe->noteRounded = $getStars->getStars($notes)[0];
+                $recipe->hasHalfStar = $getStars->getStars($notes)[1];
+            }
+
+            $form->handleRequest($request);
+
+            if($form->isSubmitted() && $form->isValid())
+            {
+                $user->setUpdatedAt(new \DateTimeImmutable());
 
                 $entityManager->persist($user);
                 $entityManager->flush();
 
-                $security->logout(false);
-                $this->addFlash('warning', 'Votre compte à bien été désactivé');
+                $this->addFlash('success', 'Enregistré');
+                return $this->redirectToRoute('profile_index', ['user' => $user->getUsername()]);
+            }
+
+            if($request->request->get('confirm_delete'))
+            {
+                $validPassword = $passwordHasher->isPasswordValid($user, $request->request->get('confirm_delete'));
+
+                if($validPassword)
+                {
+                    $user->setIsActive(false);
+                    $user->setDisabledAt(new \DateTimeImmutable());
+
+                    $entityManager->persist($user);
+                    $entityManager->flush();
+
+                    $security->logout(false);
+                    $this->addFlash('warning', 'Votre compte à bien été désactivé');
+                    return $this->redirectToRoute('app_home');
+                }
+                else
+                {
+                    $this->addFlash('warning', 'Mot de passe incorrect');
+                }
+            }
+
+            return $this->render('profile/index.html.twig', [
+                'form' => $form->createView(),
+                'user' => $user,
+                'recipes' => $recipes,
+                'isVerified' => $isVerified,
+                'favorites' => $favorites
+            ]);
+        }
+        else
+        {
+            if(!$user)
+            {
+                $this->addFlash('warning', 'L\'utilisateur recherché n\'existe plus');
                 return $this->redirectToRoute('app_home');
             }
-            else
-            {
-                $this->addFlash('warning', 'Mot de passe incorrect');
-            }
+
+            $recipes = $entityManager->getRepository(Recipes::class)->findBy(['user' => $user]);
+
+            return $this->render('profile/user.html.twig', [
+                'user' => $user,
+                'recipes' => $recipes,
+            ]);
         }
-
-        return $this->render('profile/index.html.twig', [
-            'form' => $form->createView(),
-            'user' => $user,
-            'recipes' => $recipes,
-            'isVerified' => $isVerified,
-            'favorites' => $favorites
-        ]);
-    }
-
-    #[Route('/{user}', name: 'user')]
-    public function user(EntityManagerInterface $entityManager, $user): Response
-    {
-        $user = $entityManager->getRepository(Users::class)->findOneBy(['username' => $user]);
-
-        if(!$user)
-        {
-            $this->addFlash('warning', 'L\'utilisateur recherché n\'existe plus');
-            return $this->redirectToRoute('app_home');
-        }
-
-        $recipes = $entityManager->getRepository(Recipes::class)->findBy(['user' => $user]);
-
-        return $this->render('profile/user.html.twig', [
-            'user' => $user,
-            'recipes' => $recipes,
-        ]);
     }
 
     #[Route('/recette/ajout', name: 'recipe_add')]
@@ -106,7 +133,7 @@ class ProfileController extends AbstractController
         if(!$this->getUser()->getIsVerified())
         {
             $this->addFlash('warning', 'Vous devez activer votre compte pour publier une recette');
-            return $this->redirectToRoute('profile_index');
+            return $this->redirectToRoute('profile_index', ['user' => $this->getUser()->getUsername()]);
         }
         $recipe = new Recipes();
 
@@ -172,7 +199,7 @@ class ProfileController extends AbstractController
             $entityManager->flush();
 
             $this->addFlash('success', 'Recette publié avec succès');
-            return $this->redirectToRoute('profile_index');
+            return $this->redirectToRoute('profile_index', ['user' => $this->getUser()->getUsername()]);
         }
 
         return $this->render('profile/recipe/add.html.twig', [
@@ -254,7 +281,7 @@ class ProfileController extends AbstractController
             $entityManager->flush();
 
             $this->addFlash('success', 'Recette modifié avec succès');
-            return $this->redirectToRoute('profile_index');
+            return $this->redirectToRoute('profile_index', ['user' => $user->getUsername()]);
         }
 
         return $this->render('profile/recipe/edit.html.twig', [

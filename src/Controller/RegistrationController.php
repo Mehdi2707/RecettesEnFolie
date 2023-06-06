@@ -82,7 +82,7 @@ class RegistrationController extends AbstractController
                 $user->setIsVerified(true);
                 $entityManager->flush($user);
                 $this->addFlash('success', 'Compte activé');
-                return $this->redirectToRoute('profile_index');
+                return $this->redirectToRoute('profile_index', ['user' => $user->getUsername()]);
             }
         }
 
@@ -104,7 +104,7 @@ class RegistrationController extends AbstractController
         if($user->getIsVerified())
         {
             $this->addFlash('warning', 'Cet utilisateur est déjà activé !');
-            $this->redirectToRoute('profile_index');
+            $this->redirectToRoute('profile_index', ['user' => $user->getUsername()]);
         }
 
         $header = [
@@ -127,6 +127,6 @@ class RegistrationController extends AbstractController
         );
 
         $this->addFlash('success', 'Email de vérification envoyé');
-        return $this->redirectToRoute('profile_index');
+        return $this->redirectToRoute('profile_index', ['user' => $user->getUsername()]);
     }
 }

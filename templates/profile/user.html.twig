@@ -17,7 +17,7 @@
                         <tbody>
                             {% for recipe in recipes %}
                                 <tr>
-                                    <td><a class="list-group-item list-group-item-action" href="{{ path('recipes_details', {slug: recipe.slug}) }}">{{ recipe.title }}</a></td>
+                                    <td><a class="list-group-item list-group-item-action" href="{{ path('recipes_details', {slug: recipe.slug, category: recipe.categories.parent.slug, sCategory: recipe.categories.slug}) }}">{{ recipe.title }}</a></td>
                                 </tr>
                             {% endfor %}
                         </tbody>
