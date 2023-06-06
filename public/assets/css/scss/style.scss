@@ -395,7 +395,6 @@ textarea:focus {
     line-height: 58px;
     font-weight: 600;
     @include trans-duration(500ms);
-    text-transform: capitalize;
     background-color: $bg-default;
     &.active,
     &:hover,
@@ -1711,6 +1710,14 @@ textarea:focus {
     display: none;
     @media (max-width: 768px) {
         display: block;
+    }
+}
+
+.favorites-recipes {
+    margin-top: 2rem;
+    @media (min-width: 768px) {
+        margin-top: 0;
+        border-left: solid 1px black;
     }
 }
 /* End Custom CSS */

@@ -33,15 +33,6 @@ class IngredientsFormType extends AbstractType
                     ]),
                 ],
             ])
-            ->add('name', TextType::class, [
-                'attr' => ['class' => 'ingredient-name-input form-control'],
-                'label' => 'Ingrédient',
-                'constraints' => [
-                    new Assert\NotBlank([
-                        'message' => 'Le nom de l\'ingrédient ne peut pas être vide.',
-                    ]),
-                ],
-            ])
             ->add('unit', EntityType::class, [
                 'class' => Unit::class,
                 'label' => 'Unité',
@@ -56,6 +47,16 @@ class IngredientsFormType extends AbstractType
                     ]),
                 ],
             ])
+            ->add('name', TextType::class, [
+                'attr' => ['class' => 'ingredient-name-input form-control'],
+                'label' => 'Ingrédient',
+                'constraints' => [
+                    new Assert\NotBlank([
+                        'message' => 'Le nom de l\'ingrédient ne peut pas être vide.',
+                    ]),
+                ],
+            ])
+
         ;
     }
 

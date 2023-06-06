@@ -120,6 +120,14 @@ class ProfileController extends AbstractController
 
             $recipes = $entityManager->getRepository(Recipes::class)->findBy(['user' => $user]);
 
+            foreach($recipes as $recipe)
+            {
+                $notes = $recipe->getNotes();
+
+                $recipe->noteRounded = $getStars->getStars($notes)[0];
+                $recipe->hasHalfStar = $getStars->getStars($notes)[1];
+            }
+
             return $this->render('profile/user.html.twig', [
                 'user' => $user,
                 'recipes' => $recipes,
@@ -214,7 +222,7 @@ class ProfileController extends AbstractController
         $user = $this->getUser();
 
         if($userRecipe !== $user)
-            throw new Exception('Vous n\'êtes pas autorisé à accéder à cette page');
+            return $this->redirectToRoute('profile_index', ['user' => $user->getUsername()]);
 
         $form = $this->createForm(RecipesFormType::class, $recipes);
 

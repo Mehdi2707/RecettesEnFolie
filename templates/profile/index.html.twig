@@ -3,167 +3,171 @@
 {% block title %}Mon compte{% endblock %}
 
 {% block body %}
-    <section class="container">
-        <div class="row">
+    <section class="container-fluid">
+        <div class="row m-auto">
             <div class="col-12 col-sm-6">
-                <h1>Mon compte</h1>
-                {{ form_start(form) }}
-                    <div class="input-group mb-3">
-                        <div class="input-group-prepend">
-                            <div class="input-group-text">@</div>
+                <h2 class="mb-5">Mes recettes</h2>
+                <div class="row justify-content-center">
+                    {% if recipes|length == 0 %}
+                        <div class="col-12 text-center">
+                            <p>Vous n'avez pas encore publié de recette</p>
                         </div>
-                        {{ form_row(form.username) }}
-                    </div>
-                    {{ form_row(form.email) }}
-                    <div>
-                        <span>Compte vérifié</span>
-                        {% if isVerified %}
-                            <span>✅</span>
-                        {% else %}
-                            <span>❌</span>
-                            <p>Pour envoyer le lien d'activation cliquer sur <a href="{{ path('resend_verif') }}">ce lien</a></p>
-                        {% endif %}
-                    </div>
-                    <button type="submit" class="btn btn-success my-3">Enregistrer</button>
-                {{ form_end(form) }}
-                <a href="{{ path('change_password') }}" class="btn btn-info btn-sm">Modifier mon mot de passe</a>
-            </div>
-            <div class="col-12 col-sm-6">
-                <h2 class="my-3">Mes recettes favoris</h2>
-                {% if favorites is empty %}
-                    <span>Aucune recette dans vos favoris. N'hésitez pas à ajouter les recettes qui vous intéresse dans vos favoris afin de les retrouvez plus facilement !</span>
-                {% else %}
-                    {% for favorite in favorites %}
-                        <div class="col-12">
-                            <a href="{{ path('recipes_details', {slug: favorite.recipes.slug, category: favorite.recipes.categories.parent.slug, sCategory: favorite.recipes.categories.slug}) }}">
-                                <div class="single-small-receipe-area d-flex">
-                                    <!-- Receipe Thumb -->
-                                    <div class="receipe-thumb">
-                                        <img src="{% if favorite.recipes.images[0] is defined %}{{ asset('assets/uploads/recipes/mini/300x300-' ~ favorite.recipes.images[0].name) }}{% else %}{{ asset('assets/img/bg-img/r5.jpg') }}{% endif %}" alt="{{ favorite.recipes.title }}">
-                                    </div>
-                                    <!-- Receipe Content -->
-                                    <div class="receipe-content">
-                                        <span>{{ favorite.recipes.createdAt | date("d/m/Y") }}</span>
-                                        <h5>{{ favorite.recipes.title }}</h5>
-                                        <div class="ratings">
-                                            {% apply spaceless %}
-                                                {% if favorite.recipes.noteRounded == 0 %}
-                                                    <span class="text-info">Pas de note pour l'instant</span>
-                                                {% else %}
-                                                    {% set fullStars = favorite.recipes.noteRounded %}
-                                                    {% set hasHalfStar = favorite.recipes.hasHalfStar %}
-
-                                                    {% for i in 1..fullStars %}
-                                                        <i class="fa fa-star" aria-hidden="true"></i>
-                                                    {% endfor %}
-
-                                                    {% if hasHalfStar %}
-                                                        <i class="fa fa-star-half-o" aria-hidden="true"></i>
-                                                    {% endif %}
-
-                                                    {% set emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0) %}
-
-                                                    {% if emptyStars > 0 %}
-                                                        {% for i in 1..emptyStars %}
-                                                            <i class="fa fa-star-o" aria-hidden="true"></i>
-                                                        {% endfor %}
-                                                    {% endif %}
-                                                {% endif %}
-                                            {% endapply %}
+                    {% else %}
+                        {% for recipe in recipes %}
+                            <div class="col-10 col-sm-5">
+                                <a href="{{ path('recipes_details', {slug: recipe.slug, category: recipe.categories.parent.slug, sCategory: recipe.categories.slug}) }}">
+                                    <div class="single-small-receipe-area d-flex">
+                                        <!-- Receipe Thumb -->
+                                        <div class="receipe-thumb">
+                                            <img src="{% if recipe.images[0] is defined %}{{ asset('assets/uploads/recipes/mini/300x300-' ~ recipe.images[0].name) }}{% else %}{{ asset('assets/img/bg-img/r5.jpg') }}{% endif %}" alt="{{ recipe.title }}">
                                         </div>
-                                        {% set nbComment = 0 %}
-                                        {% for comment in favorite.recipes.comments %}
-                                            {% if comment.parent == null %}
-                                                {% set nbComment = nbComment + 1 %}
-                                            {% endif %}
-                                        {% endfor %}
+                                        <!-- Receipe Content -->
+                                        <div class="receipe-content">
+                                            <span>{{ recipe.createdAt | date("d/m/Y") }}</span>
+                                            <h5>{{ recipe.title }}</h5>
+                                            <div class="ratings">
+                                                {% apply spaceless %}
+                                                    {% if recipe.noteRounded == 0 %}
+                                                        <span class="text-info">Pas de note pour l'instant</span>
+                                                    {% else %}
+                                                        {% set fullStars = recipe.noteRounded %}
+                                                        {% set hasHalfStar = recipe.hasHalfStar %}
 
-                                        <p>{{ nbComment }} Commentaire{{ nbComment <= 1 ? '' : 's' }}</p>
+                                                        {% for i in 1..fullStars %}
+                                                            <i class="fa fa-star" aria-hidden="true"></i>
+                                                        {% endfor %}
+
+                                                        {% if hasHalfStar %}
+                                                            <i class="fa fa-star-half-o" aria-hidden="true"></i>
+                                                        {% endif %}
+
+                                                        {% set emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0) %}
+
+                                                        {% if emptyStars > 0 %}
+                                                            {% for i in 1..emptyStars %}
+                                                                <i class="fa fa-star-o" aria-hidden="true"></i>
+                                                            {% endfor %}
+                                                        {% endif %}
+                                                    {% endif %}
+                                                {% endapply %}
+                                            </div>
+                                            {% set nbComment = 0 %}
+                                            {% for comment in recipe.comments %}
+                                                {% if comment.parent == null %}
+                                                    {% set nbComment = nbComment + 1 %}
+                                                {% endif %}
+                                            {% endfor %}
+
+                                            <p>{{ nbComment }} Commentaire{{ nbComment <= 1 ? '' : 's' }}</p>
+                                        </div>
                                     </div>
-                                </div>
-                            </a>
-                        </div>
-                    {% endfor %}
+                                </a>
+                            </div>
+                            <div class="col-2 col-sm-1 my-auto">
+                                <a class="btn btn-sm btn-warning" href="{{ path('profile_recipe_edit', {slug: recipe.slug}) }}"><i class="fa fa-edit"></i></a>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    <div class="col-12 text-center">
+                        <a class="my-3 btn delicious-btn" href="{{ path('profile_recipe_add') }}">Publier une nouvelle recette</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 favorites-recipes">
+                <h2 class="mb-5">Mes recettes favoris</h2>
+                {% if favorites is empty %}
+                    <div class="w-75 mb-4">
+                        <span>Aucune recette dans vos favoris. N'hésitez pas à ajouter les recettes qui vous intéresse dans vos favoris afin de les retrouvez plus facilement !</span>
+                    </div>
+                {% else %}
+                    <div class="row justify-content-center">
+                        {% for favorite in favorites %}
+                            <div class="col-12 col-sm-6">
+                                <a href="{{ path('recipes_details', {slug: favorite.recipes.slug, category: favorite.recipes.categories.parent.slug, sCategory: favorite.recipes.categories.slug}) }}">
+                                    <div class="single-small-receipe-area d-flex">
+                                        <!-- Receipe Thumb -->
+                                        <div class="receipe-thumb">
+                                            <img src="{% if favorite.recipes.images[0] is defined %}{{ asset('assets/uploads/recipes/mini/300x300-' ~ favorite.recipes.images[0].name) }}{% else %}{{ asset('assets/img/bg-img/r5.jpg') }}{% endif %}" alt="{{ favorite.recipes.title }}">
+                                        </div>
+                                        <!-- Receipe Content -->
+                                        <div class="receipe-content">
+                                            <span>{{ favorite.recipes.createdAt | date("d/m/Y") }}</span>
+                                            <h5>{{ favorite.recipes.title }}</h5>
+                                            <div class="ratings">
+                                                {% apply spaceless %}
+                                                    {% if favorite.recipes.noteRounded == 0 %}
+                                                        <span class="text-info">Pas de note pour l'instant</span>
+                                                    {% else %}
+                                                        {% set fullStars = favorite.recipes.noteRounded %}
+                                                        {% set hasHalfStar = favorite.recipes.hasHalfStar %}
+
+                                                        {% for i in 1..fullStars %}
+                                                            <i class="fa fa-star" aria-hidden="true"></i>
+                                                        {% endfor %}
+
+                                                        {% if hasHalfStar %}
+                                                            <i class="fa fa-star-half-o" aria-hidden="true"></i>
+                                                        {% endif %}
+
+                                                        {% set emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0) %}
+
+                                                        {% if emptyStars > 0 %}
+                                                            {% for i in 1..emptyStars %}
+                                                                <i class="fa fa-star-o" aria-hidden="true"></i>
+                                                            {% endfor %}
+                                                        {% endif %}
+                                                    {% endif %}
+                                                {% endapply %}
+                                            </div>
+                                            {% set nbComment = 0 %}
+                                            {% for comment in favorite.recipes.comments %}
+                                                {% if comment.parent == null %}
+                                                    {% set nbComment = nbComment + 1 %}
+                                                {% endif %}
+                                            {% endfor %}
+
+                                            <p>{{ nbComment }} Commentaire{{ nbComment <= 1 ? '' : 's' }}</p>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        {% endfor %}
+                    </div>
                 {% endif %}
             </div>
         </div>
-        <div class="row">
-            <div class="col-12">
-                <h1 class="mb-5">Mes recettes</h1>
-            </div>
-            {% if recipes|length == 0 %}
-                <div class="col my-3">
-                    <p>Vous n'avez pas encore publié de recette</p>
+
+        <div class="row justify-content-center mt-5">
+            <div class="col-12 col-sm-6">
+                <h1>Mon compte</h1>
+                {{ form_start(form) }}
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">@</div>
+                    </div>
+                    {{ form_row(form.username) }}
                 </div>
-            {% else %}
-                {% for recipe in recipes %}
-                    <div class="col-10 col-sm-3">
-                        <a href="{{ path('recipes_details', {slug: recipe.slug, category: recipe.categories.parent.slug, sCategory: recipe.categories.slug}) }}">
-                            <div class="single-small-receipe-area d-flex">
-                                <!-- Receipe Thumb -->
-                                <div class="receipe-thumb">
-                                    <img src="{% if recipe.images[0] is defined %}{{ asset('assets/uploads/recipes/mini/300x300-' ~ recipe.images[0].name) }}{% else %}{{ asset('assets/img/bg-img/r5.jpg') }}{% endif %}" alt="{{ recipe.title }}">
-                                </div>
-                                <!-- Receipe Content -->
-                                <div class="receipe-content">
-                                    <span>{{ recipe.createdAt | date("d/m/Y") }}</span>
-                                    <h5>{{ recipe.title }}</h5>
-                                    <div class="ratings">
-                                        {% apply spaceless %}
-                                            {% if recipe.noteRounded == 0 %}
-                                                <span class="text-info">Pas de note pour l'instant</span>
-                                            {% else %}
-                                                {% set fullStars = recipe.noteRounded %}
-                                                {% set hasHalfStar = recipe.hasHalfStar %}
-
-                                                {% for i in 1..fullStars %}
-                                                    <i class="fa fa-star" aria-hidden="true"></i>
-                                                {% endfor %}
-
-                                                {% if hasHalfStar %}
-                                                    <i class="fa fa-star-half-o" aria-hidden="true"></i>
-                                                {% endif %}
-
-                                                {% set emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0) %}
-
-                                                {% if emptyStars > 0 %}
-                                                    {% for i in 1..emptyStars %}
-                                                        <i class="fa fa-star-o" aria-hidden="true"></i>
-                                                    {% endfor %}
-                                                {% endif %}
-                                            {% endif %}
-                                        {% endapply %}
-                                    </div>
-                                    {% set nbComment = 0 %}
-                                    {% for comment in recipe.comments %}
-                                        {% if comment.parent == null %}
-                                            {% set nbComment = nbComment + 1 %}
-                                        {% endif %}
-                                    {% endfor %}
-
-                                    <p>{{ nbComment }} Commentaire{{ nbComment <= 1 ? '' : 's' }}</p>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-2 col-sm-1 my-auto">
-                        <a class="btn btn-sm btn-warning" href="{{ path('profile_recipe_edit', {slug: recipe.slug}) }}"><i class="fa fa-edit"></i></a>
-                    </div>
-                {% endfor %}
-            {% endif %}
+                {{ form_row(form.email) }}
+                <div>
+                    <span>Compte vérifié</span>
+                    {% if isVerified %}
+                        <span>✅</span>
+                    {% else %}
+                        <span>❌</span>
+                        <p>Pour envoyer le lien d'activation cliquer sur <a href="{{ path('resend_verif') }}">ce lien</a></p>
+                    {% endif %}
+                </div>
+                <button type="submit" class="btn btn-success my-3">Enregistrer</button>
+                {{ form_end(form) }}
+                <a href="{{ path('change_password') }}" class="btn btn-info btn-sm">Modifier mon mot de passe</a>
+                <br>
+                <button type="button" class="my-5 btn btn-danger" id="deleteUser" data-toggle="modal" data-target="#modal">
+                    Supprimer mon compte
+                </button>
+            </div>
         </div>
         <div class="row">
             <div class="col">
-                <a class="my-3 btn delicious-btn" href="{{ path('profile_recipe_add') }}">Publier une nouvelle recette</a>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col my-5">
-                <!-- Button trigger modal -->
-                <button type="button" class="btn btn-danger" id="deleteUser" data-toggle="modal" data-target="#modal">
-                    Supprimer mon compte
-                </button>
-
                 <!-- Modal -->
                 <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered" role="document">

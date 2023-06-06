@@ -321,7 +321,6 @@ textarea:focus {
   font-weight: 600;
   -webkit-transition-duration: 500ms;
   transition-duration: 500ms;
-  text-transform: capitalize;
   background-color: #4FCCA3; }
   .delicious-btn.active, .delicious-btn:hover, .delicious-btn:focus {
     font-size: 16px;
@@ -1399,6 +1398,17 @@ textarea:focus {
 @media only screen and (max-width: 768px) {
   .logoToggler {
     display: block;
+  }
+}
+
+.favorites-recipes {
+  margin-top: 2rem;
+}
+
+@media only screen and (min-width: 768px) {
+  .favorites-recipes {
+    margin-top: 0;
+    border-left: solid 1px black;
   }
 }
 

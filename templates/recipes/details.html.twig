@@ -39,20 +39,13 @@
             <div class="container">
 
                 <div class="row">
-                    <div class="col-12 col-md-8">
-                        <div class="receipe-headline my-5">
+                    <div class="col-4">
+                        <div class="my-5">
                             <span>{{ recipe.createdAt | date('d/m/Y') }}</span>
-                            <h2>{{ recipe.title }}</h2>
-                            <h5 class="mb-5">{{ recipe.description }}</h5>
-                            <div class="receipe-duration">
-                                <h6>Temps de préparation : {{ recipe.preparationTime }} min</h6>
-                                <h6>Temps de cuisson : {{ recipe.cookingTime }} min</h6>
-                                <h6>Nombre de portions : {{ recipe.numberOfServings }}</h6>
-                            </div>
                         </div>
                     </div>
 
-                    <div class="col-12 col-md-4">
+                    <div class="col-8">
                         <div class="receipe-ratings text-center my-5">
                             <div class="ratings">
                                 {% apply spaceless %}
@@ -91,12 +84,22 @@
                                     </div>
                                 {% endif %}
                             {% endif %}
-                            <div class="mb-5">
-                                <span class="delicious-btn">{{ recipe.difficultyLevel.name }}</span>
-                            </div>
-                            <div>
-                                Créé par&nbsp;<a href="{{ path('profile_index', {user: recipe.user.username}) }}" class="badge badge-light" style="font-size: 15px;">@{{ recipe.user.username }}</a>
-                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-12 receipe-headline">
+                        <h2 class="mb-5">{{ recipe.title }}</h2>
+                        <h5>{{ recipe.description }}</h5>
+                        <div class="receipe-duration mt-5">
+                            <h6>Difficulté : {{ recipe.difficultyLevel.name|capitalize }}</h6>
+                            <h6>Temps de préparation : {{ recipe.preparationTime }} min</h6>
+                            <h6>Temps de cuisson : {{ recipe.cookingTime }} min</h6>
+                            <h6>Nombre de portions : {{ recipe.numberOfServings }}</h6>
+                        </div>
+                        <div class="my-4">
+                            Créé par&nbsp;<a href="{{ path('profile_index', {user: recipe.user.username}) }}" class="badge badge-light" style="font-size: 15px;">@{{ recipe.user.username }}</a>
                         </div>
                     </div>
                 </div>
@@ -108,7 +111,7 @@
                             <h4>Ingrédients</h4>
                             {% for ingredient in recipe.ingredients %}
                                 <div style="font-size: 18px;">
-                                    <span class="font-weight-bold">- {{ ingredient.quantity|number_format(2, '.', '')|trim('0')|trim('.')|replace({'.': ','}) }} {{ ingredient.unit.name }} {{ ingredient.name }}</span>
+                                    <span class="font-weight-bold">- {{ ingredient.quantity|number_format(2, '.', '')|trim('0')|trim('.')|replace({'.': ','}) }} {{ ingredient.unit.name == 'pièce' ? '' : ingredient.unit.name }} {{ ingredient.name }}</span>
                                 </div>
                             {% endfor %}
                         </div>
