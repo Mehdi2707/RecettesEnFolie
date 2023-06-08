@@ -62,10 +62,11 @@ class RecipesController extends AbstractController
     }
 
     #[Route('/recettes/{category}/{sCategory}', name: 'sousCategory')]
-    public function sousCategory($category, $sCategory, CategoriesRepository $categoriesRepository, GetStars $getStars): Response
+    public function sousCategory($category, $sCategory, CategoriesRepository $categoriesRepository, GetStars $getStars, RecipesRepository $recipesRepository, Request $request): Response
     {
         $parentCategory = $categoriesRepository->findOneBy(['slug' => $category]);
         $childCategory = $categoriesRepository->findOneBy(['slug' => $sCategory]);
+        $page = $request->query->getInt('page', 1);
 
         if($parentCategory == null || $childCategory == null)
         {
@@ -73,7 +74,9 @@ class RecipesController extends AbstractController
             return $this->redirectToRoute('recipes_index');
         }
 
-        foreach($childCategory->getRecipes() as $recipe)
+        $recipes = $recipesRepository->findRecipesPaginated($page, $sCategory);
+
+        foreach($recipes['data'] as $recipe)
         {
             $notes = $recipe->getNotes();
 
@@ -84,7 +87,7 @@ class RecipesController extends AbstractController
         return $this->render('recipes/sousCategory.html.twig', [
             'parentCategory' => $parentCategory,
             'childCategory' => $childCategory,
-            'recipes' => $childCategory->getRecipes()
+            'recipes' => $recipes
         ]);
     }
 

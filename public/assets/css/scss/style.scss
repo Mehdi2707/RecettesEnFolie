@@ -1155,21 +1155,23 @@ textarea:focus {
     position: relative;
     z-index: 1;
     .page-link {
-        padding: 0;
+        padding: 0.5rem 0.75rem;
         font-size: 16px;
-        margin-right: 5px;
-        border: none;
-        color: $text-color2;
+        border: 1px solid #DEE2E6;
+        color: $dark-color;
+        background-color: #fff;
+        line-height: 1.25;
         &:hover,
         &:focus {
-            background-color: transparent;
-            color: $hover-color;
+            background-color: #e9ecef;
+            color: $dark-color;
         }
     }
     .page-item.active {
         .page-link {
-            background-color: transparent;
-            color: $hover-color;
+            border-color: #000000;
+            background-color: #4FCCA3;
+            color: $white-color;
         }
     }
 }

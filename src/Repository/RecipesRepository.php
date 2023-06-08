@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Recipes;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -37,6 +38,30 @@ class RecipesRepository extends ServiceEntityRepository
         if ($flush) {
             $this->getEntityManager()->flush();
         }
+    }
+
+    public function findRecipesPaginated(int $page, string $slug, int $limit = 2): array
+    {
+        $limit = abs($limit);
+        $result = [];
+
+        $query = $this->createQueryBuilder('r')
+            ->join('r.categories', 'c')
+            ->where("c.slug = '$slug'")
+        ->setMaxResults($limit)
+        ->setFirstResult(($page * $limit) - $limit);
+
+        $paginator = new Paginator($query);
+        $data = $paginator->getQuery()->getResult();
+
+        $pages = ceil($paginator->count() / $limit);
+
+        $result['data'] = $data;
+        $result['pages'] = $pages;
+        $result['page'] = $page;
+        $result['limit'] = $limit;
+
+        return $result;
     }
 
     public function searchRecipes($search)

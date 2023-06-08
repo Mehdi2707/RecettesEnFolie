@@ -935,17 +935,19 @@ textarea:focus {
   position: relative;
   z-index: 1; }
   .pagination .page-link {
-    padding: 0;
+    padding: 0.5rem 0.75rem;
     font-size: 16px;
-    margin-right: 5px;
-    border: none;
-    color: #474747; }
+    border: 1px solid #DEE2E6;
+    color: #000000;
+    background-color: #fff;
+    line-height: 1.25; }
     .pagination .page-link:hover, .pagination .page-link:focus {
-      background-color: transparent;
-      color: #40ba37; }
+      background-color: #e9ecef;
+      color: #000000; }
   .pagination .page-item.active .page-link {
-    background-color: transparent;
-    color: #40ba37; }
+    border-color: #000000;
+    background-color: #4FCCA3;
+    color: #fff; }
 
 /* :: 15.0 Receipe Area */
 .receipe-post-search {
