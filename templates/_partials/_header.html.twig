@@ -1,3 +1,7 @@
+{% block javascripts %}
+    <script src="{{ asset('assets/js/search.js') }}" defer></script>
+{% endblock %}
+
 <!-- Preloader -->
 <div id="preloader">
     <i class="circle-preloader"></i>
@@ -103,7 +107,7 @@
                                 <div class="input-group m-2">
                                     <input type="search" class="form-control" id="search" name="search" placeholder="Rechercher une recette..." aria-label="Rechercher une recette..." aria-describedby="searchInput">
                                     <div class="input-group-append">
-                                        <span class="input-group-text" id="searchInput"><i class="fa fa-search" aria-hidden="true"></i></span>
+                                        <span class="input-group-text" id="searchInput" data-url="{{ path('recipes_search_recipes', {'search': ''}) }}/"><i class="fa fa-search" aria-hidden="true"></i></span>
                                     </div>
                                 </div>
                                 <button type="submit" class="d-none"></button>
@@ -117,16 +121,3 @@
     </div>
 </header>
 <!-- ##### Header Area End ##### -->
-<script>
-    document.getElementById("searchForm").addEventListener("submit", function(event) {
-        event.preventDefault();
-
-        var searchQuery = document.getElementsByName("search")[0].value;
-        var lowercaseSearchQuery = searchQuery.toLowerCase().trim();
-        var formattedSearchQuery = lowercaseSearchQuery.replace(/ /g, '-');
-        var encodedSearchQuery = encodeURIComponent(formattedSearchQuery);
-        var redirectUrl = "{{ path('recipes_search_recipes', {'search': ''}) }}/" + encodedSearchQuery;
-
-        window.location.href = redirectUrl;
-    });
-</script>

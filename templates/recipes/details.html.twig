@@ -48,30 +48,8 @@
                     <div class="col-8">
                         <div class="receipe-ratings text-center my-5">
                             <div class="ratings">
-                                {% apply spaceless %}
-                                    {% if noteGeneral.integer == 0 %}
-                                        <span class="text-info">Pas de note pour l'instant</span>
-                                    {% else %}
-                                        {% set fullStars = noteGeneral.integer %}
-                                        {% set hasHalfStar = noteGeneral.hasHalfStar %}
-
-                                        {% for i in 1..fullStars %}
-                                            <i class="fa fa-star" aria-hidden="true"></i>
-                                        {% endfor %}
-
-                                        {% if hasHalfStar %}
-                                            <i class="fa fa-star-half-o" aria-hidden="true"></i>
-                                        {% endif %}
-
-                                        {% set emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0) %}
-
-                                        {% if emptyStars > 0 %}
-                                            {% for i in 1..emptyStars %}
-                                                <i class="fa fa-star-o" aria-hidden="true"></i>
-                                            {% endfor %}
-                                        {% endif %}
-                                    {% endif %}
-                                {% endapply %}
+                                {% set recipeStars = { recipe } %}
+                                {% include '_partials/_stars.html.twig' with recipeStars %}
                             </div>
                             {% if app.user %}
                                 {% if favorite is empty %}
@@ -198,14 +176,14 @@
                                         {% endif %}
                                             </div>
                                             {% if app.user %}
-                                                <p><a class="btn btn-sm btn-info" href="#ajout-commentaire" data-reply data-id="{{ reply.id }}">Répondre</a></p>
+                                                <p><a class="btn btn-sm btn-info" href="#ajout-commentaire" data-user="{{ reply.user.username }}" data-reply data-id="{{ reply.id }}">Répondre</a></p>
                                             {% endif %}
                                         </div>
                                     {% endfor %}
                                 {% endif %}
                                     </div>
                                     {% if app.user %}
-                                        <p><a class="btn btn-sm btn-info" href="#ajout-commentaire" data-reply data-id="{{ comment.id }}">Répondre</a></p>
+                                        <p><a class="btn btn-sm btn-info" href="#ajout-commentaire" data-user="{{ comment.user.username }}" data-reply data-id="{{ comment.id }}">Répondre</a></p>
                                     {% endif %}
                                 </div>
                             {% endif %}
@@ -253,6 +231,7 @@
                     <div class="col-12">
                         {% if app.user %}
                             <div class="contact-form-area mb-3">
+                                <div id="elementsForReply" class="pl-3"></div>
                                 {{ form_start(form) }}
                                     <div class="col-12">
                                         {{ form_row(form.content) }}

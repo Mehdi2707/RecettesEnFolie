@@ -97,6 +97,9 @@ class RecipesController extends AbstractController
         $notes = $recipes->getNotes();
         $favorite = $favoritesRepository->findOneBy(['user' => $user, 'recipes' => $recipes]);
 
+        $recipes->noteRounded = $getStars->getStars($notes)[0];
+        $recipes->hasHalfStar = $getStars->getStars($notes)[1];
+
         $comment = new Comments();
 
         $form = $this->createForm(CommentsFormType::class, $comment);
@@ -126,7 +129,6 @@ class RecipesController extends AbstractController
             'recipe' => $recipes,
             'form' => $form->createView(),
             'note' => $noteUser,
-            'noteGeneral' => [ 'integer' => $getStars->getStars($notes)[0], 'hasHalfStar' => $getStars->getStars($notes)[1] ],
             'user' => $user,
             'favorite' => $favorite
         ]);

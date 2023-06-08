@@ -12,6 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: RecipesRepository::class)]
+#[ORM\Index(name: 'recipes_idx', columns: ['title', 'description'], flags: ['fulltext'])]
 class Recipes
 {
     use CreatedAtTrait;

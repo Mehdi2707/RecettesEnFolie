@@ -2,9 +2,21 @@ $(document).ready(function ()
 {
     document.querySelectorAll("[data-reply]").forEach(element =>
     {
-        element.addEventListener("click", function(){
+        element.addEventListener("click", function(e){
+            e.preventDefault();
+            let formElement = $("#ajout-commentaire");
+            $('html, body').animate({
+                scrollTop: formElement.offset().top
+            }, 800);
+
+            document.querySelector('#elementsForReply').innerHTML = "<p>Répondre à @" + this.dataset.user + "&nbsp;&nbsp;<button id=\"stopReply\" class=\"btn btn-sm btn-danger\">Ne plus répondre</button></p>";
             document.querySelector("#comments_form_parentid").value = this.dataset.id;
         });
+    });
+
+    $(document).on('click', '#stopReply', function() {
+        document.querySelector("#comments_form_parentid").value = 0;
+        document.querySelector('#elementsForReply').innerHTML = "";
     });
 });
 

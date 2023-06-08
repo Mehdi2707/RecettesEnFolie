@@ -1,0 +1,24 @@
+{% set fullStars = recipe.noteRounded %}
+{% set hasHalfStar = recipe.hasHalfStar %}
+
+{% apply spaceless %}
+    {% if fullStars == 0 %}
+        <span class="text-info">Pas de note pour l'instant</span>
+    {% else %}
+        {% for i in 1..fullStars %}
+            <i class="fa fa-star" aria-hidden="true"></i>
+        {% endfor %}
+
+        {% if hasHalfStar %}
+            <i class="fa fa-star-half-o" aria-hidden="true"></i>
+        {% endif %}
+
+        {% set emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0) %}
+
+        {% if emptyStars > 0 %}
+            {% for i in 1..emptyStars %}
+                <i class="fa fa-star-o" aria-hidden="true"></i>
+            {% endfor %}
+        {% endif %}
+    {% endif %}
+{% endapply %}
