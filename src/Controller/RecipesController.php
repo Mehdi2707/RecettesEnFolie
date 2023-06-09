@@ -195,7 +195,9 @@ class RecipesController extends AbstractController
     #[Route('/recherche/recettes/{search}', name: 'search_recipes')]
     public function searchRecipes(Request $request, RecipesRepository $recipesRepository, GetStars $getStars, $search = '')
     {
+        $originalSearch = $search;
         $search = str_replace('-', ' ', $search);
+        $page = $request->query->getInt('page', 1);
 
         if($search == "" || strlen($search) < 3)
         {
@@ -203,9 +205,9 @@ class RecipesController extends AbstractController
             return $this->redirectToRoute('app_home');
         }
 
-        $recipes = $recipesRepository->searchRecipes($search);
+        $recipes = $recipesRepository->searchRecipes($page, $search);
 
-        foreach($recipes as $recipe)
+        foreach($recipes['data'] as $recipe)
         {
             $notes = $recipe->getNotes();
 
@@ -215,6 +217,7 @@ class RecipesController extends AbstractController
 
         return $this->render('recipes/search.html.twig', [
             'search' => $search,
+            'originalSearch' => $originalSearch,
             'recipes' => $recipes
         ]);
     }
@@ -226,9 +229,12 @@ class RecipesController extends AbstractController
         $recipe = $recipesRepository->findOneBy(['slug' => $slug]);
         $existingFavorite = $favoritesRepository->findOneBy(['user' => $user, 'recipes' => $recipe]);
 
+        if(!$user)
+            return new JsonResponse(["error" => true], 400);
+
         if($existingFavorite)
         {
-            throw new \Exception("Erreur interne");
+            return new JsonResponse(["error" => true], 400);
         }
         else
         {

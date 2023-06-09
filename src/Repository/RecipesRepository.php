@@ -40,7 +40,7 @@ class RecipesRepository extends ServiceEntityRepository
         }
     }
 
-    public function findRecipesPaginated(int $page, string $slug, int $limit = 2): array
+    public function findRecipesPaginated(int $page, string $slug, int $limit = 12): array
     {
         $limit = abs($limit);
         $result = [];
@@ -64,21 +64,36 @@ class RecipesRepository extends ServiceEntityRepository
         return $result;
     }
 
-    public function searchRecipes($search)
+    public function searchRecipes(int $page, string $search, int $limit = 12): array
     {
-        $queryBuilder = $this->createQueryBuilder('r')
+        $limit = abs($limit);
+        $result = [];
+
+        $query = $this->createQueryBuilder('r')
             ->where('MATCH_AGAINST(r.title, r.description) AGAINST (:search boolean)>0')
             ->setParameter('search', $search)
-            ->getQuery()->getResult();
+            ->setMaxResults($limit)
+            ->setFirstResult(($page * $limit) - $limit);
 
-        if(empty($queryBuilder))
+        if(empty($query->getQuery()->getResult()))
             $queryBuilder = $this->createQueryBuilder('r')
                 ->where('r.title LIKE :search')
                 ->orWhere('r.description LIKE :search')
                 ->setParameter('search', '%' . $search . '%')
-                ->getQuery()->getResult();
+                ->setMaxResults($limit)
+                ->setFirstResult(($page * $limit) - $limit);
 
-        return $queryBuilder;
+        $paginator = new Paginator($query);
+        $data = $paginator->getQuery()->getResult();
+
+        $pages = ceil($paginator->count() / $limit);
+
+        $result['data'] = $data;
+        $result['pages'] = $pages;
+        $result['page'] = $page;
+        $result['limit'] = $limit;
+
+        return $result;
     }
 
 //    /**

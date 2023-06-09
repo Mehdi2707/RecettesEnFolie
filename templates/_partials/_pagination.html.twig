@@ -3,9 +3,18 @@
         <ul class="pagination justify-content-center">
             {% if currentPage > 1 %}
                 <li class="page-item">
-                    {% set url = path(path, {category: parentCategorySlug, sCategory: childCategorySlug, page: currentPage - 1}) %}
+                    {% if path == 'recipes_search_recipes' %}
+                        {% set url = path(path, {search: search, page: currentPage - 1}) %}
+                    {% else %}
+                        {% set url = path(path, {category: parentCategorySlug, sCategory: childCategorySlug, page: currentPage - 1}) %}
+                    {% endif %}
+
                     {% if (currentPage - 1) == 1 %}
-                        {% set url = path(path, {category: parentCategorySlug, sCategory: childCategorySlug}) %}
+                        {% if path == 'recipes_search_recipes' %}
+                            {% set url = path(path, {search: search}) %}
+                        {% else %}
+                            {% set url = path(path, {category: parentCategorySlug, sCategory: childCategorySlug}) %}
+                        {% endif %}
                     {% endif %}
                     <a href="{{ url }}" class="page-link" aria-label="Précédent">
                         <span aria-hidden="true">&laquo;</span>
@@ -21,17 +30,31 @@
                 </li>
             {% endif %}
             {% for page in 1..pages %}
-                {% set url = path(path, {category: parentCategorySlug, sCategory: childCategorySlug, page: page}) %}
+                {% if path == 'recipes_search_recipes' %}
+                    {% set url = path(path, {search: search, page: page}) %}
+                {% else %}
+                    {% set url = path(path, {category: parentCategorySlug, sCategory: childCategorySlug, page: page}) %}
+                {% endif %}
+
                 {% if page == 1 %}
-                    {% set url = path(path, {category: parentCategorySlug, sCategory: childCategorySlug}) %}
+                    {% if path == 'recipes_search_recipes' %}
+                        {% set url = path(path, {search: search}) %}
+                    {% else %}
+                        {% set url = path(path, {category: parentCategorySlug, sCategory: childCategorySlug}) %}
+                    {% endif %}
                 {% endif %}
                 <li class="page-item {{ (page == currentPage) ? 'active' : '' }}">
                     <a href="{{ url }}" class="page-link">{{ page }}</a>
                 </li>
             {% endfor %}
             {% if currentPage < pages %}
+                {% if path == 'recipes_search_recipes' %}
+                    {% set url = path(path, {search: search, page: currentPage + 1}) %}
+                {% else %}
+                    {% set url = path(path, {category: parentCategorySlug, sCategory: childCategorySlug, page: currentPage + 1}) %}
+                {% endif %}
                 <li class="page-item">
-                    <a href="{{ path(path, {category: parentCategorySlug, sCategory: childCategorySlug, page: currentPage + 1}) }}" class="page-link" aria-label="Suivant">
+                    <a href="{{ url }}" class="page-link" aria-label="Suivant">
                         <span aria-hidden="true">&raquo;</span>
                         <span class="sr-only">Suivant</span>
                     </a>

@@ -4,7 +4,9 @@
 
 {% block javascripts %}
     <script src="{{ asset('assets/js/comments.js') }}" defer></script>
-    <script src="{{ asset('assets/js/stars.js') }}" defer></script>
+    {% if app.user %}
+        <script src="{{ asset('assets/js/stars.js') }}" defer></script>
+    {% endif %}
     <script src="{{ asset('assets/js/favorites.js') }}" defer></script>
 {% endblock %}
 
@@ -61,6 +63,10 @@
                                         <button class="btn" id="favorite" data-status="true" data-request="{{ path('recipes_favorites_delete', {slug: recipe.slug}) }}"><i class="text-warning fa fa-bookmark" aria-hidden="true"></i>&nbsp;&nbsp;Enlever des favoris</button>
                                     </div>
                                 {% endif %}
+                            {% else %}
+                                <div class="mb-4">
+                                    <button class="btn" id="favorite" data-status="false" data-toggle="modal" data-target="#modal" data-request="{{ path('recipes_favorites_add', {slug: recipe.slug}) }}"><i class="text-success fa fa-bookmark" aria-hidden="true"></i>&nbsp;&nbsp;Ajouter aux favoris</button>
+                                </div>
                             {% endif %}
                         </div>
                     </div>
@@ -248,6 +254,30 @@
                                 <a class="p-2 m-3 linkHeader" href="{{ path('app_register') }}">Inscription</a>
                             </div>
                         {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalTitle">Ajouter aux favoris</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group mb-4">
+                                <span>Pour sauvegarder cette recette dans vos favoris, veuillez créer un compte ou vous connecter. Ainsi, vous pourrez retrouver facilement la recette que vous souhaitez cuisiner et y accéder à tout moment.</span>
+                            </div>
+                            <div class="form-group text-center">
+                                <a class="p-2 m-3" style="border-bottom: 3px solid #4FCCA3;" href="{{ path('app_login') }}">Connexion</a>
+                                <a class="p-2 m-3 linkHeader" href="{{ path('app_register') }}">Inscription</a>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                        </div>
                     </div>
                 </div>
             </div>
