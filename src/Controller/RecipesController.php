@@ -3,12 +3,14 @@
 namespace App\Controller;
 
 use App\Entity\Comments;
+use App\Entity\ConsultationUserRecipe;
 use App\Entity\Favorites;
 use App\Entity\Ingredients;
 use App\Entity\Notes;
 use App\Form\CommentsFormType;
 use App\Repository\CategoriesRepository;
 use App\Repository\CommentsRepository;
+use App\Repository\ConsultationUserRecipeRepository;
 use App\Repository\FavoritesRepository;
 use App\Repository\NotesRepository;
 use App\Repository\RecipesRepository;
@@ -92,16 +94,46 @@ class RecipesController extends AbstractController
     }
 
     #[Route('/recettes/{category}/{sCategory}/{slug}', name: 'details')]
-    public function details($slug, RecipesRepository $recipesRepository, NotesRepository $notesRepository, Request $request, EntityManagerInterface $entityManager, FavoritesRepository $favoritesRepository, GetStars $getStars): Response
+    public function details($slug, RecipesRepository $recipesRepository, NotesRepository $notesRepository, Request $request, EntityManagerInterface $entityManager, FavoritesRepository $favoritesRepository, GetStars $getStars, ConsultationUserRecipeRepository $consultationUserRecipeRepository): Response
     {
-        $recipes = $recipesRepository->findOneBy(['slug' => $slug]);
+        $recipe = $recipesRepository->findOneBy(['slug' => $slug]);
         $user = $this->getUser();
-        $noteUser = $notesRepository->findOneBy(['user' => $user, 'recipe' => $recipes]);
-        $notes = $recipes->getNotes();
-        $favorite = $favoritesRepository->findOneBy(['user' => $user, 'recipes' => $recipes]);
+        $noteUser = $notesRepository->findOneBy(['user' => $user, 'recipe' => $recipe]);
+        $notes = $recipe->getNotes();
+        $favorite = $favoritesRepository->findOneBy(['user' => $user, 'recipes' => $recipe]);
+        $consultedRecipes = $consultationUserRecipeRepository->findRecentlyConsultedRecipes($user, $recipe, 3);
 
-        $recipes->noteRounded = $getStars->getStars($notes)[0];
-        $recipes->hasHalfStar = $getStars->getStars($notes)[1];
+        if($user)
+        {
+            $existingConsultation = $consultationUserRecipeRepository->findOneBy(['user' => $user, 'recipe' => $recipe]);
+
+            if($existingConsultation)
+            {
+                $existingConsultation->setConsultedAt(new \DateTimeImmutable());
+
+                $entityManager->persist($existingConsultation);
+                $entityManager->flush();
+            }
+            else
+            {
+                $consulationUserRecipe = new ConsultationUserRecipe();
+                $consulationUserRecipe->setUser($user);
+                $consulationUserRecipe->setRecipe($recipe);
+
+                $entityManager->persist($consulationUserRecipe);
+                $entityManager->flush();
+            }
+
+            foreach($consultedRecipes as $consultedRecipe)
+            {
+                $notesRecipe = $consultedRecipe->getRecipe()->getNotes();
+                $consultedRecipe->getRecipe()->noteRounded = $getStars->getStars($notesRecipe)[0];
+                $consultedRecipe->getRecipe()->hasHalfStar = $getStars->getStars($notesRecipe)[1];
+            }
+        }
+
+        $recipe->noteRounded = $getStars->getStars($notes)[0];
+        $recipe->hasHalfStar = $getStars->getStars($notes)[1];
 
         $comment = new Comments();
 
@@ -111,7 +143,7 @@ class RecipesController extends AbstractController
 
         if($form->isSubmitted() && $form->isValid())
         {
-            $comment->setRecipes($recipes);
+            $comment->setRecipes($recipe);
             $comment->setIsActive(true);
             $comment->setUser($user);
 
@@ -125,15 +157,16 @@ class RecipesController extends AbstractController
             $entityManager->persist($comment);
             $entityManager->flush();
 
-            return $this->redirectToRoute('recipes_details' , ['category' => $recipes->getCategories()->getParent()->getSlug(), 'sCategory' => $recipes->getCategories()->getSlug(), 'slug' => $recipes->getSlug()]);
+            return $this->redirectToRoute('recipes_details' , ['category' => $recipe->getCategories()->getParent()->getSlug(), 'sCategory' => $recipe->getCategories()->getSlug(), 'slug' => $recipe->getSlug()]);
         }
 
         return $this->render('recipes/details.html.twig', [
-            'recipe' => $recipes,
+            'recipe' => $recipe,
             'form' => $form->createView(),
             'note' => $noteUser,
             'user' => $user,
-            'favorite' => $favorite
+            'favorite' => $favorite,
+            'consultedRecipes' => $consultedRecipes
         ]);
     }
 

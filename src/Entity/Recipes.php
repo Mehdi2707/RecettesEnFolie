@@ -76,6 +76,9 @@ class Recipes
     #[ORM\JoinColumn(nullable: false)]
     private ?Categories $categories = null;
 
+    #[ORM\OneToMany(mappedBy: 'recipe_id', targetEntity: ConsultationUserRecipe::class, orphanRemoval: true)]
+    private Collection $consultationUserRecipes;
+
     public function __construct()
     {
         $this->steps = new ArrayCollection();
@@ -86,6 +89,7 @@ class Recipes
         $this->images = new ArrayCollection();
         $this->ingredients = new ArrayCollection();
         $this->notes = new ArrayCollection();
+        $this->consultationUserRecipes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -371,6 +375,36 @@ class Recipes
     public function setCategories(?Categories $categories): self
     {
         $this->categories = $categories;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ConsultationUserRecipe>
+     */
+    public function getConsultationUserRecipes(): Collection
+    {
+        return $this->consultationUserRecipes;
+    }
+
+    public function addConsultationUserRecipe(ConsultationUserRecipe $consultationUserRecipe): self
+    {
+        if (!$this->consultationUserRecipes->contains($consultationUserRecipe)) {
+            $this->consultationUserRecipes->add($consultationUserRecipe);
+            $consultationUserRecipe->setRecipeId($this);
+        }
+
+        return $this;
+    }
+
+    public function removeConsultationUserRecipe(ConsultationUserRecipe $consultationUserRecipe): self
+    {
+        if ($this->consultationUserRecipes->removeElement($consultationUserRecipe)) {
+            // set the owning side to null (unless already changed)
+            if ($consultationUserRecipe->getRecipeId() === $this) {
+                $consultationUserRecipe->setRecipeId(null);
+            }
+        }
 
         return $this;
     }

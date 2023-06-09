@@ -71,6 +71,9 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $disabled_at = null;
 
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: ConsultationUserRecipe::class, orphanRemoval: true)]
+    private Collection $consultationUserRecipes;
+
     public function __construct()
     {
         $this->recipes = new ArrayCollection();
@@ -79,6 +82,7 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
         $this->createdAt = new \DateTimeImmutable();
         $this->updatedAt = new \DateTimeImmutable();
         $this->notes = new ArrayCollection();
+        $this->consultationUserRecipes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -327,6 +331,36 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     public function setDisabledAt(?\DateTimeImmutable $disabled_at): self
     {
         $this->disabled_at = $disabled_at;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ConsultationUserRecipe>
+     */
+    public function getConsultationUserRecipes(): Collection
+    {
+        return $this->consultationUserRecipes;
+    }
+
+    public function addConsultationUserRecipe(ConsultationUserRecipe $consultationUserRecipe): self
+    {
+        if (!$this->consultationUserRecipes->contains($consultationUserRecipe)) {
+            $this->consultationUserRecipes->add($consultationUserRecipe);
+            $consultationUserRecipe->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeConsultationUserRecipe(ConsultationUserRecipe $consultationUserRecipe): self
+    {
+        if ($this->consultationUserRecipes->removeElement($consultationUserRecipe)) {
+            // set the owning side to null (unless already changed)
+            if ($consultationUserRecipe->getUser() === $this) {
+                $consultationUserRecipe->setUser(null);
+            }
+        }
 
         return $this;
     }
