@@ -94,37 +94,56 @@ class RecipesController extends AbstractController
     }
 
     #[Route('/recettes/{category}/{sCategory}/{slug}', name: 'details')]
-    public function details($slug, RecipesRepository $recipesRepository, NotesRepository $notesRepository, Request $request, EntityManagerInterface $entityManager, FavoritesRepository $favoritesRepository, GetStars $getStars, ConsultationUserRecipeRepository $consultationUserRecipeRepository): Response
+    public function details($category, $sCategory, $slug,
+                            Request $request,
+                            EntityManagerInterface $entityManager,
+                            RecipesRepository $recipesRepository,
+                            NotesRepository $notesRepository,
+                            FavoritesRepository $favoritesRepository,
+                            ConsultationUserRecipeRepository $consultationUserRecipeRepository,
+                            CategoriesRepository $categoriesRepository,
+                            GetStars $getStars): Response
     {
+        // Récupérer la catégorie parente et enfant
+        $parentCategory = $categoriesRepository->findOneBy(['slug' => $category]);
+        $childCategory = $categoriesRepository->findOneBy(['slug' => $sCategory]);
+
+        if (!$parentCategory || !$childCategory) {
+            $this->addFlash('warning', 'Un problème est survenu');
+            return $this->redirectToRoute('recipes_index');
+        }
+
+        // Récupérer la recette
         $recipe = $recipesRepository->findOneBy(['slug' => $slug]);
+
+        if (!$recipe) {
+            $this->addFlash('warning', 'Un problème est survenu');
+            return $this->redirectToRoute('recipes_sousCategory', ['category' => $category, 'sCategory' => $sCategory]);
+        }
+
         $user = $this->getUser();
         $noteUser = $notesRepository->findOneBy(['user' => $user, 'recipe' => $recipe]);
         $notes = $recipe->getNotes();
         $favorite = $favoritesRepository->findOneBy(['user' => $user, 'recipes' => $recipe]);
         $consultedRecipes = $consultationUserRecipeRepository->findRecentlyConsultedRecipes($user, $recipe, 3);
+        $bestRecipesOfsCategory = $recipesRepository->findBestRecipesOfsCategory($childCategory, $recipe, 3);
 
-        if($user)
-        {
-            $existingConsultation = $consultationUserRecipeRepository->findOneBy(['user' => $user, 'recipe' => $recipe]);
+        if ($user) {
+            // Mettre à jour la date de consultation pour la recette actuelle
+            $consultation = $consultationUserRecipeRepository->findOneBy(['user' => $user, 'recipe' => $recipe]);
 
-            if($existingConsultation)
-            {
-                $existingConsultation->setConsultedAt(new \DateTimeImmutable());
-
-                $entityManager->persist($existingConsultation);
-                $entityManager->flush();
-            }
-            else
-            {
-                $consulationUserRecipe = new ConsultationUserRecipe();
-                $consulationUserRecipe->setUser($user);
-                $consulationUserRecipe->setRecipe($recipe);
-
-                $entityManager->persist($consulationUserRecipe);
-                $entityManager->flush();
+            if ($consultation) {
+                $consultation->setConsultedAt(new \DateTimeImmutable());
+            } else {
+                $consultation = new ConsultationUserRecipe();
+                $consultation->setUser($user);
+                $consultation->setRecipe($recipe);
             }
 
-            foreach($consultedRecipes as $consultedRecipe)
+            $entityManager->persist($consultation);
+            $entityManager->flush();
+
+            foreach ($consultedRecipes as $consultedRecipe)
             {
                 $notesRecipe = $consultedRecipe->getRecipe()->getNotes();
                 $consultedRecipe->getRecipe()->noteRounded = $getStars->getStars($notesRecipe)[0];
@@ -132,27 +151,34 @@ class RecipesController extends AbstractController
             }
         }
 
+        if (empty($consultedRecipes) || count($consultedRecipes) < 3)
+        {
+            foreach ($bestRecipesOfsCategory as $bestRecipeOfsCategory)
+            {
+                $notesRecipe = $bestRecipeOfsCategory->getNotes();
+                $bestRecipeOfsCategory->noteRounded = $getStars->getStars($notesRecipe)[0];
+                $bestRecipeOfsCategory->hasHalfStar = $getStars->getStars($notesRecipe)[1];
+            }
+        }
+
         $recipe->noteRounded = $getStars->getStars($notes)[0];
         $recipe->hasHalfStar = $getStars->getStars($notes)[1];
 
         $comment = new Comments();
-
         $form = $this->createForm(CommentsFormType::class, $comment);
-
         $form->handleRequest($request);
 
-        if($form->isSubmitted() && $form->isValid())
-        {
+        if ($form->isSubmitted() && $form->isValid()) {
             $comment->setRecipes($recipe);
             $comment->setIsActive(true);
             $comment->setUser($user);
 
             $parentId = $form->get('parentid')->getData();
 
-            if($parentId != null)
+            if ($parentId != null) {
                 $parent = $entityManager->getRepository(Comments::class)->find($parentId);
-
-            $comment->setParent($parent ?? null);
+                $comment->setParent($parent);
+            }
 
             $entityManager->persist($comment);
             $entityManager->flush();
@@ -166,7 +192,8 @@ class RecipesController extends AbstractController
             'note' => $noteUser,
             'user' => $user,
             'favorite' => $favorite,
-            'consultedRecipes' => $consultedRecipes
+            'consultedRecipes' => $consultedRecipes,
+            'bestRecipesOfsCategory' => $bestRecipesOfsCategory
         ]);
     }
 

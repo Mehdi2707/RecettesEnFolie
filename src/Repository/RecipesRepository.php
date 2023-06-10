@@ -96,6 +96,22 @@ class RecipesRepository extends ServiceEntityRepository
         return $result;
     }
 
+    public function findBestRecipesOfsCategory($childCategory, $recipe, $maxResult): array
+    {
+        $query = $this->createQueryBuilder('r')
+            ->select('r')
+            ->leftJoin('r.notes', 'n', 'WITH', 'n.id IS NOT NULL')
+            ->where('r.categories = :subCategory')
+            ->andWhere('r != :currentRecipe')
+            ->setParameter('subCategory', $childCategory)
+            ->setParameter('currentRecipe', $recipe)
+            ->groupBy('r.id')
+            ->orderBy('AVG(n.value)', 'DESC')
+            ->setMaxResults($maxResult);
+
+        return $query->getQuery()->getResult();
+    }
+
 //    /**
 //     * @return Recipes[] Returns an array of Recipes objects
 //     */
