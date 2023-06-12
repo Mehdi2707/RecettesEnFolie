@@ -39,6 +39,21 @@ class CommentsRepository extends ServiceEntityRepository
         }
     }
 
+    public function findAdditionalComments($slug, $offset, $limit = 5)
+    {
+        $query = $this->createQueryBuilder('c')
+            ->select('c')
+            ->leftJoin('c.recipes', 'r')
+            ->andWhere('r.slug = :slug')
+            ->setParameter('slug', $slug)
+            ->orderBy('c.createdAt', 'DESC')
+            ->setFirstResult($offset)
+            ->setMaxResults($limit)
+            ->getQuery();
+
+        return $query->getResult();
+    }
+
 //    /**
 //     * @return Comments[] Returns an array of Comments objects
 //     */

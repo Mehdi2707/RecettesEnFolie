@@ -76,7 +76,7 @@ class RecipesRepository extends ServiceEntityRepository
             ->setFirstResult(($page * $limit) - $limit);
 
         if(empty($query->getQuery()->getResult()))
-            $queryBuilder = $this->createQueryBuilder('r')
+            $query = $this->createQueryBuilder('r')
                 ->where('r.title LIKE :search')
                 ->orWhere('r.description LIKE :search')
                 ->setParameter('search', '%' . $search . '%')

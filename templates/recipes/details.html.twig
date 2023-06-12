@@ -194,6 +194,7 @@
                                 </div>
                             {% endif %}
                         {% endfor %}
+                        <button href="#" data-url="{{ path('recipes_load_comments', {slug: recipe.slug}) }}" id="load-comments-btn" class="btn btn-sm btn-info" data-loader="0">Charger plus de commentaires</button>
                     </div>
                 </div>
 

@@ -125,12 +125,13 @@ class RecipesController extends AbstractController
         $noteUser = $notesRepository->findOneBy(['user' => $user, 'recipe' => $recipe]);
         $notes = $recipe->getNotes();
         $favorite = $favoritesRepository->findOneBy(['user' => $user, 'recipes' => $recipe]);
-        $consultedRecipes = $consultationUserRecipeRepository->findRecentlyConsultedRecipes($user, $recipe, 3);
-        $bestRecipesOfsCategory = $recipesRepository->findBestRecipesOfsCategory($childCategory, $recipe, 3);
+        $consultedRecipes = [];
+        $bestRecipesOfsCategory = [];
 
         if ($user) {
             // Mettre à jour la date de consultation pour la recette actuelle
             $consultation = $consultationUserRecipeRepository->findOneBy(['user' => $user, 'recipe' => $recipe]);
+            $consultedRecipes = $consultationUserRecipeRepository->findRecentlyConsultedRecipes($user, $recipe, 3);
 
             if ($consultation) {
                 $consultation->setConsultedAt(new \DateTimeImmutable());
@@ -143,16 +144,31 @@ class RecipesController extends AbstractController
             $entityManager->persist($consultation);
             $entityManager->flush();
 
-            foreach ($consultedRecipes as $consultedRecipe)
+            if(count($consultedRecipes) >= 3)
             {
-                $notesRecipe = $consultedRecipe->getRecipe()->getNotes();
-                $consultedRecipe->getRecipe()->noteRounded = $getStars->getStars($notesRecipe)[0];
-                $consultedRecipe->getRecipe()->hasHalfStar = $getStars->getStars($notesRecipe)[1];
+                foreach ($consultedRecipes as $consultedRecipe) {
+                    $notesRecipe = $consultedRecipe->getRecipe()->getNotes();
+                    $consultedRecipe->getRecipe()->noteRounded = $getStars->getStars($notesRecipe)[0];
+                    $consultedRecipe->getRecipe()->hasHalfStar = $getStars->getStars($notesRecipe)[1];
+                }
+            }
+            else
+            {
+                $consultedRecipes = [];
+                $bestRecipesOfsCategory = $recipesRepository->findBestRecipesOfsCategory($childCategory, $recipe, 3);
+
+                foreach ($bestRecipesOfsCategory as $bestRecipeOfsCategory)
+                {
+                    $notesRecipe = $bestRecipeOfsCategory->getNotes();
+                    $bestRecipeOfsCategory->noteRounded = $getStars->getStars($notesRecipe)[0];
+                    $bestRecipeOfsCategory->hasHalfStar = $getStars->getStars($notesRecipe)[1];
+                }
             }
         }
-
-        if (empty($consultedRecipes) || count($consultedRecipes) < 3)
+        else
         {
+            $bestRecipesOfsCategory = $recipesRepository->findBestRecipesOfsCategory($childCategory, $recipe, 3);
+
             foreach ($bestRecipesOfsCategory as $bestRecipeOfsCategory)
             {
                 $notesRecipe = $bestRecipeOfsCategory->getNotes();
@@ -195,6 +211,15 @@ class RecipesController extends AbstractController
             'consultedRecipes' => $consultedRecipes,
             'bestRecipesOfsCategory' => $bestRecipesOfsCategory
         ]);
+    }
+
+    #[Route('/charger-commentaires/{slug}', name: 'load_comments')]
+    public function loadComments($slug, Request $request, EntityManagerInterface $entityManager, CommentsRepository $commentsRepository): Response
+    {
+        $offset = $request->request->getInt('offset');
+
+        $comments = $commentsRepository->findAdditionalComments($slug, $offset);
+
     }
 
     #[Route('/modification-commentaire', name: 'edit_comment')]
