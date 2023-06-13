@@ -21,6 +21,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use Symfony\Component\Serializer\SerializerInterface;
 
 #[Route('/', name: 'recipes_')]
 class RecipesController extends AbstractController
@@ -102,6 +104,7 @@ class RecipesController extends AbstractController
                             FavoritesRepository $favoritesRepository,
                             ConsultationUserRecipeRepository $consultationUserRecipeRepository,
                             CategoriesRepository $categoriesRepository,
+                            CommentsRepository $commentsRepository,
                             GetStars $getStars): Response
     {
         // Récupérer la catégorie parente et enfant
@@ -180,6 +183,8 @@ class RecipesController extends AbstractController
         $recipe->noteRounded = $getStars->getStars($notes)[0];
         $recipe->hasHalfStar = $getStars->getStars($notes)[1];
 
+        $comments = $commentsRepository->findCommentsPaginated(1, $recipe->getSlug());
+
         $comment = new Comments();
         $form = $this->createForm(CommentsFormType::class, $comment);
         $form->handleRequest($request);
@@ -204,6 +209,7 @@ class RecipesController extends AbstractController
 
         return $this->render('recipes/details.html.twig', [
             'recipe' => $recipe,
+            'comments' => $comments,
             'form' => $form->createView(),
             'note' => $noteUser,
             'user' => $user,
@@ -214,12 +220,13 @@ class RecipesController extends AbstractController
     }
 
     #[Route('/charger-commentaires/{slug}', name: 'load_comments')]
-    public function loadComments($slug, Request $request, EntityManagerInterface $entityManager, CommentsRepository $commentsRepository): Response
+    public function loadComments($slug, Request $request, EntityManagerInterface $entityManager, CommentsRepository $commentsRepository, SerializerInterface $serializer): Response
     {
         $offset = $request->request->getInt('offset');
 
-        $comments = $commentsRepository->findAdditionalComments($slug, $offset);
+        $comments = $commentsRepository->findCommentsPaginated($offset, $slug, 5, true);
 
+        return new JsonResponse($comments);
     }
 
     #[Route('/modification-commentaire', name: 'edit_comment')]

@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Comments;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -52,6 +53,50 @@ class CommentsRepository extends ServiceEntityRepository
             ->getQuery();
 
         return $query->getResult();
+    }
+
+    public function findCommentsPaginated(int $offset, string $slug, int $limit = 5, $ajax = false): array
+    {
+        $limit = abs($limit);
+        $result = [];
+
+        $query = $this->createQueryBuilder('c')
+            ->leftJoin('c.user', 'u')
+            ->leftJoin('c.parent', 'p')
+            ->leftJoin('c.replies', 'rpl')
+            ->leftJoin('rpl.user', 'rplU')
+            ->leftJoin('rpl.parent', 'rplP')
+            ->leftJoin('rpl.replies', 'rplR')
+            ->leftJoin('rplR.user', 'rplRU')
+            ->leftJoin('rplR.parent', 'rplRP')
+            ->join('c.recipes', 'r')
+            ->where("r.slug = :slug")
+            ->andWhere('c.parent IS NULL')
+            ->orderBy('c.createdAt', 'DESC')
+            ->setMaxResults($limit)
+            ->setFirstResult(($offset * $limit) - $limit)
+            ->setParameter('slug', $slug);
+
+        $query->addSelect('PARTIAL u.{id, username}'); // Ajouter l'utilisateur à la sélection
+        $query->addSelect('p'); // Ajouter le parent à la sélection
+        $query->addSelect('rpl');
+        $query->addSelect('rplU');
+        $query->addSelect('rplP');
+        $query->addSelect('rplR');
+        $query->addSelect('rplRU');
+        $query->addSelect('rplRP');
+
+        $paginator = new Paginator($query);
+        $ajax ? $data = $paginator->getQuery()->getArrayResult() : $data = $paginator->getQuery()->getResult();
+
+        $pages = ceil($paginator->count() / $limit);
+
+        $result['data'] = $data;
+        $result['pages'] = $pages;
+        $result['offset'] = $offset;
+        $result['limit'] = $limit;
+
+        return $result;
     }
 
 //    /**

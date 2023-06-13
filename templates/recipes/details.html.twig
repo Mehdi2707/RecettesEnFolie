@@ -118,10 +118,10 @@
                 <div class="row">
                     <div class="col-12 ingredients">
                         <h4>Commentaires</h4>
-                        {% if recipe.comments.empty() %}
+                        {% if comments.data is empty %}
                             <span>Aucun commentaire pour l'instant</span>
                         {% endif %}
-                        {% for comment in recipe.comments %}
+                        {% for comment in comments.data %}
                             {% if comment.parent == null %}
                                 <div class="my-3">
                                     <span>
@@ -182,7 +182,7 @@
                                         {% endif %}
                                             </div>
                                             {% if app.user %}
-                                                <p><a class="btn btn-sm btn-info" href="#ajout-commentaire" data-user="{{ reply.user.username }}" data-reply data-id="{{ reply.id }}">Répondre</a></p>
+                                                <p><a class="btn btn-sm btn-info" href="#ajout-commentaire" data-request="{{ path('recipes_edit_comment') }}" data-user="{{ reply.user.username }}" data-reply data-id="{{ reply.id }}">Répondre</a></p>
                                             {% endif %}
                                         </div>
                                     {% endfor %}
@@ -194,7 +194,9 @@
                                 </div>
                             {% endif %}
                         {% endfor %}
-                        <button href="#" data-url="{{ path('recipes_load_comments', {slug: recipe.slug}) }}" id="load-comments-btn" class="btn btn-sm btn-info" data-loader="0">Charger plus de commentaires</button>
+                        {% if comments.pages > comments.offset %}
+                            <button href="#" data-url="{{ path('recipes_load_comments', {slug: recipe.slug}) }}" data-user="{{ user.username }}" id="load-comments-btn" class="btn btn-sm btn-info" data-offset="1">Charger plus de commentaires</button>
+                        {% endif %}
                     </div>
                 </div>
 
