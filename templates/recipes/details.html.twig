@@ -160,21 +160,21 @@
                                                     {% endif %}
                                                 </div>
                                         {% if reply.replies == true %}
-                                            {% for reply in reply.replies %}
+                                            {% for subReply in reply.replies %}
                                                 <div class="m-2">
                                                 <span>
                                                     Réponse publiée par&nbsp;
-                                                    <a href="{{ path('profile_index', {user: reply.user.username}) }}" class="badge badge-light" style="font-size: 15px;">@{{ reply.user.username }}</a>
-                                                    &nbsp;le {{ reply.createdAt|date("d/m/Y à H:i") }}
-                                                    {% if reply.createdAt != reply.updatedAt %}
-                                                        &nbsp;(modifié le {{ reply.updatedAt|date("d/m/Y à H:i") }})
+                                                    <a href="{{ path('profile_index', {user: subReply.user.username}) }}" class="badge badge-light" style="font-size: 15px;">@{{ subReply.user.username }}</a>
+                                                    &nbsp;le {{ subReply.createdAt|date("d/m/Y à H:i") }}
+                                                    {% if subReply.createdAt != subReply.updatedAt %}
+                                                        &nbsp;(modifié le {{ subReply.updatedAt|date("d/m/Y à H:i") }})
                                                     {% endif %}
                                                 </span>
                                                     <div class="card">
                                                         <div class="card-body">
-                                                            <span class="comment-content">{{ reply.content }}</span>
-                                                            {% if user == reply.user %}
-                                                                <a class="float-right edit-comment-btn" href="#" data-request="{{ path('recipes_edit_comment') }}" data-id="{{ reply.id }}" >Modifier</a>
+                                                            <span class="comment-content">{{ subReply.content }}</span>
+                                                            {% if user == subReply.user %}
+                                                                <a class="float-right edit-comment-btn" href="#" data-request="{{ path('recipes_edit_comment') }}" data-id="{{ subReply.id }}" >Modifier</a>
                                                             {% endif %}
                                                         </div>
                                                     </div>

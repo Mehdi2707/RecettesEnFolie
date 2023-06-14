@@ -161,11 +161,12 @@ $(document).ready(function() {
                     if(comment.replies && comment.replies.length > 2)
                         commentHtml += '</div></div></div></div>';
 
-                    commentHtml += '<p><a class="btn btn-sm btn-info" href="#ajout-commentaire" data-user="' +
-                        comment.user.username +
-                        '" data-reply data-id="' +
-                        comment.id +
-                        '">Répondre</a></p>';
+                    if($("#load-comments-btn").data("user") !== '')
+                        commentHtml += '<p><a class="btn btn-sm btn-info" href="#ajout-commentaire" data-user="' +
+                            comment.user.username +
+                            '" data-reply data-id="' +
+                            comment.id +
+                            '">Répondre</a></p>';
 
                     commentHtml += "</div></div>";
 
@@ -242,17 +243,20 @@ $(document).ready(function() {
 
                             replyHtml += "</div>";
 
-                            if(reply.replies && reply.replies.length > 0)
-                                replyHtml += "</div>";
+                            if(reply.replies && reply.replies.length <= 2 && reply.replies.length > 0)
+                                replyHtml += '</div></div>';
+                            if(reply.replies && reply.replies.length > 2)
+                                replyHtml += '</div></div></div>';
 
                             if (!isNestedReply) {
                                 // Ajouter le bouton "Répondre" uniquement pour les réponses aux commentaires principaux
-                                replyHtml +=
-                                    '<p><a class="btn btn-sm btn-info" href="#ajout-commentaire" data-user="' +
-                                    reply.user.username +
-                                    '" data-reply data-id="' +
-                                    reply.id +
-                                    '">Répondre</a></p>';
+                                if($("#load-comments-btn").data("user") !== '')
+                                    replyHtml +=
+                                        '<p><a class="btn btn-sm btn-info" href="#ajout-commentaire" data-user="' +
+                                        reply.user.username +
+                                        '" data-reply data-id="' +
+                                        reply.id +
+                                        '">Répondre</a></p>';
                             }
                         });
 
