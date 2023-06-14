@@ -96,7 +96,7 @@ class RecipesRepository extends ServiceEntityRepository
         return $result;
     }
 
-    public function findBestRecipesOfsCategory($childCategory, $recipe, $maxResult): array
+    public function findBestRecipesOfsCategory($childCategory, $recipe, $maxResult = 12): array
     {
         $query = $this->createQueryBuilder('r')
             ->select('r')

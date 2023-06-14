@@ -8,6 +8,7 @@
         <script src="{{ asset('assets/js/stars.js') }}" defer></script>
     {% endif %}
     <script src="{{ asset('assets/js/favorites.js') }}" defer></script>
+    <script src="{{ asset('assets/js/flickity.js') }}" defer></script>
 {% endblock %}
 
 {% block body %}
@@ -195,7 +196,7 @@
                             {% endif %}
                         {% endfor %}
                         {% if comments.pages > comments.offset %}
-                            <button href="#" data-url="{{ path('recipes_load_comments', {slug: recipe.slug}) }}" data-user="{{ user.username }}" id="load-comments-btn" class="btn btn-sm btn-info" data-offset="1">Charger plus de commentaires</button>
+                            <button href="#" data-url="{{ path('recipes_load_comments', {slug: recipe.slug}) }}" data-user="{{ user ? user.username : '' }}" id="load-comments-btn" class="btn btn-sm btn-info">Charger plus de commentaires</button>
                         {% endif %}
                     </div>
                 </div>
@@ -259,13 +260,22 @@
                         {% endif %}
                     </div>
                 </div>
+
                 <div class="row mt-3">
                     {% if consultedRecipes is empty %}
                         <div class="col-12 mb-3">
                             <h5>Vous pourriez également aimer ces recettes :</h5>
                         </div>
+                    {% else %}
+                        <div class="col-12 mb-3">
+                            <h5>D'après vos récentes consultations, vous pourriez aimer ces recettes :</h5>
+                        </div>
+                    {% endif %}
+                </div>
+                {% if consultedRecipes is empty %}
+                    <div class="carousel mb-5" data-flickity='{ "groupCells": true }'>
                         {% for recipe in bestRecipesOfsCategory %}
-                            <div class="col-12 col-sm-6 col-lg-4">
+                            <div class="carousel-cell col-12 col-sm-6 col-lg-4">
                                 <a href="{{ path('recipes_details', {slug: recipe.slug, category: recipe.categories.parent.slug, sCategory: recipe.categories.slug}) }}">
                                     <div class="single-best-receipe-area mb-30 text-center">
                                         <img style="height: 15rem;" src="{% if recipe.images[0] is defined %}{{ asset('assets/uploads/recipes/' ~ recipe.images[0].name) }}{% else %}{{ asset('assets/img/bg-img/r5.jpg') }}{% endif %}" alt="{{ recipe.title }}">
@@ -280,12 +290,11 @@
                                 </a>
                             </div>
                         {% endfor %}
-                    {% else %}
-                        <div class="col-12 mb-3">
-                            <h5>D'après vos récentes consultations, vous pourriez aimer ces recettes :</h5>
-                        </div>
+                    </div>
+                {% else %}
+                    <div class="carousel mb-5" data-flickity='{ "groupCells": true }'>
                         {% for recipe in consultedRecipes %}
-                            <div class="col-12 col-sm-6 col-lg-4">
+                            <div class="carousel-cell col-12 col-sm-6 col-lg-4">
                                 <a href="{{ path('recipes_details', {slug: recipe.recipe.slug, category: recipe.recipe.categories.parent.slug, sCategory: recipe.recipe.categories.slug}) }}">
                                     <div class="single-best-receipe-area mb-30 text-center">
                                         <img style="height: 15rem;" src="{% if recipe.recipe.images[0] is defined %}{{ asset('assets/uploads/recipes/' ~ recipe.recipe.images[0].name) }}{% else %}{{ asset('assets/img/bg-img/r5.jpg') }}{% endif %}" alt="{{ recipe.recipe.title }}">
@@ -300,9 +309,10 @@
                                 </a>
                             </div>
                         {% endfor %}
-                    {% endif %}
-                </div>
+                    </div>
+                {% endif %}
             </div>
+
             <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">

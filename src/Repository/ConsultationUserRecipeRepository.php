@@ -39,7 +39,7 @@ class ConsultationUserRecipeRepository extends ServiceEntityRepository
         }
     }
 
-    public function findRecentlyConsultedRecipes($user, $currentRecipe, $maxResult)
+    public function findRecentlyConsultedRecipes($user, $currentRecipe, $maxResult = 12)
     {
         return $this->createQueryBuilder('c')
             ->select('c, r')

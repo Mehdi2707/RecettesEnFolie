@@ -134,7 +134,7 @@ class RecipesController extends AbstractController
         if ($user) {
             // Mettre à jour la date de consultation pour la recette actuelle
             $consultation = $consultationUserRecipeRepository->findOneBy(['user' => $user, 'recipe' => $recipe]);
-            $consultedRecipes = $consultationUserRecipeRepository->findRecentlyConsultedRecipes($user, $recipe, 3);
+            $consultedRecipes = $consultationUserRecipeRepository->findRecentlyConsultedRecipes($user, $recipe);
 
             if ($consultation) {
                 $consultation->setConsultedAt(new \DateTimeImmutable());
@@ -158,7 +158,7 @@ class RecipesController extends AbstractController
             else
             {
                 $consultedRecipes = [];
-                $bestRecipesOfsCategory = $recipesRepository->findBestRecipesOfsCategory($childCategory, $recipe, 3);
+                $bestRecipesOfsCategory = $recipesRepository->findBestRecipesOfsCategory($childCategory, $recipe);
 
                 foreach ($bestRecipesOfsCategory as $bestRecipeOfsCategory)
                 {
@@ -170,7 +170,7 @@ class RecipesController extends AbstractController
         }
         else
         {
-            $bestRecipesOfsCategory = $recipesRepository->findBestRecipesOfsCategory($childCategory, $recipe, 3);
+            $bestRecipesOfsCategory = $recipesRepository->findBestRecipesOfsCategory($childCategory, $recipe);
 
             foreach ($bestRecipesOfsCategory as $bestRecipeOfsCategory)
             {
