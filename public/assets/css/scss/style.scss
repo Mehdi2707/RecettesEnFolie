@@ -741,7 +741,7 @@ textarea:focus {
     }
     &:hover .owl-prev,
     &:hover .owl-next {
-        opacity: 1;
+        opacity: 0.6;
         visibility: visible;
     }
     .owl-dots {
@@ -1233,7 +1233,7 @@ textarea:focus {
     }
     &:hover .owl-prev,
     &:hover .owl-next {
-        opacity: 1;
+        opacity: 0.6;
         visibility: visible;
     }
 }
