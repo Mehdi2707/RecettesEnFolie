@@ -79,6 +79,12 @@ class Recipes
     #[ORM\OneToMany(mappedBy: 'recipe_id', targetEntity: ConsultationUserRecipe::class, orphanRemoval: true)]
     private Collection $consultationUserRecipes;
 
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $message_status = null;
+
+    #[ORM\OneToMany(mappedBy: 'recipe', targetEntity: RecipeStatus::class)]
+    private Collection $recipeStatus;
+
     public function __construct()
     {
         $this->steps = new ArrayCollection();
@@ -90,6 +96,7 @@ class Recipes
         $this->ingredients = new ArrayCollection();
         $this->notes = new ArrayCollection();
         $this->consultationUserRecipes = new ArrayCollection();
+        $this->recipeStatus = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -403,6 +410,48 @@ class Recipes
             // set the owning side to null (unless already changed)
             if ($consultationUserRecipe->getRecipeId() === $this) {
                 $consultationUserRecipe->setRecipeId(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getMessageStatus(): ?string
+    {
+        return $this->message_status;
+    }
+
+    public function setMessageStatus(?string $message_status): self
+    {
+        $this->message_status = $message_status;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, RecipeStatus>
+     */
+    public function getRecipeStatus(): Collection
+    {
+        return $this->recipeStatus;
+    }
+
+    public function addRecipeStatus(RecipeStatus $recipeStatus): self
+    {
+        if (!$this->recipeStatus->contains($recipeStatus)) {
+            $this->recipeStatus->add($recipeStatus);
+            $recipeStatus->setRecipe($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRecipeStatus(RecipeStatus $recipeStatus): self
+    {
+        if ($this->recipeStatus->removeElement($recipeStatus)) {
+            // set the owning side to null (unless already changed)
+            if ($recipeStatus->getRecipe() === $this) {
+                $recipeStatus->setRecipe(null);
             }
         }
 
