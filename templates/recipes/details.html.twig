@@ -96,7 +96,7 @@
                             <h4>Ingrédients</h4>
                             {% for ingredient in recipe.ingredients %}
                                 <div style="font-size: 18px;">
-                                    <span class="font-weight-bold">- {{ ingredient.quantity|number_format(2, '.', '')|trim('0')|trim('.')|replace({'.': ','}) }} {{ ingredient.unit.name == 'unité' ? '' : ingredient.unit.name }} {{ ingredient.name }}</span>
+                                    <span class="font-weight-bold">- {{ ingredient.quantity|number_format(2, '.', '')|trim('0')|trim('.')|replace({'.': ','}) }} {{ ingredient.unit.name == 'pièce' ? '' : ingredient.unit.name }} {{ ingredient.name }}</span>
                                 </div>
                             {% endfor %}
                         </div>
