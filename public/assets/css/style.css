@@ -998,7 +998,7 @@ textarea:focus {
     left: auto;
     right: 4%; }
   .receipe-slider:hover .owl-prev, .receipe-slider:hover .owl-next {
-    opacity: 0.6;
+    opacity: 1;
     visibility: visible; }
 
 .receipe-headline span {

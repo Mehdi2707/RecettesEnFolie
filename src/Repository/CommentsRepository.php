@@ -73,6 +73,8 @@ class CommentsRepository extends ServiceEntityRepository
             ->where("r.slug = :slug")
             ->andWhere('c.parent IS NULL')
             ->orderBy('c.createdAt', 'DESC')
+            ->setMaxResults($limit)
+            ->setFirstResult(($offset * $limit) - $limit)
             ->setParameter('slug', $slug);
 
         $query->addSelect('PARTIAL u.{id, username}'); // Ajouter l'utilisateur à la sélection
@@ -84,15 +86,10 @@ class CommentsRepository extends ServiceEntityRepository
         $query->addSelect('rplRU');
         $query->addSelect('rplRP');
 
-        $ajax ? $results = $query->getQuery()->getArrayResult() : $results = $query->getQuery()->getResult();
+        $paginator = new Paginator($query);
+        $ajax ? $data = $paginator->getQuery()->getArrayResult() : $data = $paginator->getQuery()->getResult();
 
-        $totalResults = count($results);
-        $start = ($offset - 1) * $limit;
-        $end = $start + $limit;
-
-        $data = array_slice($results, $start, $limit);
-
-        $pages = ceil($totalResults / $limit);
+        $pages = ceil($paginator->count() / $limit);
 
         $result['data'] = $data;
         $result['pages'] = $pages;

@@ -187,7 +187,6 @@ $(document).ready(function() {
                         replyHtml += '<div class="replies">';
 
                         replies.forEach(function(reply) {
-
                             const createdAtR = reply.createdAt;
                             const updatedAtR = reply.updatedAt;
 
@@ -221,7 +220,8 @@ $(document).ready(function() {
                                 " à " +
                                 formattedCTimeR;
 
-                            isFirstIteration = false;
+                            if(isFirstIteration)
+                                isFirstIteration = false;
 
                             if (createdAtObjR.getTime() !== updatedAtObjR.getTime()) {
                                 replyHtml +=

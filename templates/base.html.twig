@@ -85,9 +85,6 @@
 
         {% include "_partials/_header.html.twig" %}
 
-        <div id="fb-root"></div>
-        <script async defer crossorigin="anonymous" src="https://connect.facebook.net/fr_FR/sdk.js#xfbml=1&version=v17.0&appId=510141992429352&autoLogAppEvents=1" nonce="aoMKyaCM"></script>
-
         {% if app.user and app.user.isVerified == false %}
             <div class="alert alert-warning alert-dismissible" role="alert">
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
