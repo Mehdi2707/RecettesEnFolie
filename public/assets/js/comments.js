@@ -213,6 +213,9 @@ $(document).ready(function() {
                                 " à " +
                                 formattedCTimeR;
 
+                            if(isFirstIteration)
+                                isFirstIteration = false;
+                            
                             if (createdAtObjR.getTime() !== updatedAtObjR.getTime()) {
                                 replyHtml +=
                                     '&nbsp;(modifié le ' +
