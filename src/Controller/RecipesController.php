@@ -35,9 +35,10 @@ class RecipesController extends AbstractController
     }
 
     #[Route('/recettes/{category}', name: 'category')]
-    public function category($category, CategoriesRepository $categoriesRepository, GetStars $getStars): Response
+    public function category($category, CategoriesRepository $categoriesRepository, RecipesRepository $recipesRepository, GetStars $getStars): Response
     {
         $parentCategory = $categoriesRepository->findOneBy(['slug' => $category]);
+        $childCategory = $categoriesRepository->findChildCategories($parentCategory);
 
         if($parentCategory == null)
         {
@@ -47,10 +48,14 @@ class RecipesController extends AbstractController
 
         $categories = [];
 
-        foreach($parentCategory->getCategories() as $category)
+        foreach($childCategory as $category)
         {
-            $categories[$category->getName()] = $category->getRecipes();
-            foreach($categories[$category->getName()] as $recipe)
+            $categories[$category->getName()] = $recipesRepository->findRecipesOfsCategoryValidated($category->getSlug());
+        }
+
+        foreach($categories as $category)
+        {
+            foreach($category as $recipe)
             {
                 $notes = $recipe->getNotes();
 
@@ -119,7 +124,7 @@ class RecipesController extends AbstractController
         // Récupérer la recette
         $recipe = $recipesRepository->findOneBy(['slug' => $slug]);
 
-        if (!$recipe) {
+        if (!$recipe || $recipe->getRecipeStatus()->getName() != 'valide') {
             $this->addFlash('warning', 'Un problème est survenu');
             return $this->redirectToRoute('recipes_sousCategory', ['category' => $category, 'sCategory' => $sCategory]);
         }

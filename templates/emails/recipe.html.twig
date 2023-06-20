@@ -1,0 +1,15 @@
+<div style="text-align: center;">
+    {% set imagePath = absolute_url(asset('assets/img/core-img/logo.png')) %}
+    <img src="{{ imagePath }}" alt="Logo" width="305" style="display: block; margin: 0 auto;" />
+</div>
+<h1>Votre publication de {{ recipe.title }} sur Recettes en folie</h1>
+<p>Bonjour {{ user.username }},</p>
+
+<p>Vous avez publié une nouvelle recette sur notre site et nous vous en remercions,</p>
+<br>
+<p>Notre équipe va maintenant prendre le relais pour vérifier si les informations apportées sont corrects.</p>
+<p>Si tout est bon votre recette sera validée et directement publié sur notre site.</p>
+<p>Dans le cas contraire, nous vous informerons des modifications à apporté.</p>
+<br>
+<p>D'ici 48h vous serez notifié par email de l'état de votre recette,</p>
+<p>En attendant n'hésitez pas à aller consulter nos recettes du moment : <a href="{{ absolute_url(path('app_home')) }}">Recettes en folie</a></p>

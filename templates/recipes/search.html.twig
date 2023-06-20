@@ -17,22 +17,8 @@
                 {% if recipes.data is empty %}
                     <span class="mb-5">Aucun résultat ! Essayez de faire une recherche sur un mot clé tel que 'burger' ou encore 'pâtes'</span>
                 {% else %}
-                    {% for recipe in recipes.data %}
-                        <div class="col-12 col-sm-6 col-lg-4">
-                            <a href="{{ path('recipes_details', {slug: recipe.slug, category: recipe.categories.parent.slug, sCategory: recipe.categories.slug}) }}">
-                                <div class="single-best-receipe-area mb-30 text-center">
-                                    <img style="height: 15rem;" src="{% if recipe.images[0] is defined %}{{ asset('assets/uploads/recipes/' ~ recipe.images[0].name) }}{% else %}{{ asset('assets/img/bg-img/r5.jpg') }}{% endif %}" alt="{{ recipe.title }}">
-                                    <div class="receipe-content">
-                                        <h5>{{ recipe.title }}</h5>
-                                        <div class="ratings">
-                                            {% set recipeStars = { recipe } %}
-                                            {% include '_partials/_stars.html.twig' with recipeStars %}
-                                        </div>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                    {% endfor %}
+                    {% set _recipes = recipes.data %}
+                    {% include '_partials/_recipes.html.twig' with _recipes %}
                 {% endif %}
             </div>
             {% set path = 'recipes_search_recipes' %}

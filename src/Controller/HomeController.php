@@ -21,7 +21,7 @@ class HomeController extends AbstractController
         if($request->query->has('status') && $request->query->has('message'))
             $this->addFlash($request->query->get('status'), $request->query->get('message'));
 
-        $recipes = $recipesRepository->findBy([], ['createdAt' => 'desc']);
+        $recipes = $recipesRepository->findRecentRecipesValidated();
 
         foreach($recipes as $recipe)
         {

@@ -40,6 +40,43 @@ class RecipesRepository extends ServiceEntityRepository
         }
     }
 
+    public function findRecentRecipesValidated(): array
+    {
+        return $this->createQueryBuilder('r')
+            ->leftJoin('r.recipeStatus', 'rs')
+            ->where('rs.name = :status')
+            ->setParameter('status', 'valide')
+            ->orderBy('r.createdAt', 'desc')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findRecipesValidatedUser($user): array
+    {
+        return $this->createQueryBuilder('r')
+            ->leftJoin('r.recipeStatus', 'rs')
+            ->leftJoin('r.user', 'u')
+            ->where('rs.name = :status')
+            ->andWhere('u = :user')
+            ->setParameter('user', $user)
+            ->setParameter('status', 'valide')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findRecipesOfsCategoryValidated($slug): array
+    {
+        return $this->createQueryBuilder('r')
+            ->leftJoin('r.recipeStatus', 'rs')
+            ->leftJoin('r.categories', 'c')
+            ->where('c.slug = :slug')
+            ->andWhere('rs.name = :status')
+            ->setParameter('status', 'valide')
+            ->setParameter('slug', $slug)
+            ->getQuery()
+            ->getResult();
+    }
+
     public function findRecipesPaginated(int $page, string $slug, int $limit = 12): array
     {
         $limit = abs($limit);
@@ -47,7 +84,11 @@ class RecipesRepository extends ServiceEntityRepository
 
         $query = $this->createQueryBuilder('r')
             ->join('r.categories', 'c')
+            ->leftJoin('r.recipeStatus', 'rs')
             ->where("c.slug = '$slug'")
+            ->andWhere('rs.name = :status')
+            ->setParameter('status', 'valide')
+
         ->setMaxResults($limit)
         ->setFirstResult(($page * $limit) - $limit);
 
@@ -70,15 +111,21 @@ class RecipesRepository extends ServiceEntityRepository
         $result = [];
 
         $query = $this->createQueryBuilder('r')
+            ->leftJoin('r.recipeStatus', 'rs')
             ->where('MATCH_AGAINST(r.title, r.description) AGAINST (:search boolean)>0')
+            ->andWhere('rs.name = :status')
+            ->setParameter('status', 'valide')
             ->setParameter('search', $search)
             ->setMaxResults($limit)
             ->setFirstResult(($page * $limit) - $limit);
 
         if(empty($query->getQuery()->getResult()))
             $query = $this->createQueryBuilder('r')
+                ->leftJoin('r.recipeStatus', 'rs')
                 ->where('r.title LIKE :search')
                 ->orWhere('r.description LIKE :search')
+                ->andWhere('rs.name = :status')
+                ->setParameter('status', 'valide')
                 ->setParameter('search', '%' . $search . '%')
                 ->setMaxResults($limit)
                 ->setFirstResult(($page * $limit) - $limit);
@@ -101,8 +148,11 @@ class RecipesRepository extends ServiceEntityRepository
         $query = $this->createQueryBuilder('r')
             ->select('r')
             ->leftJoin('r.notes', 'n', 'WITH', 'n.id IS NOT NULL')
+            ->leftJoin('r.recipeStatus', 'rs')
             ->where('r.categories = :subCategory')
+            ->andWhere('rs.name = :status')
             ->andWhere('r != :currentRecipe')
+            ->setParameter('status', 'valide')
             ->setParameter('subCategory', $childCategory)
             ->setParameter('currentRecipe', $recipe)
             ->groupBy('r.id')

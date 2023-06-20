@@ -4,12 +4,14 @@ namespace App\Controller;
 
 use App\Entity\Images;
 use App\Entity\Recipes;
+use App\Entity\RecipeStatus;
 use App\Entity\Users;
 use App\Form\ProfileFormType;
 use App\Form\RecipesFormType;
 use App\Repository\FavoritesRepository;
 use App\Service\GetStars;
 use App\Service\PictureService;
+use App\Service\SendMailService;
 use Doctrine\DBAL\Exception;
 use Doctrine\ORM\EntityManagerInterface;
 use Ramsey\Uuid\Uuid;
@@ -118,7 +120,7 @@ class ProfileController extends AbstractController
                 return $this->redirectToRoute('app_home');
             }
 
-            $recipes = $entityManager->getRepository(Recipes::class)->findBy(['user' => $user]);
+            $recipes = $entityManager->getRepository(Recipes::class)->findRecipesValidatedUser($user);
 
             foreach($recipes as $recipe)
             {
@@ -136,7 +138,7 @@ class ProfileController extends AbstractController
     }
 
     #[Route('/recette/ajout', name: 'recipe_add')]
-    public function add(EntityManagerInterface $entityManager, Request $request, SluggerInterface $slugger, PictureService $pictureService): Response
+    public function add(EntityManagerInterface $entityManager, Request $request, SluggerInterface $slugger, PictureService $pictureService, SendMailService $mailService): Response
     {
         if(!$this->getUser()->getIsVerified())
         {
@@ -144,6 +146,7 @@ class ProfileController extends AbstractController
             return $this->redirectToRoute('profile_index', ['user' => $this->getUser()->getUsername()]);
         }
         $recipe = new Recipes();
+        $status = new RecipeStatus();
 
         $form = $this->createForm(RecipesFormType::class, $recipe);
 
@@ -168,6 +171,8 @@ class ProfileController extends AbstractController
 
             $recipe->setSlug($slug);
             $recipe->setUser($this->getUser());
+            $status->setName('en attente');
+            $recipe->setRecipeStatus($status);
 
             $ingredientsForm = $form->get('ingredients');
             $hasIngredients = false;
@@ -204,9 +209,17 @@ class ProfileController extends AbstractController
             }
 
             $entityManager->persist($recipe);
+            $entityManager->persist($status);
             $entityManager->flush();
 
-            $this->addFlash('success', 'Recette publié avec succès');
+            $mailService->send(
+                $this->getParameter('app.mailaddress'),
+                $this->getUser()->getEmail(),
+                'Suite à la publication de votre recette - Recettes en folie',
+                'recipe',
+                [ 'user' => $this->getUser(), 'recipe' => $recipe ]
+            );
+            $this->addFlash('success', 'Votre recette à été soumis à notre équipe de modération');
             return $this->redirectToRoute('profile_index', ['user' => $this->getUser()->getUsername()]);
         }
 
@@ -216,7 +229,7 @@ class ProfileController extends AbstractController
     }
 
     #[Route('/recette/edition/{slug}', name: 'recipe_edit')]
-    public function edit(Recipes $recipes, EntityManagerInterface $entityManager, Request $request, SluggerInterface $slugger, PictureService $pictureService): Response
+    public function edit(Recipes $recipes, EntityManagerInterface $entityManager, Request $request, SluggerInterface $slugger, PictureService $pictureService, SendMailService $mailService): Response
     {
         $userRecipe = $recipes->getUser();
         $user = $this->getUser();
@@ -248,6 +261,9 @@ class ProfileController extends AbstractController
             $id = $parts[1];
             $slug = $slugger->slug($recipes->getTitle())->lower() . '-i-' . $id;
             $recipes->setSlug($slug);
+            $status = $recipes->getRecipeStatus();
+            $status->setName('en attente');
+            $recipes->setRecipeStatus($status);
 
             $recipes->setUpdatedAt(new \DateTimeImmutable());
 
@@ -285,10 +301,18 @@ class ProfileController extends AbstractController
                 ]);
             }
 
+            $entityManager->persist($status);
             $entityManager->persist($recipes);
             $entityManager->flush();
 
-            $this->addFlash('success', 'Recette modifié avec succès');
+            $mailService->send(
+                $this->getParameter('app.mailaddress'),
+                $this->getUser()->getEmail(),
+                'Suite à la modification de votre recette - Recettes en folie',
+                'recipe',
+                [ 'user' => $this->getUser(), 'recipe' => $recipes ]
+            );
+            $this->addFlash('success', 'Votre recette à été soumis à notre équipe de modération');
             return $this->redirectToRoute('profile_index', ['user' => $user->getUsername()]);
         }
 

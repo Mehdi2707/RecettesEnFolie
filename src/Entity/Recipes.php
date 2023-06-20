@@ -79,6 +79,10 @@ class Recipes
     #[ORM\OneToMany(mappedBy: 'recipe_id', targetEntity: ConsultationUserRecipe::class, orphanRemoval: true)]
     private Collection $consultationUserRecipes;
 
+    #[ORM\ManyToOne(inversedBy: 'recipe_status')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?RecipeStatus $recipeStatus = null;
+
     public function __construct()
     {
         $this->steps = new ArrayCollection();
@@ -405,6 +409,18 @@ class Recipes
                 $consultationUserRecipe->setRecipeId(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getRecipeStatus(): ?RecipeStatus
+    {
+        return $this->recipeStatus;
+    }
+
+    public function setRecipeStatus(?RecipeStatus $recipeStatus): self
+    {
+        $this->recipeStatus = $recipeStatus;
 
         return $this;
     }

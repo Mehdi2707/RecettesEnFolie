@@ -44,10 +44,13 @@ class ConsultationUserRecipeRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('c')
             ->select('c, r')
             ->leftJoin('c.recipe', 'r')
+            ->leftJoin('r.recipeStatus', 'rs')
+            ->where('rs.name = :status')
             ->andWhere('c.user = :user')
             ->andWhere('r != :currentRecipe')
             ->orderBy('c.consultedAt', 'DESC')
             ->setMaxResults($maxResult)
+            ->setParameter('status', 'valide')
             ->setParameter('user', $user)
             ->setParameter('currentRecipe', $currentRecipe)
             ->getQuery()->getResult();
