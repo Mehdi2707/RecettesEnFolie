@@ -156,16 +156,10 @@ $(document).ready(function() {
 
                     commentHtml += "</div>";
 
-                    if(comment.replies)
-                    {
-                        var lengthReply = 1;
-
-                        while(lengthReply <= comment.replies.length)
-                        {
-                            commentHtml += '</div>';
-                            lengthReply++;
-                        }
-                    }
+                   if(comment.replies && comment.replies.length <= 2 && comment.replies.length > 0)
+                        commentHtml += '</div>';
+                    if(comment.replies && comment.replies.length > 2)
+                        commentHtml += '</div></div></div></div>';
 
                     if($("#load-comments-btn").data("user") !== '')
                         commentHtml += '<p><a class="btn btn-sm btn-info" href="#ajout-commentaire" data-user="' +
@@ -181,7 +175,6 @@ $(document).ready(function() {
 
                 function generateReplyHTML(replies, isNestedReply) {
                     var replyHtml = "";
-                    var isFirstIteration = true;
 
                     if (replies && replies.length > 0) {
                         replyHtml += '<div class="replies">';
@@ -206,7 +199,7 @@ $(document).ready(function() {
                             });
 
                             replyHtml +=
-                                '<div class="' + (isFirstIteration === true ? 'm-2' : '') + '">' +
+                                '<div class="m-2">' +
                                 '<span>' +
                                 'Réponse publiée par&nbsp;' +
                                 '<a href="' +
@@ -219,9 +212,6 @@ $(document).ready(function() {
                                 formattedCDateR +
                                 " à " +
                                 formattedCTimeR;
-
-                            if(isFirstIteration)
-                                isFirstIteration = false;
 
                             if (createdAtObjR.getTime() !== updatedAtObjR.getTime()) {
                                 replyHtml +=
@@ -253,16 +243,10 @@ $(document).ready(function() {
 
                             replyHtml += "</div>";
 
-                            if(reply.replies)
-                            {
-                                var lengthReply = 1;
-
-                                while(lengthReply <= reply.replies.length)
-                                {
-                                    replyHtml += '</div>';
-                                    lengthReply++;
-                                }
-                            }
+                            if(reply.replies && reply.replies.length <= 2 && reply.replies.length > 0)
+                                replyHtml += '</div></div>';
+                            if(reply.replies && reply.replies.length > 2)
+                                replyHtml += '</div></div></div>';
 
                             if (!isNestedReply) {
                                 // Ajouter le bouton "Répondre" uniquement pour les réponses aux commentaires principaux
