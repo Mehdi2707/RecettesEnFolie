@@ -17,6 +17,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -237,6 +238,15 @@ class ProfileController extends AbstractController
         if($userRecipe !== $user)
             return $this->redirectToRoute('profile_index', ['user' => $user->getUsername()]);
 
+        $originalTitle = $recipes->getTitle();
+        $originalDescription = $recipes->getDescription();
+        $originalPreparation = $recipes->getPreparationTime();
+        $originalCooking = $recipes->getCookingTime();
+        $originalServings = $recipes->getNumberOfServings();
+        $originalCategory = $recipes->getCategories();
+        $originalIngredients = $recipes->getIngredients();
+        $originalSteps = $recipes->getSteps();
+
         $form = $this->createForm(RecipesFormType::class, $recipes);
 
         $form->handleRequest($request);
@@ -256,63 +266,53 @@ class ProfileController extends AbstractController
                 $recipes->addImage($img);
             }
 
-            $slug = $recipes->getSlug();
-            $parts = explode("-i-", $slug);
-            $id = $parts[1];
-            $slug = $slugger->slug($recipes->getTitle())->lower() . '-i-' . $id;
-            $recipes->setSlug($slug);
-            $status = $recipes->getRecipeStatus();
-            $status->setName('en attente');
-            $recipes->setRecipeStatus($status);
-
             $recipes->setUpdatedAt(new \DateTimeImmutable());
 
-            $ingredientsForm = $form->get('ingredients');
-            $hasIngredients = false;
-            foreach ($ingredientsForm as $ingredientForm) {
-                if (!empty($ingredientForm->get('name')->getData()) && !empty($ingredientForm->get('quantity')->getData())) {
-                    $hasIngredients = true;
-                    break;
-                }
-            }
-
-            $stepsForm = $form->get('steps');
-            $hasSteps = false;
-            foreach ($stepsForm as $stepForm) {
-                if (!empty($stepForm->get('description')->getData())) {
-                    $hasSteps = true;
-                    break;
-                }
-            }
-
-            if (!$hasIngredients)
+            if( $originalTitle !== $recipes->getTitle() ||
+                $originalDescription !== $recipes->getDescription() ||
+                $originalPreparation !== $recipes->getPreparationTime() ||
+                $originalCooking !== $recipes->getCookingTime() ||
+                $originalServings !== $recipes->getNumberOfServings() ||
+                $originalCategory !== $recipes->getCategories() ||
+                $originalIngredients !== $recipes->getIngredients() ||
+                $originalSteps !== $recipes->getSteps())
             {
-                $this->addFlash('danger', 'Veuillez ajouter au moins un ingrédient');
-                return $this->render('profile/recipe/edit.html.twig', [
-                    'recipeForm' => $form->createView(),
-                ]);
-            }
+                $this->updateRecipeChanges($recipes, $slugger);
 
-            if (!$hasSteps)
+                if (!$this->hasIngredients($form) || !$this->hasSteps($form))
+                {
+                    $this->addFlash('danger', 'Veuillez ajouter au moins un ingrédient et une étape');
+                    return $this->render('profile/recipe/edit.html.twig', [
+                        'recipeForm' => $form->createView(),
+                    ]);
+                }
+
+                $entityManager->beginTransaction();
+                try {
+                    $entityManager->persist($recipes);
+                    $entityManager->flush();
+                    $entityManager->commit();
+                } catch (\Exception $e) {
+                    $entityManager->rollback();
+                    throw $e;
+                }
+
+                $mailService->send(
+                    $this->getParameter('app.mailaddress'),
+                    $this->getUser()->getEmail(),
+                    'Suite à la modification de votre recette - Recettes en folie',
+                    'recipe',
+                    [ 'user' => $this->getUser(), 'recipe' => $recipes ]
+                );
+
+                $this->addFlash('success', 'Vos modifications ont été soumis à notre équipe de modération');
+            }
+            else
             {
-                $this->addFlash('danger', 'Veuillez ajouter au moins une étape');
-                return $this->render('profile/recipe/edit.html.twig', [
-                    'recipeForm' => $form->createView(),
-                ]);
+                $entityManager->flush();
+                $this->addFlash('success', 'Votre recette à bien été modifié');
             }
 
-            $entityManager->persist($status);
-            $entityManager->persist($recipes);
-            $entityManager->flush();
-
-            $mailService->send(
-                $this->getParameter('app.mailaddress'),
-                $this->getUser()->getEmail(),
-                'Suite à la modification de votre recette - Recettes en folie',
-                'recipe',
-                [ 'user' => $this->getUser(), 'recipe' => $recipes ]
-            );
-            $this->addFlash('success', 'Votre recette à été soumis à notre équipe de modération');
             return $this->redirectToRoute('profile_index', ['user' => $user->getUsername()]);
         }
 
@@ -320,6 +320,41 @@ class ProfileController extends AbstractController
             'recipe' => $recipes,
             'recipeForm' => $form->createView()
         ]);
+    }
+
+    private function updateRecipeChanges(Recipes $recipes, SluggerInterface $slugger)
+    {
+        $slug = $recipes->getSlug();
+        $parts = explode("-i-", $slug);
+        $id = $parts[1];
+        $slug = $slugger->slug($recipes->getTitle())->lower() . '-i-' . $id;
+        $recipes->setSlug($slug);
+
+        $status = $recipes->getRecipeStatus();
+        $status->setName('en attente');
+        $recipes->setRecipeStatus($status);
+    }
+
+    private function hasIngredients(FormInterface $form): bool
+    {
+        $ingredientsForm = $form->get('ingredients');
+        foreach ($ingredientsForm as $ingredientForm) {
+            if (!empty($ingredientForm->get('name')->getData()) && !empty($ingredientForm->get('quantity')->getData())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private function hasSteps(FormInterface $form): bool
+    {
+        $stepsForm = $form->get('steps');
+        foreach ($stepsForm as $stepForm) {
+            if (!empty($stepForm->get('description')->getData())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     #[Route('/suppression/image/{id}', name: 'recipe_delete_image', methods: ['DELETE'])]

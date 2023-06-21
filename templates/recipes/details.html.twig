@@ -84,7 +84,7 @@
                 <div class="row mb-3">
                     <div class="col-12 receipe-headline">
                         <h2 class="mb-5">{{ recipe.title }}</h2>
-                        <h5>{{ recipe.description }}</h5>
+                        <h5>{{ recipe.description|nl2br }}</h5>
                         <div class="receipe-duration mt-5">
                             <h6>Difficulté : {{ recipe.difficultyLevel.name|capitalize }}</h6>
                             <h6>Temps de préparation : {{ recipe.preparationTime }} min</h6>

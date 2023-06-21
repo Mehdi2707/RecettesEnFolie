@@ -1,0 +1,16 @@
+<div style="text-align: center;">
+    {% set imagePath = absolute_url(asset('assets/img/core-img/logo.png')) %}
+    <img src="{{ imagePath }}" alt="Logo" width="305" style="display: block; margin: 0 auto;" />
+</div>
+<h1>Votre recette {{ recipe.title }} à été refusé sur Recettes en folie</h1>
+<p>Bonjour {{ user.username }},</p>
+
+<p>Vous avez publié une nouvelle recette sur notre site et nous vous en remercions,</p>
+<br>
+<p>Votre recette n'est pas conforme, nous vous prions de bien vouloir vérifier les modifications à apporté pour que votre recette soit validé.</p>
+<p>Voici le message de l'équipe de modération pour vous aider à corriger la recette :</p>
+<br>
+<p>{{ message|nl2br }}</p>
+<br>
+<p>Vous trouverez également le message de l'équipe de modération sur votre compte.</p>
+<p>A bientôt sur Recettes en folie !</p>

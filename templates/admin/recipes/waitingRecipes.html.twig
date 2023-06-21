@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des recettes en attente (Administration){% endblock %}
+
+{% block body %}
+    <section class="container">
+        <div class="row">
+            {% include "_partials/_adminnav.html.twig" %}
+            <div class="col">
+                <h1>Liste des recettes en attente</h1>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Titre</th>
+                            <th>Description</th>
+                            <th>Slug</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for recipe in recipes %}
+                        <tr>
+                            <td>{{ recipe.id }}</td>
+                            <td>{{ recipe.title }}</td>
+                            <td>{{ recipe.description }}</td>
+                            <td>{{ recipe.slug }}</td>
+                            <td>
+                                <a class="btn btn-sm btn-warning" href="{{ path('admin_recipes_verify', {id: recipe.id}) }}"><i class="fa fa-eye"></i></a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+{% endblock %}

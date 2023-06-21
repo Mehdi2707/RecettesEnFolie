@@ -1,0 +1,93 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Vérification de {{ recipe.title }}{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            {% include "_partials/_adminnav.html.twig" %}
+        </div>
+    </div>
+
+    <div class="receipe-post-area pt-3">
+
+        <!-- Receipe Slider -->
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="receipe-slider owl-carousel">
+                        {% for image in recipe.images %}
+                            <img class="m-auto {{ (loop.index0 == 0) ? 'active' : '' }}" src="{{ asset('assets/uploads/recipes/') ~ image.name }}" style="width:600px;" alt="{{ recipe.title }}">
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Receipe Content Area -->
+        <div class="receipe-content-area">
+            <div class="container">
+
+                <div class="row">
+                    <div class="col-4">
+                        <div class="my-5">
+                            <span>{{ recipe.createdAt | date('d/m/Y') }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-12 receipe-headline">
+                        <h2 class="mb-5">{{ recipe.title }}</h2>
+                        <h5>{{ recipe.description|nl2br }}</h5>
+                        <div class="receipe-duration mt-5">
+                            <h6>Difficulté : {{ recipe.difficultyLevel.name|capitalize }}</h6>
+                            <h6>Temps de préparation : {{ recipe.preparationTime }} min</h6>
+                            <h6>Temps de cuisson : {{ recipe.cookingTime }} min</h6>
+                            <h6>Nombre de portions : {{ recipe.numberOfServings }}</h6>
+                            <h6>Catégorie : {{ recipe.categories.name }}</h6>
+                        </div>
+                        <div class="my-4">
+                            Créé par&nbsp;<a href="{{ path('profile_index', {user: recipe.user.username}) }}" class="badge badge-light" style="font-size: 15px;">@{{ recipe.user.username }}</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Ingredients -->
+                    <div class="col-12 col-lg-4">
+                        <div class="ingredients">
+                            <h4>Ingrédients</h4>
+                            {% for ingredient in recipe.ingredients %}
+                                <div style="font-size: 18px;">
+                                    <span class="font-weight-bold">- {{ ingredient.quantity|number_format(2, '.', '')|trim('0')|trim('.')|replace({'.': ','}) }} {{ ingredient.unit.name == 'unité' ? '' : ingredient.unit.name }} {{ ingredient.name }}</span>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-8">
+                        <!-- Single Preparation Step -->
+                        {% set counter = 1 %}
+                        {% for step in recipe.steps %}
+                            <div class="single-preparation-step d-flex">
+                                <h4>0{{ counter }}.</h4>
+                                <div style="font-size: 16px;">
+                                    {{ step.description|nl2br }}
+                                </div>
+                            </div>
+                            {% set counter = counter + 1 %}
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12 my-5 text-center">
+                        <a class="btn btn-sm btn-success p-2 mr-5" style="font-size: 20px;" href="{{ path('admin_recipes_validated', {id: recipe.id}) }}">Valider</a>
+                        <a class="btn btn-sm btn-danger p-2" style="font-size: 20px;" href="{{ path('admin_recipes_refused', {id: recipe.id}) }}">Refuser</a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -51,6 +51,17 @@ class RecipesRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    public function findRecipesWaiting(): array
+    {
+        return $this->createQueryBuilder('r')
+            ->leftJoin('r.recipeStatus', 'rs')
+            ->where('rs.name = :status')
+            ->setParameter('status', 'en attente')
+            ->orderBy('r.createdAt', 'asc')
+            ->getQuery()
+            ->getResult();
+    }
+
     public function findRecipesValidatedUser($user): array
     {
         return $this->createQueryBuilder('r')

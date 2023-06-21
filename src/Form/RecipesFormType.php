@@ -30,7 +30,8 @@ class RecipesFormType extends AbstractType
             ->add('description', options: [
                 'label' => 'Description',
                 'attr' => [
-                    'class' => 'form-control'
+                    'class' => 'form-control',
+                    'rows' => '5'
                 ]
             ])
             ->add('preparationTime', options: [

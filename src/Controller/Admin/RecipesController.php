@@ -6,8 +6,10 @@ use App\Entity\Images;
 use App\Entity\Ingredients;
 use App\Entity\Recipes;
 use App\Form\AdminRecipesFormType;
+use App\Form\AdminRefusedRecipeFormType;
 use App\Repository\RecipesRepository;
 use App\Service\PictureService;
+use App\Service\SendMailService;
 use Doctrine\ORM\EntityManagerInterface;
 use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -27,6 +29,86 @@ class RecipesController extends AbstractController
 
         return $this->render('admin/recipes/index.html.twig', [
             'recipes' => $recipes,
+        ]);
+    }
+
+    #[Route('/en-attente', name: 'waiting')]
+    public function waitingRecipes(RecipesRepository $recipesRepository): Response
+    {
+        $recipes = $recipesRepository->findRecipesWaiting();
+
+        return $this->render('admin/recipes/waitingRecipes.html.twig', [
+            'recipes' => $recipes,
+        ]);
+    }
+
+    #[Route('/verification/{id}', name: 'verify')]
+    public function verifyRecipe(Recipes $recipes): Response
+    {
+        $this->denyAccessUnlessGranted('RECIPE_EDIT', $recipes);
+
+        return $this->render('admin/recipes/verifyRecipe.html.twig', [
+            'recipe' => $recipes,
+        ]);
+    }
+
+    #[Route('/validation/{id}', name: 'validated')]
+    public function validatedRecipe(Recipes $recipes, EntityManagerInterface $entityManager, SendMailService $mailService): Response
+    {
+        $this->denyAccessUnlessGranted('RECIPE_EDIT', $recipes);
+
+        $status = $recipes->getRecipeStatus();
+        $status->setName('valide');
+        $recipes->setRecipeStatus($status);
+
+        $entityManager->persist($recipes);
+        $entityManager->flush();
+
+        $mailService->send(
+            $this->getParameter('app.mailaddress'),
+            $recipes->getUser()->getEmail(),
+            'Votre recette est en ligne - Recettes en folie',
+            'recipeValidated',
+            [ 'user' => $recipes->getUser(), 'recipe' => $recipes ]
+        );
+
+        return $this->redirectToRoute('admin_recipes_waiting');
+    }
+
+    #[Route('/refus/{id}', name: 'refused')]
+    public function refusedRecipe(Recipes $recipes, Request $request, EntityManagerInterface $entityManager, SendMailService $mailService): Response
+    {
+        $this->denyAccessUnlessGranted('RECIPE_EDIT', $recipes);
+
+        $form = $this->createForm(AdminRefusedRecipeFormType::class, $recipes);
+
+        $form->handleRequest($request);
+
+        if($form->isSubmitted() && $form->isValid())
+        {
+            $status = $recipes->getRecipeStatus();
+            $message = $status->getMessage();
+            $status->setName('refuse');
+            $recipes->setRecipeStatus($status);
+
+            $entityManager->persist($recipes);
+            $entityManager->flush();
+
+            $mailService->send(
+                $this->getParameter('app.mailaddress'),
+                $recipes->getUser()->getEmail(),
+                'Votre recette à été refusé - Recettes en folie',
+                'recipeRefused',
+                [ 'user' => $recipes->getUser(), 'recipe' => $recipes, 'message' => $message ]
+            );
+
+            $this->addFlash('success', 'Recette traité');
+            return $this->redirectToRoute('admin_recipes_waiting');
+        }
+
+        return $this->render('admin/recipes/refusedRecipe.html.twig', [
+            'recipe' => $recipes,
+            'form' => $form->createView()
         ]);
     }
 

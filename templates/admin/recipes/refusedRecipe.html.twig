@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Vérification de {{ recipe.title }}{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            {% include "_partials/_adminnav.html.twig" %}
+            <div class="col-12 mb-4">
+                <h4 class="mb-3">Récapitulatif de la recette</h4>
+                <h6>Titre : {{ recipe.title }}</h6>
+                <h6>Description : {{ recipe.description }}</h6>
+                <h6>Difficulté : {{ recipe.difficultyLevel.name }}</h6>
+                <h6>Temps de préparation : {{ recipe.preparationTime }} min</h6>
+                <h6>Temps de cuisson : {{ recipe.cookingTime }} min</h6>
+                <h6>Nombre de portions : {{ recipe.numberOfServings }}</h6>
+                <h6>Catégorie : {{ recipe.categories.name }}</h6>
+            </div>
+            <div class="col-12 col-lg-4">
+                <div class="ingredients">
+                    <h4>Ingrédients</h4>
+                    {% for ingredient in recipe.ingredients %}
+                        <div style="font-size: 18px;">
+                            <span class="font-weight-bold">- {{ ingredient.quantity|number_format(2, '.', '')|trim('0')|trim('.')|replace({'.': ','}) }} {{ ingredient.unit.name == 'unité' ? '' : ingredient.unit.name }} {{ ingredient.name }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="col-12 col-lg-8">
+                <!-- Single Preparation Step -->
+                {% set counter = 1 %}
+                {% for step in recipe.steps %}
+                    <div class="single-preparation-step d-flex">
+                        <h4>0{{ counter }}.</h4>
+                        <div style="font-size: 16px;">
+                            {{ step.description|nl2br }}
+                        </div>
+                    </div>
+                    {% set counter = counter + 1 %}
+                {% endfor %}
+            </div>
+            <div class="col-12 my-3 text-center">
+                {{ form_start(form) }}
+                    {{ form_row(form.recipeStatus.message) }}
+                    <button type="submit" class="mt-2 btn btn-sm btn-success">Envoyer</button>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

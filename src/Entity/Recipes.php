@@ -79,7 +79,7 @@ class Recipes
     #[ORM\OneToMany(mappedBy: 'recipe_id', targetEntity: ConsultationUserRecipe::class, orphanRemoval: true)]
     private Collection $consultationUserRecipes;
 
-    #[ORM\ManyToOne(inversedBy: 'recipe_status')]
+    #[ORM\ManyToOne(inversedBy: 'recipe_status', cascade: ['persist'])]
     #[ORM\JoinColumn(nullable: false)]
     private ?RecipeStatus $recipeStatus = null;
 

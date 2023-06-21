@@ -1,0 +1,13 @@
+<div style="text-align: center;">
+    {% set imagePath = absolute_url(asset('assets/img/core-img/logo.png')) %}
+    <img src="{{ imagePath }}" alt="Logo" width="305" style="display: block; margin: 0 auto;" />
+</div>
+<h1>Votre recette {{ recipe.title }} est en ligne sur Recettes en folie</h1>
+<p>Bonjour {{ user.username }},</p>
+
+<p>Vous avez publié une nouvelle recette sur notre site et nous vous en remercions,</p>
+<br>
+<p>Votre recette à bien été validé par notre équipe est elle est désormais en ligne.</p>
+<p>Vous pouvez maintenant y accéder soit en cliquant <a href="{{ absolute_url(path('recipes_details', {slug: recipe.slug, category: recipe.categories.parent.slug, sCategory: recipe.categories.slug})) }}">ici</a> soit en allant sur votre compte.</p>
+<br>
+<p>A bientôt sur Recettes en folie !</p>
