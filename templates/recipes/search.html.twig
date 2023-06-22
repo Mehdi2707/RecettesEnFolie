@@ -2,6 +2,10 @@
 
 {% block title %}Recettes de {{ search }}{% endblock %}
 
+{% block javascripts %}
+    <script src="{{ asset('assets/js/filterIngredients.js') }}" defer></script>
+{% endblock %}
+
 {% block body %}
     <section>
         <div class="container">
@@ -9,8 +13,49 @@
                 <div class="col-12">
                     <div class="section-heading">
                         <h3>Recettes de {{ search }}</h3>
+                        <button class="btn btn-outline-secondary mt-2 float-right" type="button" data-toggle="collapse" data-target="#filterElement" aria-controls="filterElement" aria-expanded="false" aria-label="Filtrer par">Filtrer</button>
                     </div>
                 </div>
+            </div>
+
+            <div class="mb-4 collapse" id="filterElement">
+                {{ form_start(form) }}
+                    <div class="row">
+                        <div class="col-3">
+                            {% for category in form.categories %}
+                                <div class="form-group">
+                                    {{ form_widget(category) }}
+                                    {{ form_label(category) }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <div class="col-3">
+                            {% for difficult in form.difficulty %}
+                                <div class="form-group">
+                                    {{ form_widget(difficult) }}
+                                    <label for="{{ difficult.vars.id }}">{{ difficult.vars.label|capitalize }}</label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <div class="col-3">
+                            <div class="form-group">
+                                {{ form_label(form.prepTimeMax) }}
+                                {{ form_widget(form.prepTimeMax) }}
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="form-group" id="ingredientsElem" data-url="{{ path('recipes_ingredients_search') }}">
+                                {{ form_label(form.ingredients) }}
+                                {{ form_widget(form.ingredients) }}
+                                <input type="text" class="form-control filter-ingredients" />
+                            </div>
+                            <table class="ingredient-table"></table>
+                        </div>
+                        <div class="col-2">
+                            <button type="submit" class="btn btn-sm btn-success">Appliquer</button>
+                        </div>
+                    </div>
+                {{ form_end(form) }}
             </div>
 
             <div class="row">

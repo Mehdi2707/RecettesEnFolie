@@ -47,6 +47,12 @@ class RecipesController extends AbstractController
     {
         $this->denyAccessUnlessGranted('RECIPE_EDIT', $recipes);
 
+        if($recipes->getRecipeStatus()->getName() !== 'en attente')
+        {
+            $this->addFlash('warning', 'Cette recette à déjà été traité');
+            return $this->redirectToRoute('admin_recipes_waiting');
+        }
+
         return $this->render('admin/recipes/verifyRecipe.html.twig', [
             'recipe' => $recipes,
         ]);
@@ -56,6 +62,12 @@ class RecipesController extends AbstractController
     public function validatedRecipe(Recipes $recipes, EntityManagerInterface $entityManager, SendMailService $mailService): Response
     {
         $this->denyAccessUnlessGranted('RECIPE_EDIT', $recipes);
+
+        if($recipes->getRecipeStatus()->getName() !== 'en attente')
+        {
+            $this->addFlash('warning', 'Cette recette à déjà été traité');
+            return $this->redirectToRoute('admin_recipes_waiting');
+        }
 
         $status = $recipes->getRecipeStatus();
         $status->setName('valide');
@@ -72,6 +84,7 @@ class RecipesController extends AbstractController
             [ 'user' => $recipes->getUser(), 'recipe' => $recipes ]
         );
 
+        $this->addFlash('success', 'Recette traité');
         return $this->redirectToRoute('admin_recipes_waiting');
     }
 
@@ -79,6 +92,12 @@ class RecipesController extends AbstractController
     public function refusedRecipe(Recipes $recipes, Request $request, EntityManagerInterface $entityManager, SendMailService $mailService): Response
     {
         $this->denyAccessUnlessGranted('RECIPE_EDIT', $recipes);
+
+        if($recipes->getRecipeStatus()->getName() !== 'en attente')
+        {
+            $this->addFlash('warning', 'Cette recette à déjà été traité');
+            return $this->redirectToRoute('admin_recipes_waiting');
+        }
 
         $form = $this->createForm(AdminRefusedRecipeFormType::class, $recipes);
 

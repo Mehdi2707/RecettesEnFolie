@@ -9,7 +9,7 @@ use App\Entity\Users;
 use App\Form\ProfileFormType;
 use App\Form\RecipesFormType;
 use App\Repository\FavoritesRepository;
-use App\Service\GetStars;
+use App\Service\StarsService;
 use App\Service\PictureService;
 use App\Service\SendMailService;
 use Doctrine\DBAL\Exception;
@@ -42,7 +42,7 @@ class ProfileController extends AbstractController
     }
 
     #[Route('/{user}', name: 'index')]
-    public function user($user, EntityManagerInterface $entityManager, Request $request, FavoritesRepository $favoritesRepository, UserPasswordHasherInterface $passwordHasher, Security $security, GetStars $getStars): Response
+    public function user($user, EntityManagerInterface $entityManager, Request $request, FavoritesRepository $favoritesRepository, UserPasswordHasherInterface $passwordHasher, Security $security, StarsService $starsService): Response
     {
         $user = $entityManager->getRepository(Users::class)->findOneBy(['username' => $user]);
         $currentUser = $this->getUser();
@@ -58,17 +58,11 @@ class ProfileController extends AbstractController
             {
                 $notes = $recipe->getRecipes()->getNotes();
 
-                $recipe->getRecipes()->noteRounded = $getStars->getStars($notes)[0];
-                $recipe->getRecipes()->hasHalfStar = $getStars->getStars($notes)[1];
+                $recipe->getRecipes()->noteRounded = $starsService->getStars($notes)[0];
+                $recipe->getRecipes()->hasHalfStar = $starsService->getStars($notes)[1];
             }
 
-            foreach($recipes as $recipe)
-            {
-                $notes = $recipe->getNotes();
-
-                $recipe->noteRounded = $getStars->getStars($notes)[0];
-                $recipe->hasHalfStar = $getStars->getStars($notes)[1];
-            }
+            $starsService->addStars($recipes);
 
             $form->handleRequest($request);
 
@@ -122,14 +116,7 @@ class ProfileController extends AbstractController
             }
 
             $recipes = $entityManager->getRepository(Recipes::class)->findRecipesValidatedUser($user);
-
-            foreach($recipes as $recipe)
-            {
-                $notes = $recipe->getNotes();
-
-                $recipe->noteRounded = $getStars->getStars($notes)[0];
-                $recipe->hasHalfStar = $getStars->getStars($notes)[1];
-            }
+            $starsService->addStars($recipes);
 
             return $this->render('profile/user.html.twig', [
                 'user' => $user,
@@ -322,6 +309,28 @@ class ProfileController extends AbstractController
         ]);
     }
 
+    #[Route('/suppression/image/{id}', name: 'recipe_delete_image', methods: ['DELETE'])]
+    public function deleteImage(Images $images, Request $request, EntityManagerInterface $entityManager, PictureService $pictureService): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+
+        if($this->isCsrfTokenValid('delete' . $images->getId(), $data['_token']))
+        {
+            $name = $images->getName();
+
+            if($pictureService->delete($name, 'recipes', 300, 300))
+            {
+                $entityManager->remove($images);
+                $entityManager->flush();
+
+                return new JsonResponse(['success' => true], 200);
+            }
+            return new JsonResponse(['error' => 'Ereur de suppression'], 400);
+        }
+
+        return new JsonResponse(['error' => 'Token invalide'], 400);
+    }
+
     private function updateRecipeChanges(Recipes $recipes, SluggerInterface $slugger)
     {
         $slug = $recipes->getSlug();
@@ -355,27 +364,5 @@ class ProfileController extends AbstractController
             }
         }
         return false;
-    }
-
-    #[Route('/suppression/image/{id}', name: 'recipe_delete_image', methods: ['DELETE'])]
-    public function deleteImage(Images $images, Request $request, EntityManagerInterface $entityManager, PictureService $pictureService): JsonResponse
-    {
-        $data = json_decode($request->getContent(), true);
-
-        if($this->isCsrfTokenValid('delete' . $images->getId(), $data['_token']))
-        {
-            $name = $images->getName();
-
-            if($pictureService->delete($name, 'recipes', 300, 300))
-            {
-                $entityManager->remove($images);
-                $entityManager->flush();
-
-                return new JsonResponse(['success' => true], 200);
-            }
-            return new JsonResponse(['error' => 'Ereur de suppression'], 400);
-        }
-
-        return new JsonResponse(['error' => 'Token invalide'], 400);
     }
 }

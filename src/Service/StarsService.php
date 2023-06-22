@@ -2,7 +2,7 @@
 
 namespace App\Service;
 
-class GetStars
+class StarsService
 {
     public function getStars($notes): array
     {
@@ -31,5 +31,18 @@ class GetStars
             $noteRounded++;
 
         return [$noteRounded, $hasHalfStar];
+    }
+
+    public function addStars($recipes): array
+    {
+        foreach($recipes as $recipe)
+        {
+            $notes = $recipe->getNotes();
+
+            $recipe->noteRounded = $this->getStars($notes)[0];
+            $recipe->hasHalfStar = $this->getStars($notes)[1];
+        }
+
+        return $recipes;
     }
 }

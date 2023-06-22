@@ -8,20 +8,21 @@ use App\Entity\Favorites;
 use App\Entity\Ingredients;
 use App\Entity\Notes;
 use App\Form\CommentsFormType;
+use App\Form\RecipesSearchFilterFormType;
 use App\Repository\CategoriesRepository;
 use App\Repository\CommentsRepository;
 use App\Repository\ConsultationUserRecipeRepository;
+use App\Repository\DifficultyLevelRepository;
 use App\Repository\FavoritesRepository;
 use App\Repository\NotesRepository;
 use App\Repository\RecipesRepository;
-use App\Service\GetStars;
+use App\Service\StarsService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 
 #[Route('/', name: 'recipes_')]
@@ -35,7 +36,7 @@ class RecipesController extends AbstractController
     }
 
     #[Route('/recettes/{category}', name: 'category')]
-    public function category($category, CategoriesRepository $categoriesRepository, RecipesRepository $recipesRepository, GetStars $getStars): Response
+    public function category($category, CategoriesRepository $categoriesRepository, RecipesRepository $recipesRepository, StarsService $starsService): Response
     {
         $parentCategory = $categoriesRepository->findOneBy(['slug' => $category]);
         $childCategory = $categoriesRepository->findChildCategories($parentCategory);
@@ -55,13 +56,7 @@ class RecipesController extends AbstractController
 
         foreach($categories as $category)
         {
-            foreach($category as $recipe)
-            {
-                $notes = $recipe->getNotes();
-
-                $recipe->noteRounded = $getStars->getStars($notes)[0];
-                $recipe->hasHalfStar = $getStars->getStars($notes)[1];
-            }
+            $starsService->addStars($category);
         }
 
         return $this->render('recipes/category.html.twig', [
@@ -71,7 +66,7 @@ class RecipesController extends AbstractController
     }
 
     #[Route('/recettes/{category}/{sCategory}', name: 'sousCategory')]
-    public function sousCategory($category, $sCategory, CategoriesRepository $categoriesRepository, GetStars $getStars, RecipesRepository $recipesRepository, Request $request): Response
+    public function sousCategory($category, $sCategory, CategoriesRepository $categoriesRepository, StarsService $starsService, RecipesRepository $recipesRepository, Request $request): Response
     {
         $parentCategory = $categoriesRepository->findOneBy(['slug' => $category]);
         $childCategory = $categoriesRepository->findOneBy(['slug' => $sCategory]);
@@ -84,14 +79,7 @@ class RecipesController extends AbstractController
         }
 
         $recipes = $recipesRepository->findRecipesPaginated($page, $sCategory);
-
-        foreach($recipes['data'] as $recipe)
-        {
-            $notes = $recipe->getNotes();
-
-            $recipe->noteRounded = $getStars->getStars($notes)[0];
-            $recipe->hasHalfStar = $getStars->getStars($notes)[1];
-        }
+        $starsService->addStars($recipes['data']);
 
         return $this->render('recipes/sousCategory.html.twig', [
             'parentCategory' => $parentCategory,
@@ -110,7 +98,7 @@ class RecipesController extends AbstractController
                             ConsultationUserRecipeRepository $consultationUserRecipeRepository,
                             CategoriesRepository $categoriesRepository,
                             CommentsRepository $commentsRepository,
-                            GetStars $getStars): Response
+                            StarsService $starsService): Response
     {
         // Récupérer la catégorie parente et enfant
         $parentCategory = $categoriesRepository->findOneBy(['slug' => $category]);
@@ -156,37 +144,25 @@ class RecipesController extends AbstractController
             {
                 foreach ($consultedRecipes as $consultedRecipe) {
                     $notesRecipe = $consultedRecipe->getRecipe()->getNotes();
-                    $consultedRecipe->getRecipe()->noteRounded = $getStars->getStars($notesRecipe)[0];
-                    $consultedRecipe->getRecipe()->hasHalfStar = $getStars->getStars($notesRecipe)[1];
+                    $consultedRecipe->getRecipe()->noteRounded = $starsService->getStars($notesRecipe)[0];
+                    $consultedRecipe->getRecipe()->hasHalfStar = $starsService->getStars($notesRecipe)[1];
                 }
             }
             else
             {
                 $consultedRecipes = [];
                 $bestRecipesOfsCategory = $recipesRepository->findBestRecipesOfsCategory($childCategory, $recipe);
-
-                foreach ($bestRecipesOfsCategory as $bestRecipeOfsCategory)
-                {
-                    $notesRecipe = $bestRecipeOfsCategory->getNotes();
-                    $bestRecipeOfsCategory->noteRounded = $getStars->getStars($notesRecipe)[0];
-                    $bestRecipeOfsCategory->hasHalfStar = $getStars->getStars($notesRecipe)[1];
-                }
+                $starsService->addStars($bestRecipesOfsCategory);
             }
         }
         else
         {
             $bestRecipesOfsCategory = $recipesRepository->findBestRecipesOfsCategory($childCategory, $recipe);
-
-            foreach ($bestRecipesOfsCategory as $bestRecipeOfsCategory)
-            {
-                $notesRecipe = $bestRecipeOfsCategory->getNotes();
-                $bestRecipeOfsCategory->noteRounded = $getStars->getStars($notesRecipe)[0];
-                $bestRecipeOfsCategory->hasHalfStar = $getStars->getStars($notesRecipe)[1];
-            }
+            $starsService->addStars($bestRecipesOfsCategory);
         }
 
-        $recipe->noteRounded = $getStars->getStars($notes)[0];
-        $recipe->hasHalfStar = $getStars->getStars($notes)[1];
+        $recipe->noteRounded = $starsService->getStars($notes)[0];
+        $recipe->hasHalfStar = $starsService->getStars($notes)[1];
 
         $comments = $commentsRepository->findCommentsPaginated(1, $recipe->getSlug());
 
@@ -290,7 +266,7 @@ class RecipesController extends AbstractController
     }
 
     #[Route('/recherche/recettes/{search}', name: 'search_recipes')]
-    public function searchRecipes(Request $request, RecipesRepository $recipesRepository, GetStars $getStars, $search = '')
+    public function searchRecipes(Request $request, RecipesRepository $recipesRepository, StarsService $starsService, CategoriesRepository $categoriesRepository, DifficultyLevelRepository $difficultyLevelRepository, $search = '')
     {
         $originalSearch = $search;
         $search = str_replace('-', ' ', $search);
@@ -302,20 +278,24 @@ class RecipesController extends AbstractController
             return $this->redirectToRoute('app_home');
         }
 
-        $recipes = $recipesRepository->searchRecipes($page, $search);
+        $form = $this->createForm(RecipesSearchFilterFormType::class);
+        $form->handleRequest($request);
 
-        foreach($recipes['data'] as $recipe)
+        if($form->isSubmitted() && $form->isValid())
         {
-            $notes = $recipe->getNotes();
-
-            $recipe->noteRounded =  $getStars->getStars($notes)[0];
-            $recipe->hasHalfStar = $getStars->getStars($notes)[1];
+            $data = $form->getData();
+            $categories = $data['categories'];
+            dd($data);
         }
+
+        $recipes = $recipesRepository->searchRecipes($page, $search);
+        $starsService->addStars($recipes['data']);
 
         return $this->render('recipes/search.html.twig', [
             'search' => $search,
             'originalSearch' => $originalSearch,
-            'recipes' => $recipes
+            'recipes' => $recipes,
+            'form' => $form->createView()
         ]);
     }
 

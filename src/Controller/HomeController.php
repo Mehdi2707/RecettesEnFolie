@@ -5,7 +5,7 @@ namespace App\Controller;
 use App\Entity\Newsletter\UsersN;
 use App\Form\NewslettersUsersNFormType;
 use App\Repository\RecipesRepository;
-use App\Service\GetStars;
+use App\Service\StarsService;
 use App\Service\SendMailService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -16,20 +16,13 @@ use Symfony\Component\Routing\Annotation\Route;
 class HomeController extends AbstractController
 {
     #[Route('/', name: 'app_home')]
-    public function index(RecipesRepository $recipesRepository, Request $request, EntityManagerInterface $entityManager, SendMailService $mailService, GetStars $getStars): Response
+    public function index(RecipesRepository $recipesRepository, Request $request, EntityManagerInterface $entityManager, SendMailService $mailService, StarsService $starsService): Response
     {
         if($request->query->has('status') && $request->query->has('message'))
             $this->addFlash($request->query->get('status'), $request->query->get('message'));
 
         $recipes = $recipesRepository->findRecentRecipesValidated();
-
-        foreach($recipes as $recipe)
-        {
-            $notes = $recipe->getNotes();
-
-            $recipe->noteRounded = $getStars->getStars($notes)[0];
-            $recipe->hasHalfStar = $getStars->getStars($notes)[1];
-        }
+        $starsService->addStars($recipes);
 
         $userN = new UsersN();
         $form = $this->createForm(NewslettersUsersNFormType::class, $userN);
