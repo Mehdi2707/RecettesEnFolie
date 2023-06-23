@@ -2,8 +2,11 @@
 
 namespace App\Repository;
 
+use App\Entity\Categories;
+use App\Entity\DifficultyLevel;
 use App\Entity\Recipes;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -140,6 +143,112 @@ class RecipesRepository extends ServiceEntityRepository
                 ->setParameter('search', '%' . $search . '%')
                 ->setMaxResults($limit)
                 ->setFirstResult(($page * $limit) - $limit);
+
+        $paginator = new Paginator($query);
+        $data = $paginator->getQuery()->getResult();
+
+        $pages = ceil($paginator->count() / $limit);
+
+        $result['data'] = $data;
+        $result['pages'] = $pages;
+        $result['page'] = $page;
+        $result['limit'] = $limit;
+
+        return $result;
+    }
+
+    public function searchRecipesFilter(int $page, string $search, array $categories, ArrayCollection $difficulty, $prepTimeMax, $ingredients, int $limit = 12): array
+    {
+        $limit = abs($limit);
+        $result = [];
+
+        $query = $this->createQueryBuilder('r')
+            ->leftJoin('r.recipeStatus', 'rs')
+            ->where('MATCH_AGAINST(r.title, r.description) AGAINST (:search boolean)>0')
+            ->andWhere('rs.name = :status')
+            ->setParameter('status', 'valide')
+            ->setParameter('search', $search);
+
+        if (!empty($categories)) {
+            $categoryIds = array_map(function($category) {
+                return $category->getId();
+            }, $categories);
+
+            $query->join('r.categories', 'rc')
+                ->andWhere('rc.id IN (:categoryIds) OR rc.parent IN (:categoryIds)')
+                ->setParameter('categoryIds', $categoryIds);
+        }
+
+        if (!empty($difficulty) && !$difficulty->isEmpty()) {
+            $difficultyIds = array_map(function($difficulty) {
+                return $difficulty->getId();
+            }, $difficulty->toArray());
+
+            $query->join('r.difficultyLevel', 'rd')
+                ->andWhere('rd.id IN (:difficultyIds)')
+                ->setParameter('difficultyIds', $difficultyIds);
+        }
+
+        if (!empty($prepTimeMax)) {
+            $query->andWhere('r.preparationTime <= :prepTimeMax')
+                ->setParameter('prepTimeMax', $prepTimeMax);
+        }
+
+        if (!empty($ingredients)) {
+            $ingredientNames = explode(',', $ingredients);
+            $query->join('r.ingredients', 'ri')
+                ->andWhere('ri.name IN (:ingredientNames)')
+                ->setParameter('ingredientNames', $ingredientNames);
+        }
+
+        $query->setMaxResults($limit)
+            ->setFirstResult(($page * $limit) - $limit);
+
+        if(empty($query->getQuery()->getResult()))
+        {
+            $query = $this->createQueryBuilder('r')
+                ->leftJoin('r.recipeStatus', 'rs')
+                ->where('r.title LIKE :search')
+                ->orWhere('r.description LIKE :search')
+                ->andWhere('rs.name = :status')
+                ->setParameter('status', 'valide')
+                ->setParameter('search', '%' . $search . '%');
+
+            if (!empty($categories)) {
+                $categoryIds = array_map(function($category) {
+                    return $category->getId();
+                }, $categories);
+
+                $query->join('r.categories', 'rc')
+                    ->andWhere('rc.id IN (:categoryIds) OR rc.parent IN (:categoryIds)')
+                    ->setParameter('categoryIds', $categoryIds);
+            }
+
+            if (!empty($difficulty) && !$difficulty->isEmpty()) {
+                $difficultyIds = array_map(function($difficulty) {
+                    return $difficulty->getId();
+                }, $difficulty->toArray());
+
+                $query->join('r.difficultyLevel', 'rd')
+                    ->andWhere('rd.id IN (:difficultyIds)')
+                    ->setParameter('difficultyIds', $difficultyIds);
+            }
+
+            if (!empty($prepTimeMax)) {
+                $query->andWhere('r.preparationTime <= :prepTimeMax')
+                    ->setParameter('prepTimeMax', $prepTimeMax);
+            }
+
+            if (!empty($ingredients)) {
+                $ingredientNames = explode(',', $ingredients);
+                $query->join('r.ingredients', 'ri')
+                    ->andWhere('ri.name IN (:ingredientNames)')
+                    ->setParameter('ingredientNames', $ingredientNames);
+            }
+
+            $query->setMaxResults($limit)
+                ->setFirstResult(($page * $limit) - $limit);
+        }
 
         $paginator = new Paginator($query);
         $data = $paginator->getQuery()->getResult();

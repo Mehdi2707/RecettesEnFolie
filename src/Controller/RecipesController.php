@@ -266,7 +266,7 @@ class RecipesController extends AbstractController
     }
 
     #[Route('/recherche/recettes/{search}', name: 'search_recipes')]
-    public function searchRecipes(Request $request, RecipesRepository $recipesRepository, StarsService $starsService, CategoriesRepository $categoriesRepository, DifficultyLevelRepository $difficultyLevelRepository, $search = '')
+    public function searchRecipes(Request $request, RecipesRepository $recipesRepository, StarsService $starsService, $search = '')
     {
         $originalSearch = $search;
         $search = str_replace('-', ' ', $search);
@@ -285,7 +285,19 @@ class RecipesController extends AbstractController
         {
             $data = $form->getData();
             $categories = $data['categories'];
-            dd($data);
+            $difficulty = $data['difficulty'];
+            $prepTimeMax = $data['prepTimeMax'];
+            $ingredients = $data['ingredients'];
+
+            $recipes = $recipesRepository->searchRecipesFilter($page, $search, $categories, $difficulty, $prepTimeMax, $ingredients);
+            $starsService->addStars($recipes['data']);
+
+            return $this->render('recipes/search.html.twig', [
+                'search' => $search,
+                'originalSearch' => $originalSearch,
+                'recipes' => $recipes,
+                'form' => $form->createView()
+            ]);
         }
 
         $recipes = $recipesRepository->searchRecipes($page, $search);

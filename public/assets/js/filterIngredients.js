@@ -1,9 +1,27 @@
 $(document).ready(function() {
-    var ingredientInput = $('.filter-ingredients');
+    var ingredientInput = $('#filter-ingredients');
     var urlSearch = $('#ingredientsElem').data('url');
     var ingredientDropdown = $('<ul class="ingredient-dropdown list-group"></ul>');
     ingredientInput.after(ingredientDropdown);
     var ingredientsArray = [];
+
+    // Fonction pour mettre à jour le tableau lors du chargement de la page
+    function updateTableOnPageLoad() {
+        var hiddenField = $('.hidden-ingredients-field');
+        var ingredientsString = hiddenField.val();
+
+        if (ingredientsString) {
+            var ingredients = ingredientsString.split(',');
+
+            // Ajouter chaque ingrédient au tableau
+            ingredients.forEach(function(ingredient) {
+                addIngredientToTable(ingredient);
+            });
+        }
+    }
+
+    // Appeler la fonction pour mettre à jour le tableau lors du chargement de la page
+    updateTableOnPageLoad();
 
     ingredientInput.on('input', function() {
         var input = $(this).val();
