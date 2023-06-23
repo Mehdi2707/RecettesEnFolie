@@ -10,20 +10,20 @@
                 {{ form_start(registrationForm) }}
 
                     {{ form_label(registrationForm.email) }}
-                    {{ form_widget(registrationForm.email) }}
-                    <div class="invalid-feedback">
+                    {{ form_widget(registrationForm.email, {'attr': {'class': registrationForm.email.vars.errors|length > 0 ? 'is-invalid form-control' : 'form-control' }}) }}
+                    <div class="invalid-feedback mb-2">
                         {{ form_errors(registrationForm.email) }}
                     </div>
 
                     {{ form_label(registrationForm.username) }}
-                    {{ form_widget(registrationForm.username) }}
-                    <div class="invalid-feedback">
+                    {{ form_widget(registrationForm.username, {'attr': {'class': registrationForm.username.vars.errors|length > 0 ? 'is-invalid form-control' : 'form-control' }}) }}
+                    <div class="invalid-feedback mb-2">
                         {{ form_errors(registrationForm.username) }}
                     </div>
 
                     {{ form_label(registrationForm.plainPassword) }}
-                    {{ form_widget(registrationForm.plainPassword) }}
-                    <div class="invalid-feedback">
+                    {{ form_widget(registrationForm.plainPassword, {'attr': {'class': registrationForm.plainPassword.vars.errors|length > 0 ? 'is-invalid form-control' : 'form-control' }}) }}
+                    <div class="invalid-feedback mb-2">
                         {{ form_errors(registrationForm.plainPassword) }}
                     </div>
 
