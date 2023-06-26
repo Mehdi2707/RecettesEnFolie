@@ -137,8 +137,8 @@ class ProfileController extends AbstractController
         $status = new RecipeStatus();
 
         $form = $this->createForm(RecipesFormType::class, $recipe);
-
         $form->handleRequest($request);
+        $formSubmitted = $form->isSubmitted();
 
         if($form->isSubmitted() && $form->isValid())
         {
@@ -185,6 +185,7 @@ class ProfileController extends AbstractController
                 $this->addFlash('danger', 'Veuillez ajouter au moins un ingrédient');
                 return $this->render('profile/recipe/add.html.twig', [
                     'recipeForm' => $form->createView(),
+                    'formSubmitted' => $formSubmitted
                 ]);
             }
 
@@ -193,6 +194,7 @@ class ProfileController extends AbstractController
                 $this->addFlash('danger', 'Veuillez ajouter au moins une étape');
                 return $this->render('profile/recipe/add.html.twig', [
                     'recipeForm' => $form->createView(),
+                    'formSubmitted' => $formSubmitted
                 ]);
             }
 
@@ -212,7 +214,8 @@ class ProfileController extends AbstractController
         }
 
         return $this->render('profile/recipe/add.html.twig', [
-            'recipeForm' => $form->createView()
+            'recipeForm' => $form->createView(),
+            'formSubmitted' => $formSubmitted
         ]);
     }
 
@@ -235,8 +238,8 @@ class ProfileController extends AbstractController
         $originalSteps = $recipes->getSteps();
 
         $form = $this->createForm(RecipesFormType::class, $recipes);
-
         $form->handleRequest($request);
+        $formSubmitted = $form->isSubmitted();
 
         if($form->isSubmitted() && $form->isValid())
         {
@@ -271,6 +274,7 @@ class ProfileController extends AbstractController
                     $this->addFlash('danger', 'Veuillez ajouter au moins un ingrédient et une étape');
                     return $this->render('profile/recipe/edit.html.twig', [
                         'recipeForm' => $form->createView(),
+                        'formSubmitted' => $formSubmitted
                     ]);
                 }
 
@@ -305,7 +309,8 @@ class ProfileController extends AbstractController
 
         return $this->render('profile/recipe/edit.html.twig', [
             'recipe' => $recipes,
-            'recipeForm' => $form->createView()
+            'recipeForm' => $form->createView(),
+            'formSubmitted' => $formSubmitted
         ]);
     }
 

@@ -29,6 +29,7 @@ class Recipes
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Assert\NotBlank(message: 'La description de la recette ne peut pas être vide')]
     private ?string $description = null;
 
     #[ORM\Column(length: 255)]

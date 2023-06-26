@@ -139,8 +139,8 @@ class RecipesController extends AbstractController
         $recipe = new Recipes();
 
         $form = $this->createForm(AdminRecipesFormType::class, $recipe);
-
         $form->handleRequest($request);
+        $formSubmitted = $form->isSubmitted();
 
         if($form->isSubmitted() && $form->isValid())
         {
@@ -183,6 +183,7 @@ class RecipesController extends AbstractController
                 $this->addFlash('danger', 'Veuillez ajouter au moins un ingrédient');
                 return $this->render('admin/recipes/add.html.twig', [
                     'recipeForm' => $form->createView(),
+                    'formSubmitted' => $formSubmitted
                 ]);
             }
 
@@ -191,6 +192,7 @@ class RecipesController extends AbstractController
                 $this->addFlash('danger', 'Veuillez ajouter au moins une étape');
                 return $this->render('admin/recipes/add.html.twig', [
                     'recipeForm' => $form->createView(),
+                    'formSubmitted' => $formSubmitted
                 ]);
             }
 
@@ -203,6 +205,7 @@ class RecipesController extends AbstractController
 
         return $this->render('admin/recipes/add.html.twig', [
             'recipeForm' => $form->createView(),
+            'formSubmitted' => $formSubmitted
         ]);
     }
 
@@ -212,8 +215,8 @@ class RecipesController extends AbstractController
         $this->denyAccessUnlessGranted('RECIPE_EDIT', $recipes);
 
         $form = $this->createForm(AdminRecipesFormType::class, $recipes);
-
         $form->handleRequest($request);
+        $formSubmitted = $form->isSubmitted();
 
         if($form->isSubmitted() && $form->isValid())
         {
@@ -261,6 +264,7 @@ class RecipesController extends AbstractController
                 $this->addFlash('danger', 'Veuillez ajouter au moins un ingrédient');
                 return $this->render('admin/recipes/edit.html.twig', [
                     'recipeForm' => $form->createView(),
+                    'formSubmitted' => $formSubmitted
                 ]);
             }
 
@@ -281,7 +285,8 @@ class RecipesController extends AbstractController
 
         return $this->render('admin/recipes/edit.html.twig', [
             'recipeForm' => $form->createView(),
-            'recipe' => $recipes
+            'recipe' => $recipes,
+            'formSubmitted' => $formSubmitted
         ]);
     }
 

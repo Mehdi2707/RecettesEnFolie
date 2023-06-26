@@ -14,7 +14,8 @@ $addIngredientLink.on('click', function(e) {
     var ingredientIndex = ingredientList.children().length;
     var ingredientPrototype = ingredientList.data('prototype');
     var modifiedPrototype = "<span class=\"fa fa-plus\" style=\"color: #15c215;font-size: 30px;\"></span>" + ingredientPrototype;
-    modifiedPrototype = modifiedPrototype.replace('id="recipes_form_ingredients___name__"', 'id="recipes_form_ingredients___name__" class ="form-row"');
+    modifiedPrototype = modifiedPrototype.replace('id="recipes_form_ingredients___name__"', 'id="recipes_form_ingredients___name__" class="form-row"');
+    modifiedPrototype = modifiedPrototype.replace('id="admin_recipes_form_ingredients___name__"', 'id="admin_recipes_form_ingredients___name__" class="form-row"');
     modifiedPrototype = modifiedPrototype.replace(/<div>/g, '<div class="col-md-4">');
 
     var ingredientForm = modifiedPrototype.replace(/__name__/g, ingredientIndex);

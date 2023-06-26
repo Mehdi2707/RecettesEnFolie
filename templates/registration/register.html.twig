@@ -10,16 +10,36 @@
                 {{ form_start(registrationForm) }}
 
                     {{ form_label(registrationForm.email) }}
-                    {{ form_widget(registrationForm.email, {'attr': {'class': registrationForm.email.vars.errors|length > 0 ? 'is-invalid form-control' : 'form-control' }}) }}
-                    <div class="invalid-feedback mb-2">
-                        {{ form_errors(registrationForm.email) }}
-                    </div>
+
+                    {% if registrationForm.email.vars.errors|length > 0 %}
+                        {{ form_widget(registrationForm.email, {'attr': {'class': 'is-invalid form-control' }}) }}
+                        <div class="invalid-feedback mb-2">
+                            {{ form_errors(registrationForm.email) }}
+                        </div>
+                    {% elseif registrationForm.email.vars.errors|length <= 0 and formSubmitted %}
+                        {{ form_widget(registrationForm.email, {'attr': {'class': 'is-valid form-control' }}) }}
+                        <div class="valid-feedback mb-2">
+                            Email correct
+                        </div>
+                    {% else %}
+                        {{ form_widget(registrationForm.email, {'attr': {'class': 'form-control' }}) }}
+                    {% endif %}
 
                     {{ form_label(registrationForm.username) }}
-                    {{ form_widget(registrationForm.username, {'attr': {'class': registrationForm.username.vars.errors|length > 0 ? 'is-invalid form-control' : 'form-control' }}) }}
-                    <div class="invalid-feedback mb-2">
-                        {{ form_errors(registrationForm.username) }}
-                    </div>
+
+                    {% if registrationForm.username.vars.errors|length > 0 %}
+                        {{ form_widget(registrationForm.username, {'attr': {'class': 'is-invalid form-control' }}) }}
+                        <div class="invalid-feedback mb-2">
+                            {{ form_errors(registrationForm.username) }}
+                        </div>
+                    {% elseif registrationForm.username.vars.errors|length <= 0 and formSubmitted %}
+                        {{ form_widget(registrationForm.username, {'attr': {'class': 'is-valid form-control' }}) }}
+                        <div class="valid-feedback mb-2">
+                            Nom d'utilisateur correct
+                        </div>
+                    {% else %}
+                        {{ form_widget(registrationForm.username, {'attr': {'class': 'form-control' }}) }}
+                    {% endif %}
 
                     {{ form_label(registrationForm.plainPassword) }}
                     {{ form_widget(registrationForm.plainPassword, {'attr': {'class': registrationForm.plainPassword.vars.errors|length > 0 ? 'is-invalid form-control' : 'form-control' }}) }}

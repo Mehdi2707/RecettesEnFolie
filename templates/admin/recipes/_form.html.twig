@@ -1,14 +1,84 @@
 {% block javascripts %}
-    <script src="{{ asset('assets/js/ingredients.js') }}" defer></script>
+    <script src="{{ asset('assets/js/ingredients_v2.js') }}" defer></script>
     <script src="{{ asset('assets/js/steps.js') }}" defer></script>
 {% endblock %}
 
 {{ form_start(recipeForm) }}
-    {{ form_row(recipeForm.title) }}
-    {{ form_row(recipeForm.description) }}
-    {{ form_row(recipeForm.preparationTime) }}
-    {{ form_row(recipeForm.cookingTime) }}
-    {{ form_row(recipeForm.numberOfServings) }}
+    {{ form_label(recipeForm.title) }}
+     {% if recipeForm.title.vars.errors|length > 0 %}
+         {{ form_widget(recipeForm.title, {'attr': {'class': 'is-invalid form-control' }}) }}
+         <div class="invalid-feedback mb-2">
+             {{ form_errors(recipeForm.title) }}
+         </div>
+     {% elseif recipeForm.title.vars.errors|length <= 0 and formSubmitted %}
+         {{ form_widget(recipeForm.title, {'attr': {'class': 'is-valid form-control' }}) }}
+         <div class="valid-feedback mb-2">
+             Titre correct
+         </div>
+     {% else %}
+         {{ form_widget(recipeForm.title, {'attr': {'class': 'form-control' }}) }}
+     {% endif %}
+
+    {{ form_label(recipeForm.description) }}
+     {% if recipeForm.description.vars.errors|length > 0 %}
+         {{ form_widget(recipeForm.description, {'attr': {'class': 'is-invalid form-control' }}) }}
+         <div class="invalid-feedback mb-2">
+             {{ form_errors(recipeForm.description) }}
+         </div>
+     {% elseif recipeForm.description.vars.errors|length <= 0 and formSubmitted %}
+         {{ form_widget(recipeForm.description, {'attr': {'class': 'is-valid form-control' }}) }}
+         <div class="valid-feedback mb-2">
+             Description correct
+         </div>
+     {% else %}
+         {{ form_widget(recipeForm.description, {'attr': {'class': 'form-control' }}) }}
+     {% endif %}
+
+    {{ form_label(recipeForm.preparationTime) }}
+     {% if recipeForm.preparationTime.vars.errors|length > 0 %}
+         {{ form_widget(recipeForm.preparationTime, {'attr': {'class': 'is-invalid form-control' }}) }}
+         <div class="invalid-feedback mb-2">
+             {{ form_errors(recipeForm.preparationTime) }}
+         </div>
+     {% elseif recipeForm.preparationTime.vars.errors|length <= 0 and formSubmitted %}
+         {{ form_widget(recipeForm.preparationTime, {'attr': {'class': 'is-valid form-control' }}) }}
+         <div class="valid-feedback mb-2">
+             Temps de préparation correct
+         </div>
+     {% else %}
+         {{ form_widget(recipeForm.preparationTime, {'attr': {'class': 'form-control' }}) }}
+     {% endif %}
+
+    {{ form_label(recipeForm.cookingTime) }}
+     {% if recipeForm.cookingTime.vars.errors|length > 0 %}
+         {{ form_widget(recipeForm.cookingTime, {'attr': {'class': 'is-invalid form-control' }}) }}
+         <div class="invalid-feedback mb-2">
+             {{ form_errors(recipeForm.cookingTime) }}
+         </div>
+     {% elseif recipeForm.cookingTime.vars.errors|length <= 0 and formSubmitted %}
+         {{ form_widget(recipeForm.cookingTime, {'attr': {'class': 'is-valid form-control' }}) }}
+         <div class="valid-feedback mb-2">
+             Temps de cuisson correct
+         </div>
+     {% else %}
+         {{ form_widget(recipeForm.cookingTime, {'attr': {'class': 'form-control' }}) }}
+     {% endif %}
+
+    {{ form_label(recipeForm.numberOfServings) }}
+     {% if recipeForm.numberOfServings.vars.errors|length > 0 %}
+         {{ form_widget(recipeForm.numberOfServings, {'attr': {'class': 'is-invalid form-control' }}) }}
+         <div class="invalid-feedback mb-2">
+             {{ form_errors(recipeForm.numberOfServings) }}
+         </div>
+     {% elseif recipeForm.numberOfServings.vars.errors|length <= 0 and formSubmitted %}
+         {{ form_widget(recipeForm.numberOfServings, {'attr': {'class': 'is-valid form-control' }}) }}
+         <div class="valid-feedback mb-2">
+             Nombre de portions correct
+         </div>
+     {% else %}
+         {{ form_widget(recipeForm.numberOfServings, {'attr': {'class': 'form-control' }}) }}
+     {% endif %}
+
     {{ form_row(recipeForm.difficultyLevel) }}
     {{ form_row(recipeForm.categories) }}
     {{ form_row(recipeForm.user) }}
@@ -23,7 +93,14 @@
         {% endfor %}
     {% endif %}
 
-    {{ form_row(recipeForm.images) }}
+     {% if recipeForm.images.vars.errors|length > 0 %}
+         {{ form_widget(recipeForm.images, {'attr': {'class': 'is-invalid form-control' }}) }}
+         <div class="invalid-feedback mb-2">
+             {{ form_errors(recipeForm.images) }}
+         </div>
+     {% else %}
+         {{ form_widget(recipeForm.images, {'attr': {'class': 'form-control' }}) }}
+     {% endif %}
 
     <div class="my-3 form-group">
         <h2>Ingrédients</h2>
@@ -35,12 +112,13 @@
                             {{ form_row(ingredientForm.quantity) }}
                         </div>
                         <div class="col-md-4">
-                            {{ form_row(ingredientForm.name) }}
-                        </div>
-                        <div class="col-md-4">
                             {{ form_row(ingredientForm.unit) }}
                         </div>
+                        <div class="col-md-4">
+                            {{ form_row(ingredientForm.name) }}
+                        </div>
                     </div>
+                    <a href="#" class="my-3 btn btn-sm btn-danger remove-ingredient">Supprimer l'ingrédient</a>
                 </li>
             {% endfor %}
         </ul>
@@ -53,6 +131,7 @@
             {% for stepForm in recipeForm.steps %}
                 <li class="col-12 my-2">
                     {{ form_row(stepForm.description) }}
+                    <button class="delete-step btn btn-sm btn-danger my-3">Supprimer l'étape</button>
                 </li>
             {% endfor %}
         </ul>
