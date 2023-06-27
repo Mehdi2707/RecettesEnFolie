@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Newsletter\UsersN;
 use App\Form\NewslettersUsersNFormType;
+use App\Message\SendEmailMessage;
 use App\Repository\RecipesRepository;
 use App\Service\StarsService;
 use App\Service\SendMailService;
@@ -11,12 +12,13 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 class HomeController extends AbstractController
 {
     #[Route('/', name: 'app_home')]
-    public function index(RecipesRepository $recipesRepository, Request $request, EntityManagerInterface $entityManager, SendMailService $mailService, StarsService $starsService): Response
+    public function index(RecipesRepository $recipesRepository, Request $request, EntityManagerInterface $entityManager, MessageBusInterface $messageBus, StarsService $starsService): Response
     {
         if($request->query->has('status') && $request->query->has('message'))
             $this->addFlash($request->query->get('status'), $request->query->get('message'));
@@ -37,12 +39,14 @@ class HomeController extends AbstractController
             $entityManager->persist($userN);
             $entityManager->flush();
 
-            $mailService->send(
-                $this->getParameter('app.mailaddress'),
-                $userN->getEmail(),
-                "Inscription à la newsletter - Recettes en folie",
-                "newsletter",
-                [ 'user' => $userN, 'token' => $token ]
+            $messageBus->dispatch(
+                new SendEmailMessage(
+                    $this->getParameter('app.mailaddress'),
+                    $userN->getEmail(),
+                    "Inscription à la newsletter - Recettes en folie",
+                    "newsletter",
+                    [ 'user' => $userN, 'token' => $token ]
+                )
             );
 
             $this->addFlash('success', 'Vous êtes bien inscrit à notre newsletter, Merci !');

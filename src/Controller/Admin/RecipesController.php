@@ -7,6 +7,7 @@ use App\Entity\Ingredients;
 use App\Entity\Recipes;
 use App\Form\AdminRecipesFormType;
 use App\Form\AdminRefusedRecipeFormType;
+use App\Message\SendEmailMessage;
 use App\Repository\RecipesRepository;
 use App\Service\PictureService;
 use App\Service\SendMailService;
@@ -16,6 +17,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
@@ -59,7 +61,7 @@ class RecipesController extends AbstractController
     }
 
     #[Route('/validation/{id}', name: 'validated')]
-    public function validatedRecipe(Recipes $recipes, EntityManagerInterface $entityManager, SendMailService $mailService): Response
+    public function validatedRecipe(Recipes $recipes, EntityManagerInterface $entityManager, MessageBusInterface $messageBus): Response
     {
         $this->denyAccessUnlessGranted('RECIPE_EDIT', $recipes);
 
@@ -76,12 +78,14 @@ class RecipesController extends AbstractController
         $entityManager->persist($recipes);
         $entityManager->flush();
 
-        $mailService->send(
-            $this->getParameter('app.mailaddress'),
-            $recipes->getUser()->getEmail(),
-            'Votre recette est en ligne - Recettes en folie',
-            'recipeValidated',
-            [ 'user' => $recipes->getUser(), 'recipe' => $recipes ]
+        $messageBus->dispatch(
+            new SendEmailMessage(
+                $this->getParameter('app.mailaddress'),
+                $recipes->getUser()->getEmail(),
+                'Votre recette est en ligne - Recettes en folie',
+                'recipeValidated',
+                [ 'user' => $recipes->getUser(), 'recipe' => $recipes ]
+            )
         );
 
         $this->addFlash('success', 'Recette traité');
@@ -89,7 +93,7 @@ class RecipesController extends AbstractController
     }
 
     #[Route('/refus/{id}', name: 'refused')]
-    public function refusedRecipe(Recipes $recipes, Request $request, EntityManagerInterface $entityManager, SendMailService $mailService): Response
+    public function refusedRecipe(Recipes $recipes, Request $request, EntityManagerInterface $entityManager, MessageBusInterface $messageBus): Response
     {
         $this->denyAccessUnlessGranted('RECIPE_EDIT', $recipes);
 
@@ -113,12 +117,14 @@ class RecipesController extends AbstractController
             $entityManager->persist($recipes);
             $entityManager->flush();
 
-            $mailService->send(
-                $this->getParameter('app.mailaddress'),
-                $recipes->getUser()->getEmail(),
-                'Votre recette à été refusé - Recettes en folie',
-                'recipeRefused',
-                [ 'user' => $recipes->getUser(), 'recipe' => $recipes, 'message' => $message ]
+            $messageBus->dispatch(
+                new SendEmailMessage(
+                    $this->getParameter('app.mailaddress'),
+                    $recipes->getUser()->getEmail(),
+                    'Votre recette à été refusé - Recettes en folie',
+                    'recipeRefused',
+                    [ 'user' => $recipes->getUser(), 'recipe' => $recipes, 'message' => $message ]
+                )
             );
 
             $this->addFlash('success', 'Recette traité');

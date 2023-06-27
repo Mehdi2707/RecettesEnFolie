@@ -8,6 +8,7 @@ use App\Entity\RecipeStatus;
 use App\Entity\Users;
 use App\Form\ProfileFormType;
 use App\Form\RecipesFormType;
+use App\Message\SendEmailMessage;
 use App\Repository\FavoritesRepository;
 use App\Service\StarsService;
 use App\Service\PictureService;
@@ -21,6 +22,7 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\PasswordHasher\PasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
@@ -126,7 +128,7 @@ class ProfileController extends AbstractController
     }
 
     #[Route('/recette/ajout', name: 'recipe_add')]
-    public function add(EntityManagerInterface $entityManager, Request $request, SluggerInterface $slugger, PictureService $pictureService, SendMailService $mailService): Response
+    public function add(EntityManagerInterface $entityManager, Request $request, SluggerInterface $slugger, PictureService $pictureService, MessageBusInterface $messageBus): Response
     {
         if(!$this->getUser()->getIsVerified())
         {
@@ -202,12 +204,14 @@ class ProfileController extends AbstractController
             $entityManager->persist($status);
             $entityManager->flush();
 
-            $mailService->send(
-                $this->getParameter('app.mailaddress'),
-                $this->getUser()->getEmail(),
-                'Suite à la publication de votre recette - Recettes en folie',
-                'recipe',
-                [ 'user' => $this->getUser(), 'recipe' => $recipe ]
+            $messageBus->dispatch(
+                new SendEmailMessage(
+                    $this->getParameter('app.mailaddress'),
+                    $this->getUser()->getEmail(),
+                    'Suite à la publication de votre recette - Recettes en folie',
+                    'recipe',
+                    [ 'user' => $this->getUser(), 'recipe' => $recipe ]
+                )
             );
             $this->addFlash('success', 'Votre recette à été soumis à notre équipe de modération');
             return $this->redirectToRoute('profile_index', ['user' => $this->getUser()->getUsername()]);
@@ -220,7 +224,7 @@ class ProfileController extends AbstractController
     }
 
     #[Route('/recette/edition/{slug}', name: 'recipe_edit')]
-    public function edit(Recipes $recipes, EntityManagerInterface $entityManager, Request $request, SluggerInterface $slugger, PictureService $pictureService, SendMailService $mailService): Response
+    public function edit(Recipes $recipes, EntityManagerInterface $entityManager, Request $request, SluggerInterface $slugger, PictureService $pictureService, MessageBusInterface $messageBus): Response
     {
         $userRecipe = $recipes->getUser();
         $user = $this->getUser();
@@ -288,12 +292,14 @@ class ProfileController extends AbstractController
                     throw $e;
                 }
 
-                $mailService->send(
-                    $this->getParameter('app.mailaddress'),
-                    $this->getUser()->getEmail(),
-                    'Suite à la modification de votre recette - Recettes en folie',
-                    'recipe',
-                    [ 'user' => $this->getUser(), 'recipe' => $recipes ]
+                $messageBus->dispatch(
+                    new SendEmailMessage(
+                        $this->getParameter('app.mailaddress'),
+                        $this->getUser()->getEmail(),
+                        'Suite à la modification de votre recette - Recettes en folie',
+                        'recipe',
+                        [ 'user' => $this->getUser(), 'recipe' => $recipes ]
+                    )
                 );
 
                 $this->addFlash('success', 'Vos modifications ont été soumis à notre équipe de modération');

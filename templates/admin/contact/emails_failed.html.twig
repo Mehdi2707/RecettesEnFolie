@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Emails non envoyés (Administration){% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            {% include "_partials/_adminnav.html.twig" %}
+            <div class="col">
+                <h1>Liste des emails non envoyés</h1>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Email</th>
+                        <th>Objet du mail</th>
+                        <th>Infos</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for message in messages %}
+                        <tr>
+                            <td>{{ message.id }}</td>
+                            <td>{{ message.message.to }}</td>
+                            <td>{{ message.message.subject }}</td>
+                            <td>{{ dump(message.message.context) }}</td>
+                            <td>
+                                <a class="btn btn-sm btn-success" href="{{ path('admin_contact_emails_failed_resend', {id: message.id}) }}">Renvoyer</a>
+                                <a class="btn btn-sm btn-danger" href="{{ path('admin_contact_emails_failed_delete', {id: message.id}) }}">Supprimer</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

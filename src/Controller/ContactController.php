@@ -38,14 +38,6 @@ class ContactController extends AbstractController
                 )
             );
 
-//            $mailService->send(
-//                $this->getParameter('app.mailaddress'),
-//                $contact->getEmail(),
-//                'Votre demande de contact - Recettes en folie',
-//                'contact',
-//                [ 'contact' => $contact ]
-//            );
-
             $this->addFlash('success', 'Votre demande à bien été enregistré, un mail de confirmation vient de vous être envoyé');
             return $this->redirectToRoute('app_home');
         }

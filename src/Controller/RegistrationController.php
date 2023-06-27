@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Users;
 use App\Form\RegistrationFormType;
+use App\Message\SendEmailMessage;
 use App\Repository\UsersRepository;
 use App\Security\UsersAuthenticator;
 use App\Service\JWTService;
@@ -12,6 +13,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\UserAuthenticatorInterface;
@@ -20,7 +22,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class RegistrationController extends AbstractController
 {
     #[Route('/inscription', name: 'app_register')]
-    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, UserAuthenticatorInterface $userAuthenticator, UsersAuthenticator $authenticator, EntityManagerInterface $entityManager, SendMailService $mailService, JWTService $JWTService): Response
+    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, UserAuthenticatorInterface $userAuthenticator, UsersAuthenticator $authenticator, EntityManagerInterface $entityManager, MessageBusInterface $messageBus, JWTService $JWTService): Response
     {
         $user = new Users();
         $form = $this->createForm(RegistrationFormType::class, $user);
@@ -51,12 +53,14 @@ class RegistrationController extends AbstractController
 
             $token = $JWTService->generate($header, $payload, $this->getParameter('app.jwtsecret'));
 
-            $mailService->send(
-                $this->getParameter('app.mailaddress'),
-                $user->getEmail(),
-                "Activation du compte - Recettes en folie",
-                "register",
-                [ 'user' => $user, 'token' => $token ]
+            $messageBus->dispatch(
+                new SendEmailMessage(
+                    $this->getParameter('app.mailaddress'),
+                    $user->getEmail(),
+                    "Activation du compte - Recettes en folie",
+                    "register",
+                    [ 'user' => $user, 'token' => $token ]
+                )
             );
 
             return $userAuthenticator->authenticateUser(
@@ -93,7 +97,7 @@ class RegistrationController extends AbstractController
     }
 
     #[Route('/renvoiverif', name: 'resend_verif')]
-    public function resendVerif(JWTService $JWTService, SendMailService $mailService, UsersRepository $usersRepository): Response
+    public function resendVerif(JWTService $JWTService, MessageBusInterface $messageBus, UsersRepository $usersRepository): Response
     {
         $user = $this->getUser();
 
@@ -120,12 +124,14 @@ class RegistrationController extends AbstractController
 
         $token = $JWTService->generate($header, $payload, $this->getParameter('app.jwtsecret'));
 
-        $mailService->send(
-            $this->getParameter('app.mailaddress'),
-            $user->getEmail(),
-            "Activation du compte - Recettes en folie",
-            "register",
-            [ 'user' => $user, 'token' => $token ]
+        $messageBus->dispatch(
+            new SendEmailMessage(
+                $this->getParameter('app.mailaddress'),
+                $user->getEmail(),
+                "Activation du compte - Recettes en folie",
+                "register",
+                [ 'user' => $user, 'token' => $token ]
+            )
         );
 
         $this->addFlash('success', 'Email de vérification envoyé');

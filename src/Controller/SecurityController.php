@@ -4,12 +4,14 @@ namespace App\Controller;
 
 use App\Form\ResetPasswordFormType;
 use App\Form\ResetPasswordRequestFormType;
+use App\Message\SendEmailMessage;
 use App\Repository\UsersRepository;
 use App\Service\SendMailService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -40,7 +42,7 @@ class SecurityController extends AbstractController
     }
 
     #[Route('/reinitialisation-mot-de-passe', name: 'change_password')]
-    public function changePassword(TokenGeneratorInterface $tokenGenerator, EntityManagerInterface $entityManager, SendMailService $mailService)
+    public function changePassword(TokenGeneratorInterface $tokenGenerator, EntityManagerInterface $entityManager, MessageBusInterface $messageBus)
     {
         $user = $this->getUser();
 
@@ -56,12 +58,14 @@ class SecurityController extends AbstractController
             'user' => $user
         ];
 
-        $mailService->send(
-            $this->getParameter('app.mailaddress'),
-            $user->getEmail(),
-            'Réinitialisation du mot de passe',
-            'password_reset',
-            $context
+        $messageBus->dispatch(
+            new SendEmailMessage(
+                $this->getParameter('app.mailaddress'),
+                $user->getEmail(),
+                'Réinitialisation du mot de passe',
+                'password_reset',
+                $context
+            )
         );
 
         $this->addFlash('success', 'Vous avez reçu un lien dans votre boite mail pour réinitialiser votre mot de passe');
@@ -69,7 +73,7 @@ class SecurityController extends AbstractController
     }
 
     #[Route(path: '/mot-de-passe-oublie', name: 'forgotten_password')]
-    public function forgottenPassword(Request $request, UsersRepository $usersRepository, TokenGeneratorInterface $tokenGenerator, EntityManagerInterface $entityManager, SendMailService $mailService): Response
+    public function forgottenPassword(Request $request, UsersRepository $usersRepository, TokenGeneratorInterface $tokenGenerator, EntityManagerInterface $entityManager, MessageBusInterface $messageBus): Response
     {
         $form = $this->createForm(ResetPasswordRequestFormType::class);
 
@@ -93,12 +97,14 @@ class SecurityController extends AbstractController
                     'user' => $user
                 ];
 
-                $mailService->send(
-                    $this->getParameter('app.mailaddress'),
-                    $user->getEmail(),
-                    'Réinitialisation du mot de passe',
-                    'password_reset',
-                    $context
+                $messageBus->dispatch(
+                    new SendEmailMessage(
+                        $this->getParameter('app.mailaddress'),
+                        $user->getEmail(),
+                        'Réinitialisation du mot de passe',
+                        'password_reset',
+                        $context
+                    )
                 );
 
                 $this->addFlash('success', 'Email envoyé avec succès');

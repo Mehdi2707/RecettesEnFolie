@@ -4,6 +4,7 @@ namespace App\Controller\Admin;
 
 use App\Entity\Newsletter\Newsletters;
 use App\Form\NewslettersFormType;
+use App\Message\SendEmailMessage;
 use App\Repository\Newsletter\NewslettersRepository;
 use App\Repository\Newsletter\UsersNRepository;
 use App\Service\SendMailService;
@@ -11,6 +12,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/admin', name: 'admin_')]
@@ -57,18 +59,20 @@ class MainController extends AbstractController
     }
 
     #[Route('/newsletter/envoi/{id}', name: 'newsletter_send')]
-    public function newsletterSend(UsersNRepository $usersNRepository, SendMailService $mailService, Newsletters $newsletters, EntityManagerInterface $entityManager): Response
+    public function newsletterSend(UsersNRepository $usersNRepository, MessageBusInterface $messageBus, Newsletters $newsletters, EntityManagerInterface $entityManager): Response
     {
         $users = $usersNRepository->findBy(['is_valid' => true]);
 
         foreach($users as $user)
         {
-            $mailService->send(
-                $this->getParameter('app.mailaddress'),
-                $user->getEmail(),
-                $newsletters->getName(),
-                'newsletterSend',
-                [ 'newsletter' => $newsletters, 'user' => $user ]
+            $messageBus->dispatch(
+                new SendEmailMessage(
+                    $this->getParameter('app.mailaddress'),
+                    $user->getEmail(),
+                    $newsletters->getName(),
+                    'newsletterSend',
+                    [ 'newsletter' => $newsletters, 'user' => $user ]
+                )
             );
         }
 
