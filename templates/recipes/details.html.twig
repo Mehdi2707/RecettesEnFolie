@@ -25,8 +25,7 @@
     <div class="container">
         <div class="row">
             <div class="col-12">
-                <div class="fb-share-button m-3 float-right" data-href="{{ app.request.uri }}" data-layout="button" data-size="large"><a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u={{ app.request.uri|url_encode }}&amp;src=sdkpreparse" class="fb-xfbml-parse-ignore">Partager</a></div>
-            </div>
+                            </div>
         </div>
     </div>
 
@@ -51,9 +50,12 @@
 
                 <div class="row">
                     <div class="col-4">
-                        <div class="my-5">
+                        <div class="mt-5 mb-4">
                             <span>{{ recipe.createdAt | date('d/m/Y') }}</span>
                         </div>
+                        <div id="fb-root"></div>
+                        <script async defer crossorigin="anonymous" src="https://connect.facebook.net/fr_FR/sdk.js#xfbml=1&version=v17.0&appId=510141992429352&autoLogAppEvents=1" nonce="aoMKyaCM"></script>
+                        <div class="fb-share-button mt-3" data-href="{{ app.request.uri }}" data-layout="button" data-size="large"><a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u={{ app.request.uri|url_encode }}&amp;src=sdkpreparse" class="fb-xfbml-parse-ignore">Partager</a></div>
                     </div>
 
                     <div class="col-8">
@@ -88,7 +90,9 @@
                         <div class="receipe-duration mt-5">
                             <h6>Difficulté : {{ recipe.difficultyLevel.name|capitalize }}</h6>
                             <h6>Temps de préparation : {{ recipe.preparationTime }} min</h6>
-                            <h6>Temps de cuisson : {{ recipe.cookingTime }} min</h6>
+                            {% if recipe.cookingTime > 0 %}
+                                <h6>Temps de cuisson : {{ recipe.cookingTime }} min</h6>
+                            {% endif %}
                             <h6>Nombre de portions : {{ recipe.numberOfServings }}</h6>
                         </div>
                         <div class="my-4">
@@ -104,7 +108,18 @@
                             <h4>Ingrédients</h4>
                             {% for ingredient in recipe.ingredients %}
                                 <div style="font-size: 18px;">
-                                    <span class="font-weight-bold">- {{ ingredient.quantity|number_format(2, '.', '')|trim('0')|trim('.')|replace({'.': ','}) }} {{ ingredient.unit.name == 'unité' ? '' : ingredient.unit.name }} {{ ingredient.name }}</span>
+                                    <span class="font-weight-bold">- {{ ingredient.quantity|number_format(2, '.', '')|trim('0')|trim('.')|replace({'.': ','}) }}
+                                                                    {{ ingredient.unit.name == 'unité' ? '' : ingredient.unit.name }}
+                                                                    {% if ingredient.unit.name != 'unité' %}
+                                                                        {% if ingredient.name|first in ['a', 'e', 'i', 'o', 'u', 'y'] %}
+                                                                            d'{{ ingredient.name|lower }}
+                                                                        {% else %}
+                                                                            de {{ ingredient.name|lower }}
+                                                                        {% endif %}
+                                                                    {% else %}
+                                                                        {{ ingredient.name|lower }}
+                                                                    {% endif %}
+                                    </span>
                                 </div>
                             {% endfor %}
                         </div>
@@ -283,10 +298,10 @@
                 {% if consultedRecipes is empty %}
                     <div class="carousel mb-5" data-flickity='{ "groupCells": true }'>
                         {% for recipe in bestRecipesOfsCategory %}
-                            <div class="carousel-cell col-12 col-sm-6 col-lg-4">
+                            <div class="carousel-cell col-12 col-sm-6 col-lg-3">
                                 <a href="{{ path('recipes_details', {slug: recipe.slug, category: recipe.categories.parent.slug, sCategory: recipe.categories.slug}) }}">
                                     <div class="single-best-receipe-area mb-30 text-center">
-                                        <img style="height: 15rem;" src="{% if recipe.images[0] is defined %}{{ asset('assets/uploads/recipes/' ~ recipe.images[0].name) }}{% else %}{{ asset('assets/img/bg-img/r5.jpg') }}{% endif %}" alt="{{ recipe.title }}">
+                                        <img style="max-height: 10rem; min-height: 5rem; max-width: 15rem; min-width: 10rem;" src="{% if recipe.images[0] is defined %}{{ asset('assets/uploads/recipes/' ~ recipe.images[0].name) }}{% else %}{{ asset('assets/img/bg-img/r5.webp') }}{% endif %}" alt="{{ recipe.title }}">
                                         <div class="receipe-content">
                                             <h5>{{ recipe.title }}</h5>
                                             <div class="ratings">
@@ -302,10 +317,10 @@
                 {% else %}
                     <div class="carousel mb-5" data-flickity='{ "groupCells": true }'>
                         {% for recipe in consultedRecipes %}
-                            <div class="carousel-cell col-12 col-sm-6 col-lg-4">
+                            <div class="carousel-cell col-12 col-sm-6 col-lg-3">
                                 <a href="{{ path('recipes_details', {slug: recipe.recipe.slug, category: recipe.recipe.categories.parent.slug, sCategory: recipe.recipe.categories.slug}) }}">
                                     <div class="single-best-receipe-area mb-30 text-center">
-                                        <img style="height: 15rem;" src="{% if recipe.recipe.images[0] is defined %}{{ asset('assets/uploads/recipes/' ~ recipe.recipe.images[0].name) }}{% else %}{{ asset('assets/img/bg-img/r5.jpg') }}{% endif %}" alt="{{ recipe.recipe.title }}">
+                                        <img style="max-height: 10rem; min-height: 5rem; max-width: 15rem; min-width: 10rem;" src="{% if recipe.recipe.images[0] is defined %}{{ asset('assets/uploads/recipes/' ~ recipe.recipe.images[0].name) }}{% else %}{{ asset('assets/img/bg-img/r5.webp') }}{% endif %}" alt="{{ recipe.recipe.title }}">
                                         <div class="receipe-content">
                                             <h5>{{ recipe.recipe.title }}</h5>
                                             <div class="ratings">

@@ -19,7 +19,7 @@
                                     <div class="single-small-receipe-area d-flex">
                                         <!-- Receipe Thumb -->
                                         <div class="receipe-thumb">
-                                            <img src="{% if recipe.images[0] is defined %}{{ asset('assets/uploads/recipes/mini/300x300-' ~ recipe.images[0].name) }}{% else %}{{ asset('assets/img/bg-img/r5.jpg') }}{% endif %}" alt="{{ recipe.title }}">
+                                            <img src="{% if recipe.images[0] is defined %}{{ asset('assets/uploads/recipes/mini/300x300-' ~ recipe.images[0].name) }}{% else %}{{ asset('assets/img/bg-img/r5.webp') }}{% endif %}" alt="{{ recipe.title }}">
                                         </div>
                                         <!-- Receipe Content -->
                                         <div class="receipe-content">
@@ -92,7 +92,7 @@
                                     <div class="single-small-receipe-area d-flex">
                                         <!-- Receipe Thumb -->
                                         <div class="receipe-thumb">
-                                            <img src="{% if favorite.recipes.images[0] is defined %}{{ asset('assets/uploads/recipes/mini/300x300-' ~ favorite.recipes.images[0].name) }}{% else %}{{ asset('assets/img/bg-img/r5.jpg') }}{% endif %}" alt="{{ favorite.recipes.title }}">
+                                            <img src="{% if favorite.recipes.images[0] is defined %}{{ asset('assets/uploads/recipes/mini/300x300-' ~ favorite.recipes.images[0].name) }}{% else %}{{ asset('assets/img/bg-img/r5.webp') }}{% endif %}" alt="{{ favorite.recipes.title }}">
                                         </div>
                                         <!-- Receipe Content -->
                                         <div class="receipe-content">

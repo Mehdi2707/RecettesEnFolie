@@ -1,8 +1,8 @@
 {% for recipe in _recipes %}
-    <div class="col-12 col-sm-6 col-lg-4">
+    <div class="col-12 col-sm-6 col-lg-3">
         <a href="{{ path('recipes_details', {slug: recipe.slug, category: recipe.categories.parent.slug, sCategory: recipe.categories.slug}) }}">
             <div class="single-best-receipe-area mb-30 text-center">
-                <img style="height: 15rem;" src="{% if recipe.images[0] is defined %}{{ asset('assets/uploads/recipes/' ~ recipe.images[0].name) }}{% else %}{{ asset('assets/img/bg-img/r5.jpg') }}{% endif %}" alt="{{ recipe.title }}">
+                <img style="max-height: 10rem; min-height: 5rem; max-width: 15rem; min-width: 10rem;" src="{% if recipe.images[0] is defined %}{{ asset('assets/uploads/recipes/' ~ recipe.images[0].name) }}{% else %}{{ asset('assets/img/bg-img/r5.webp') }}{% endif %}" alt="{{ recipe.title }}">
                 <div class="receipe-content">
                     <h5>{{ recipe.title }}</h5>
                     <div class="ratings">
