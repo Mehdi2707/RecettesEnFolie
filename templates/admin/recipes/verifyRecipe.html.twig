@@ -58,9 +58,29 @@
                     <div class="col-12 col-lg-4">
                         <div class="ingredients">
                             <h4>Ingrédients</h4>
+
+                            {% macro formatNumber(number) %}
+                                {% set formattedNumber = number|number_format(2, ',', '.') %}
+                                {{ formattedNumber|replace({',00': '', ',0': ','}) }}
+                            {% endmacro %}
+
                             {% for ingredient in recipe.ingredients %}
+                                {% import _self as helpers %}
+                                {% set formattedNumber = helpers.formatNumber(ingredient.quantity) %}
+
                                 <div style="font-size: 18px;">
-                                    <span class="font-weight-bold">- {{ ingredient.quantity|number_format(2, '.', '')|trim('0')|trim('.')|replace({'.': ','}) }} {{ ingredient.unit.name == 'unité' ? '' : ingredient.unit.name }} {{ ingredient.name }}</span>
+                                    <span class="font-weight-bold">- {{ formattedNumber }}
+                                                                    {{ ingredient.unit.name == 'unité' ? '' : ingredient.unit.name }}
+                                                                    {% if ingredient.unit.name != 'unité' %}
+                                                                        {% if ingredient.name|first in ['a', 'e', 'i', 'o', 'u', 'y'] %}
+                                                                            d'{{ ingredient.name|lower }}
+                                                                        {% else %}
+                                                                            de {{ ingredient.name|lower }}
+                                                                        {% endif %}
+                                                                    {% else %}
+                                                                        {{ ingredient.name|lower }}
+                                                                    {% endif %}
+                                    </span>
                                 </div>
                             {% endfor %}
                         </div>
