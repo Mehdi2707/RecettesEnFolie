@@ -5,6 +5,7 @@ namespace App\Controller\Admin;
 use App\Entity\Images;
 use App\Entity\Ingredients;
 use App\Entity\Recipes;
+use App\Entity\RecipeStatus;
 use App\Form\AdminRecipesFormType;
 use App\Form\AdminRefusedRecipeFormType;
 use App\Message\SendEmailMessage;
@@ -143,6 +144,7 @@ class RecipesController extends AbstractController
         $this->denyAccessUnlessGranted('ROLE_RECIPE_ADMIN');
 
         $recipe = new Recipes();
+        $status = new RecipeStatus();
 
         $form = $this->createForm(AdminRecipesFormType::class, $recipe);
         $form->handleRequest($request);
@@ -165,6 +167,8 @@ class RecipesController extends AbstractController
 
             $slug = $slugger->slug($recipe->getTitle())->lower() . '-i-' . Uuid::uuid4()->toString();
             $recipe->setSlug($slug);
+            $status->setName('en attente');
+            $recipe->setRecipeStatus($status);
 
             $ingredientsForm = $form->get('ingredients');
             $hasIngredients = false;
@@ -203,6 +207,7 @@ class RecipesController extends AbstractController
             }
 
             $entityManager->persist($recipe);
+            $entityManager->persist($status);
             $entityManager->flush();
 
             $this->addFlash('success', 'Recette ajouté avec succès');
