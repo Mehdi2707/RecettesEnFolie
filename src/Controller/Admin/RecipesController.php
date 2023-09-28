@@ -167,7 +167,7 @@ class RecipesController extends AbstractController
 
             $slug = $slugger->slug($recipe->getTitle())->lower() . '-i-' . Uuid::uuid4()->toString();
             $recipe->setSlug($slug);
-            $status->setName('en attente');
+            $status->setName('valide');
             $recipe->setRecipeStatus($status);
 
             $ingredientsForm = $form->get('ingredients');
