@@ -2,6 +2,8 @@
 
 {% block title %}{{ recipe.title }}{% endblock %}
 
+{% block metaDescription %}{{ recipe.description|nl2br }}{% endblock %}
+
 {% block javascripts %}
     <script src="{{ asset('assets/js/comments.js') }}" defer></script>
     {% if app.user %}
@@ -22,12 +24,12 @@
         </a>
     </nav>
 
-    <div class="container">
-        <div class="row">
-            <div class="col-12">
-                            </div>
-        </div>
-    </div>
+{#    <div class="container">#}
+{#        <div class="row">#}
+{#            <div class="col-12">#}
+{#                            </div>#}
+{#        </div>#}
+{#    </div>#}
 
     <div class="receipe-post-area pt-3">
 
@@ -85,8 +87,8 @@
 
                 <div class="row mb-3">
                     <div class="col-12 receipe-headline">
-                        <h2 class="mb-5">{{ recipe.title }}</h2>
-                        <h5>{{ recipe.description|nl2br }}</h5>
+                        <h1 class="mb-5">{{ recipe.title }}</h1>
+                        <h2 style="font-size: 1.25rem;">{{ recipe.description|nl2br }}</h2>
                         <div class="receipe-duration mt-5">
                             <h6>Difficulté : {{ recipe.difficultyLevel.name|capitalize }}</h6>
                             <h6>Temps de préparation : {{ recipe.preparationTime }} min</h6>
@@ -115,8 +117,8 @@
                             {% for ingredient in recipe.ingredients %}
                                 {% import _self as helpers %}
                                 {% set formattedNumber = helpers.formatNumber(ingredient.quantity) %}
-                                <div style="font-size: 18px;">
-                                    <span class="font-weight-bold">- {{ formattedNumber }}
+                                <div>
+                                    <h3 style="font-size: 18px;" class="font-weight-bold">- {{ formattedNumber }}
                                                                     {{ ingredient.unit.name == 'unité' ? '' : ingredient.unit.name }}
                                                                     {% if ingredient.unit.name != 'unité' %}
                                                                         {% if ingredient.name|first in ['a', 'e', 'i', 'o', 'u', 'y'] %}
@@ -127,7 +129,7 @@
                                                                     {% else %}
                                                                         {{ ingredient.name|lower }}
                                                                     {% endif %}
-                                    </span>
+                                    </h3>
                                 </div>
                             {% endfor %}
                         </div>
@@ -138,8 +140,8 @@
                         {% for step in recipe.steps %}
                             <div class="single-preparation-step d-flex">
                                 <h4>0{{ counter }}.</h4>
-                                <div style="font-size: 16px;">
-                                    {{ step.description|nl2br }}
+                                <div>
+                                    <h3 style="font-size: 16px;">{{ step.description|nl2br }}</h3>
                                 </div>
                             </div>
                             {% set counter = counter + 1 %}
@@ -235,7 +237,7 @@
                 <div class="row" id="ajout-commentaire">
                     <div class="col-12">
                         <div class="mt-2 mb-3 text-left">
-                            <h3>Laisser un commentaire</h3>
+                            <h4>Laisser un commentaire</h4>
                         </div>
                         {% if app.user %}
                             <div class="receipe-ratings">
