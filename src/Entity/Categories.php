@@ -30,6 +30,9 @@ class Categories
     #[ORM\Column(length: 255)]
     private ?string $slug = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?int $catOrder = null;
+
     public function __construct()
     {
         $this->categories = new ArrayCollection();
@@ -138,6 +141,18 @@ class Categories
     public function setSlug(string $slug): self
     {
         $this->slug = $slug;
+
+        return $this;
+    }
+
+    public function getCatOrder(): ?int
+    {
+        return $this->catOrder;
+    }
+
+    public function setCatOrder(?int $catOrder): self
+    {
+        $this->catOrder = $catOrder;
 
         return $this;
     }

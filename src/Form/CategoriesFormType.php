@@ -17,8 +17,14 @@ class CategoriesFormType extends AbstractType
             ->add('name', options: [
                 'label' => false,
                 'attr' => [
-                    'class' => 'form-control mt-3',
+                    'class' => 'form-control my-3',
                     'placeholder' => 'entrée'
+                ]
+            ])
+            ->add('catOrder', options: [
+                'label' => 'Ordre d\'affichage',
+                'attr' => [
+                    'class' => 'form-control mb-3',
                 ]
             ])
             ->add('parent', EntityType::class, [

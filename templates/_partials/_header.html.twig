@@ -77,25 +77,21 @@
                             </a>
                         </div>
                         <ul>
-                            {% for category in categories %}
-                                {% if category.parent is null %}
-                                    <li>
-                                        <a class="linkHeader" href="{{ path('recipes_category', {category: category.slug}) }}">{{ category.name }}</a>
-                                        {% set childCategories = [] %}
-                                        {% for childCategory in categories %}
-                                            {% if childCategory.parent == category %}
-                                                {% set childCategories = childCategories|merge([childCategory]) %}
-                                            {% endif %}
-                                        {% endfor %}
-                                        {% if childCategories is not empty %}
-                                            <ul class="dropdown">
-                                                {% for childCategory in childCategories %}
-                                                    <li><a class="nav-link" style="text-transform: capitalize" href="{{ path('recipes_sousCategory', {category: category.slug, sCategory: childCategory.slug}) }}">{{ childCategory.name }}</a></li>
-                                                {% endfor %}
-                                            </ul>
-                                        {% endif %}
-                                    </li>
-                                {% endif %}
+                            {% set sortedCategories = categories|filter(c => c.parent is null)|sort((a, b) => a.catOrder <=> b.catOrder) %}
+
+                            {% for category in sortedCategories %}
+                                <li>
+                                    <a class="linkHeader" href="{{ path('recipes_category', {category: category.slug}) }}">{{ category.name }}</a>
+
+                                    {% set childCategories = categories|filter(c => c.parent == category)|sort((a, b) => a.catOrder <=> b.catOrder) %}
+                                    {% if childCategories is not empty %}
+                                        <ul class="dropdown">
+                                            {% for childCategory in childCategories %}
+                                                <li><a class="nav-link" style="text-transform: capitalize" href="{{ path('recipes_sousCategory', {category: category.slug, sCategory: childCategory.slug}) }}">{{ childCategory.name }}</a></li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% endif %}
+                                </li>
                             {% endfor %}
                             <li><a class="linkHeader" href="{{ path('app_contact') }}">Contact</a></li>
                         </ul>

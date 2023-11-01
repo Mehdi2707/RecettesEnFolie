@@ -13,6 +13,7 @@
                         <tr>
                             <th>ID</th>
                             <th>Nom</th>
+                            <th>Ordre</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -21,6 +22,7 @@
                         <tr>
                             <td>{{ category.id }}</td>
                             <td>{{ category.name }}</td>
+                            <td>{{ category.catOrder }}</td>
                             <td>
                                 <a class="btn btn-warning" href="{{ path('admin_categories_edit', {id: category.id}) }}"><i class="fa fa-edit"></i></a>
                             </td>
