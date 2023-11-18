@@ -1,5 +1,5 @@
 <div style="text-align: center;">
-    <a href="{{ absolute_url(path('app_home')) }}">
+    <a href="{{ 'https://recettesenfolie.fr' ~ path('app_home') }}">
         <img src="{{ email.image('@images/core-img/logo.webp') }}" alt="Logo" width="305" style="display: block; margin: 0 auto;" />
     </a>
 </div>
@@ -8,4 +8,4 @@
     {{ newsletter.content|raw }}
 </div>
 
-<p>Pour vous désinscrire, cliquez sur ce lien <a href="{{ absolute_url(path('unsubscribe_newsletter', {id: user.id, token: user.validationToken})) }}">Me désinscrire</a></p>
+<p>Pour vous désinscrire, cliquez sur ce lien <a href="{{ 'https://recettesenfolie.fr' ~ path('unsubscribe_newsletter', {id: user.id, token: user.validationToken}) }}">Me désinscrire</a></p>

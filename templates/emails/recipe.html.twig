@@ -1,5 +1,5 @@
 <div style="text-align: center;">
-    <a href="{{ absolute_url(path('app_home')) }}">
+    <a href="{{ 'https://recettesenfolie.fr' ~ path('app_home') }}">
         <img src="{{ email.image('@images/core-img/logo.webp') }}" alt="Logo" width="305" style="display: block; margin: 0 auto;" />
     </a>
 </div>
@@ -13,4 +13,4 @@
 <p>Dans le cas contraire, nous vous informerons des modifications à apporté.</p>
 <br>
 <p>D'ici 48h vous serez notifié par email de l'état de votre recette,</p>
-<p>En attendant n'hésitez pas à aller consulter nos recettes du moment : <a href="{{ absolute_url(path('app_home')) }}">Recettes en folie</a></p>
+<p>En attendant n'hésitez pas à aller consulter nos recettes du moment : <a href="{{ 'https://recettesenfolie.fr' ~ path('app_home') }}">Recettes en folie</a></p>
