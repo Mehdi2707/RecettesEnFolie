@@ -1,9 +1,9 @@
 <div style="text-align: center;">
-    <a href="{{ 'https://recettesenfolie.fr' ~ path('app_home') }}">
+    <a href="{{ absolute_url(path('app_home')) }}">
         <img src="{{ email.image('@images/core-img/logo.webp') }}" alt="Logo" width="305" style="display: block; margin: 0 auto;" />
     </a>
 </div>
 <h1>Inscription à la newsletter</h1>
 <p>Bonjour,</p>
 <p>Votre inscription à la newsletter de Recettes en folie est à valider en cliquant sur le lien ci-dessous :</p>
-<a href="{{ 'https://recettesenfolie.fr' ~ path('confirm_newsletter', {id: user.id, token: token}) }}">Activer ma newsletter</a>
+<a href="{{ absolute_url(path('confirm_newsletter', {id: user.id, token: token})) }}">Activer ma newsletter</a>

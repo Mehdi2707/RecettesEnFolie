@@ -1,5 +1,5 @@
 <div style="text-align: center;">
-    <a href="{{ 'https://recettesenfolie.fr' ~ path('app_home') }}">
+    <a href="{{ absolute_url(path('app_home')) }}">
         <img src="{{ email.image('@images/core-img/logo.webp') }}" alt="Logo" width="305" style="display: block; margin: 0 auto;" />
     </a>
 </div>
@@ -9,6 +9,6 @@
 <p>Vous avez publié une nouvelle recette sur notre site et nous vous en remercions,</p>
 <br>
 <p>Votre recette à bien été validé par notre équipe est elle est désormais en ligne.</p>
-<p>Vous pouvez maintenant y accéder soit en cliquant <a href="{{ 'https://recettesenfolie.fr' ~ path('recipes_details', {slug: recipe.slug, category: recipe.categories.parent.slug, sCategory: recipe.categories.slug}) }}">ici</a> soit en allant sur votre compte.</p>
+<p>Vous pouvez maintenant y accéder soit en cliquant <a href="{{ absolute_url(path('recipes_details', {slug: recipe.slug, category: recipe.categories.parent.slug, sCategory: recipe.categories.slug})) }}">ici</a> soit en allant sur votre compte.</p>
 <br>
 <p>A bientôt sur Recettes en folie !</p>
