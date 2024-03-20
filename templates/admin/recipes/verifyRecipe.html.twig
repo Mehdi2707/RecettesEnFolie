@@ -17,7 +17,7 @@
                 <div class="col-12">
                     <div class="receipe-slider owl-carousel">
                         {% for image in recipe.images %}
-                            <img class="m-auto {{ (loop.index0 == 0) ? 'active' : '' }}" src="{{ asset('assets/uploads/recipes/') ~ image.name }}" style="width:600px;" alt="{{ recipe.title }}">
+                            <img class="m-auto {{ (loop.index0 == 0) ? 'active' : '' }}" src="{{ asset('assets/uploads/recipes/mini/400x400-') ~ image.name }}" style="width:400px;" alt="{{ recipe.title }}">
                         {% endfor %}
                     </div>
                 </div>

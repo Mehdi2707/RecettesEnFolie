@@ -150,7 +150,7 @@ class ProfileController extends AbstractController
             {
                 $folder = 'recipes';
 
-                $file = $pictureService->add($image, $folder, 300, 300);
+                $file = $pictureService->add($image, $folder, 400, 400);
 
                 $img = new Images();
                 $img->setName($file);
@@ -253,7 +253,7 @@ class ProfileController extends AbstractController
             {
                 $folder = 'recipes';
 
-                $file = $pictureService->add($image, $folder, 300, 300);
+                $file = $pictureService->add($image, $folder, 400, 400);
 
                 $img = new Images();
                 $img->setName($file);
@@ -329,7 +329,7 @@ class ProfileController extends AbstractController
         {
             $name = $images->getName();
 
-            if($pictureService->delete($name, 'recipes', 300, 300))
+            if($pictureService->delete($name, 'recipes', 400, 400))
             {
                 $entityManager->remove($images);
                 $entityManager->flush();
