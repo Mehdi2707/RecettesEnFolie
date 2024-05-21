@@ -22,7 +22,7 @@ class RecipeStatus
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $message = null;
 
-    #[ORM\OneToMany(mappedBy: 'recipe_status', targetEntity: Recipes::class)]
+    #[ORM\OneToMany(mappedBy: 'recipeStatus', targetEntity: Recipes::class)]
     private Collection $recipeStatus;
 
     public function __construct()

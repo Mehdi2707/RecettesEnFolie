@@ -59,8 +59,6 @@ class DeleteInactiveUsersCommand extends Command
         // Exécuter les opérations de suppression
         $this->entityManager->flush();
 
-        $output->writeln('Inactive users deleted.');
-
         return Command::SUCCESS;
     }
 }
