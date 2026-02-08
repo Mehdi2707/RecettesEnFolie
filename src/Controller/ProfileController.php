@@ -130,6 +130,12 @@ class ProfileController extends AbstractController
     #[Route('/recette/ajout', name: 'recipe_add')]
     public function add(EntityManagerInterface $entityManager, Request $request, SluggerInterface $slugger, PictureService $pictureService, MessageBusInterface $messageBus): Response
     {
+        if(!$this->getUser())
+        {
+            $this->addFlash('warning', 'Vous devez être connecté');
+            return $this->redirectToRoute('profile_index', ['users' => $this->getUser()->getUsername()]);
+        }
+
         if(!$this->getUser()->getIsVerified())
         {
             $this->addFlash('warning', 'Vous devez activer votre compte pour publier une recette');

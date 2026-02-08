@@ -111,13 +111,13 @@ class RecipesController extends AbstractController
 
         // Récupérer la recette
         $recipe = $recipesRepository->findOneBy(['slug' => $slug]);
+	$user = $this->getUser();
 
-        if (!$recipe || $recipe->getRecipeStatus()->getName() != 'valide') {
+        if (!$recipe || ($recipe->getUser() !== $user && $recipe->getRecipeStatus()->getName() != 'valide')) {
             $this->addFlash('warning', 'Un problème est survenu');
             return $this->redirectToRoute('recipes_sousCategory', ['category' => $category, 'sCategory' => $sCategory]);
         }
 
-        $user = $this->getUser();
         $noteUser = $notesRepository->findOneBy(['user' => $user, 'recipe' => $recipe]);
         $notes = $recipe->getNotes();
         $favorite = $favoritesRepository->findOneBy(['user' => $user, 'recipes' => $recipe]);

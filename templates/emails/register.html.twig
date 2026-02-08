@@ -6,5 +6,5 @@
 <h1>Activez votre compte</h1>
 <p>Bonjour, {{ user.username }}</p>
 <p>Votre inscription sur Recettes en folie est à valider en cliquant sur le lien ci-dessous :</p>
-<a href="{{ absolute_url(path('verify_user', {token: token})) }}">Activer mon compte</a>
+<a href="https://recettesenfolie.fr{{ (path('verify_user', {token: token})) }}">Activer mon compte</a>
 <p>Ce lien expirera dans 3 heures</p>
